@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://tb-backend-1.onrender.com/api',
+  baseURL: 'https://tb-backend-1.onrender.com',
 });
 
 // Har request me JWT attach karo
