@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../services/api';               // <--- Yeh import karo!
 import { useNavigate } from 'react-router-dom';
 
 const UserDashboard = () => {
@@ -10,8 +10,9 @@ const UserDashboard = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
+        // User details (login token)
         const token = localStorage.getItem('token');
-        const res = await axios.get('https://tb-backend-1.onrender.com/api/users/me', {
+        const res = await api.get('/users/me', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setUser(res.data);
@@ -20,8 +21,9 @@ const UserDashboard = () => {
       }
     };
     fetchUser();
-    // WhatsApp numbers laao
-    axios.get('http://localhost:5000/api/settings')
+
+    // WhatsApp numbers laao — ab api.js se
+    api.get('/settings')
       .then(res => setNumbers(res.data || {}))
       .catch(() => {});
   }, []);
