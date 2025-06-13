@@ -128,7 +128,7 @@ const DashboardPage = () => {
   const fetchUsers = async (search = '') => {
     try {
       const params = search.trim() ? { search } : {};
-      const res = await api.get('http://localhost:5000/api/admin/users', { params });
+      const res = await api.get('/admin/users', { params });
       const data = res.data;
       const list = Array.isArray(data) ? data : data.users || [];
       setUsers(list);
