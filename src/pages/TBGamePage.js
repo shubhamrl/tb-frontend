@@ -39,6 +39,9 @@ export default function TBGamePage() {
   const [winnerChoice, setWinnerChoice] = useState(null);
   const [displayedWinner, setDisplayedWinner] = useState(null);
   const [balance, setBalance] = useState(0);
+  // 🔄 Add this new state for userBets:
+const [userBets, setUserBets] = useState({});
+
 
   // ---- Live-state every second ----
   useEffect(() => {
@@ -48,6 +51,7 @@ export default function TBGamePage() {
         setCurrentRound(res.data.round);
         setTimer(res.data.timer);
         setBets(res.data.totals || {});
+        setUserBets(res.data.userBets || {}); // 👈 Added this line
         setWinnerChoice(res.data.winnerChoice || null);
         if (typeof res.data.balance === "number") setBalance(res.data.balance);
       } catch (err) {
@@ -138,7 +142,7 @@ export default function TBGamePage() {
           >
             <img src={item.src} alt={item.name} />
             <p className="name">{item.name}</p>
-            <p className="bet">₹{bets[item.name] || 0}</p>
+         <p className="bet">₹{userBets[item.name] || 0}</p>
             <input
               type="text"
               disabled={timer <= 15}
