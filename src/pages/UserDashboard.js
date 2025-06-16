@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import api from '../services/api';               // <--- Yeh import karo!
+import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
 const UserDashboard = () => {
@@ -10,7 +10,6 @@ const UserDashboard = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        // User details (login token)
         const token = localStorage.getItem('token');
         const res = await api.get('/users/me', {
           headers: { Authorization: `Bearer ${token}` }
@@ -22,7 +21,6 @@ const UserDashboard = () => {
     };
     fetchUser();
 
-    // WhatsApp numbers laao — ab api.js se
     api.get('/settings')
       .then(res => setNumbers(res.data || {}))
       .catch(() => {});
@@ -41,10 +39,16 @@ const UserDashboard = () => {
     return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
   return (
     <div className="dashboard-container">
       <h1>Welcome, {user.email}</h1>
       <p>Your Balance: ₹{user.balance}</p>
+
       <div className="dashboard-buttons">
         <button onClick={() => window.location.href = createWhatsAppLink('deposit')}>
           Deposit
@@ -53,9 +57,15 @@ const UserDashboard = () => {
           Withdraw
         </button>
       </div>
+
       <div className="game-buttons">
         <button onClick={() => navigate('/game/tb')}>Play Titali Bhavara</button>
         <button onClick={() => navigate('/game/spin')}>Play Spin to Win</button>
+      </div>
+
+      {/* 🔴 Logout Button */}
+      <div className="logout-section" style={{ marginTop: '20px' }}>
+        <button onClick={handleLogout}>Logout</button>
       </div>
     </div>
   );
