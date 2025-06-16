@@ -11,26 +11,31 @@ function App() {
   const token = localStorage.getItem('token');
   return (
     <Router>
-      <Routes>
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="/dashboard"
-          element={token ? <UserDashboard /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/admin"
-          element={token ? <AdminDashboard /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/game/tb"
-          element={token ? <TBGamePage /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/game/spin"
-          element={token ? <SpinGamePage /> : <Navigate to="/login" />}
-        />
-      </Routes>
+     <Routes>
+  <Route
+    path="/"
+    element={token ? <Navigate to="/dashboard" /> : <Navigate to="/signup" />}
+  />
+  <Route path="/signup" element={<Signup />} />
+  <Route path="/login" element={<Login />} />
+  <Route
+    path="/dashboard"
+    element={token ? <UserDashboard /> : <Navigate to="/login" />}
+  />
+  <Route
+    path="/admin"
+    element={token ? <AdminDashboard /> : <Navigate to="/login" />}
+  />
+  <Route
+    path="/game/tb"
+    element={token ? <TBGamePage /> : <Navigate to="/login" />}
+  />
+  <Route
+    path="/game/spin"
+    element={token ? <SpinGamePage /> : <Navigate to="/login" />}
+  />
+</Routes>
+
     </Router>
   );
 }
