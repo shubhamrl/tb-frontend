@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -42,6 +42,11 @@ const Signup = () => {
         />
         <button type="submit">Sign Up</button>
       </form>
+
+      {/* 👇 Login link below form */}
+      <p style={{ marginTop: '10px' }}>
+        Already have an account? <Link to="/login">Login here</Link>
+      </p>
     </div>
   );
 };
