@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
+import '../styles/userdashboard.css';
 
 const UserDashboard = () => {
   const [user, setUser] = useState({ id: '', email: '', balance: 0 });
