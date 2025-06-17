@@ -42,8 +42,9 @@
   }
 
   .winner-box {
-    width: 100%;
-    margin: 1rem auto;
+    width: 160px !important;   /* pehle 220px tha */
+  min-height: 90px !important;
+  padding: 0.7rem !important;
   }
 
   .last-wins {
@@ -103,8 +104,8 @@
 }
 
 .card img {
-  width: 80px;
-  height: 80px;
+  width: 50px;
+  height: 50px;
   object-fit: contain;
   margin-bottom: 0.5rem;
 }
