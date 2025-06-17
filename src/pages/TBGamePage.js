@@ -159,7 +159,9 @@ const [userBets, setUserBets] = useState({});
           </div>
         ))}
       </div>
+
       {/* Winner Box */}
+  <div className="right-panel">
       <div
         className="winner-box"
         style={{
@@ -203,5 +205,6 @@ const [userBets, setUserBets] = useState({});
         </ul>
       </div>
     </div>
+   </div>
   );
 }
