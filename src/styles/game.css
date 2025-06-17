@@ -4,52 +4,6 @@
   margin: auto;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   position: relative;
-  display: flex;
-  flex-direction: column;
-}
-
-@media (orientation: landscape) {
-  .game-container {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-
-  .game-header {
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-    width: 100%;
-    margin-bottom: 1rem;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background: #fff;
-    z-index: 10;
-    padding: 0.5rem;
-  }
-
-  .image-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    padding-top: 3.5rem;
-    width: 70%;
-  }
-
-  .right-panel {
-    width: 30%;
-    padding-top: 3.5rem;
-  }
-
-  .winner-box {
-    width: 160px !important;
-    min-height: 90px !important;
-    padding: 0.7rem !important;
-  }
-
-  .last-wins {
-    width: 100%;
-  }
 }
 
 .game-header {
@@ -81,21 +35,15 @@
   margin: 1rem 0;
 }
 
-/* COMPACT CARD STYLE */
 .card {
   background: white;
   border: 1px solid #ccc;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
-  padding: 0.4rem 0.3rem 0.6rem 0.3rem;
+  padding: 0.75rem;
   transition: transform 0.2s, box-shadow 0.2s;
   position: relative;
-  height: 210px;
-  min-width: 135px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
 }
 
 .card:hover {
@@ -110,54 +58,41 @@
 }
 
 .card img {
-  width: 48px;
-  height: 48px;
+  width: 80px;
+  height: 80px;
   object-fit: contain;
-  margin: 0 auto 0.1rem auto;
+  margin-bottom: 0.5rem;
 }
 
 .card .name {
   text-transform: capitalize;
-  margin: 0.25rem 0 0.12rem 0;
-  font-size: 1.05rem;
+  margin: 0.5rem 0;
   font-weight: 500;
 }
 
 .card .bet {
   font-weight: bold;
   color: #333;
-  margin-bottom: 0.10rem;
-  font-size: 0.98rem;
-}
-
-/* INPUT + BUTTON ek row me */
-.card .bet-input-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
-  margin-bottom: 0.15rem;
+  margin-bottom: 0.5rem;
 }
 
 .card input {
-  width: 38px;
-  padding: 0.22rem;
+  width: 60%;
+  padding: 0.4rem;
   border: 1px solid #ccc;
-  border-radius: 7px;
+  border-radius: 8px;
   text-align: center;
-  font-size: 0.93rem;
+  margin-bottom: 0.5rem;
 }
 
 .card button {
-  padding: 0.27rem 0.7rem;
+  padding: 0.4rem 0.8rem;
   background: #2196f3;
   color: white;
   border: none;
-  border-radius: 7px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
-  font-size: 0.97rem;
-  margin-left: 0.05rem;
   transition: background 0.2s;
 }
 
@@ -201,6 +136,7 @@
   border-bottom: none;
 }
 
+/* Popup Styles */
 .winner-popup {
   position: absolute;
   top: 50%;
