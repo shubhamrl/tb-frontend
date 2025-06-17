@@ -143,19 +143,22 @@ const [userBets, setUserBets] = useState({});
             <img src={item.src} alt={item.name} />
             <p className="name">{item.name}</p>
          <p className="bet">₹{userBets[item.name] || 0}</p>
-            <input
-              type="text"
-              disabled={timer <= 15}
-              value={inputValues[item.name] || ''}
-              onChange={e => handleInputChange(item.name, e.target.value)}
-              placeholder="₹"
-            />
-            <button
-              disabled={timer <= 15}
-              onClick={() => placeBetHandler(item.name)}
-            >
-              Bet
-            </button>
+           <div className="bet-input-row">
+  <input
+    type="text"
+    disabled={timer <= 15}
+    value={inputValues[item.name] || ''}
+    onChange={e => handleInputChange(item.name, e.target.value)}
+    placeholder="₹"
+  />
+  <button
+    disabled={timer <= 15}
+    onClick={() => placeBetHandler(item.name)}
+  >
+    Bet
+  </button>
+</div>
+
           </div>
         ))}
       </div>
