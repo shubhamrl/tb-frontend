@@ -4,6 +4,51 @@
   margin: auto;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (orientation: landscape) {
+  .game-container {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .game-header {
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 1rem;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #fff;
+    z-index: 10;
+    padding: 0.5rem;
+  }
+
+  .image-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    padding-top: 3.5rem;
+    width: 70%;
+  }
+
+  .right-panel {
+    width: 30%;
+    padding-top: 3.5rem;
+  }
+
+  .winner-box {
+    width: 100%;
+    margin: 1rem auto;
+  }
+
+  .last-wins {
+    width: 100%;
+  }
 }
 
 .game-header {
@@ -136,7 +181,6 @@
   border-bottom: none;
 }
 
-/* Popup Styles */
 .winner-popup {
   position: absolute;
   top: 50%;
