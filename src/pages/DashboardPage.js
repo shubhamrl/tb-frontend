@@ -24,7 +24,7 @@ const IMAGE_LIST = [
   { name: 'rabbit',      src: '/images/rabbit.png'       }
 ];
 
-// === WhatsApp Settings component ===
+// WhatsApp Settings component (no changes needed)
 const WhatsappSettings = () => {
   const [deposit, setDeposit] = useState('');
   const [withdraw, setWithdraw] = useState('');
@@ -115,8 +115,8 @@ const DashboardPage = () => {
       const data = res.data;
       const list = Array.isArray(data) ? data : data.users || [];
       setUsers(list);
-      setTotalUsers(data.total || list.length);
-      setActiveUsers(data.active || 0); // API me aata hai to, warna calculate kar lo
+      setTotalUsers(data.total || 0);
+      setActiveUsers(data.active || 0);
     } catch (err) {
       console.error('Error fetching users:', err);
     }
@@ -177,11 +177,11 @@ const DashboardPage = () => {
       <h1>Admin Dashboard</h1>
 
       {/* ====== Total/Active Users Row ====== */}
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        marginBottom: 24 
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 24
       }}>
         <div style={{
           background: '#f1f3f6',
@@ -214,28 +214,49 @@ const DashboardPage = () => {
       {/* WhatsApp Number Settings */}
       <WhatsappSettings />
 
-      {/* ===== Users List (Scrollable Box) ===== */}
-      <section style={{
-        background: '#fff',
-        borderRadius: 14,
-        padding: '0.5rem',
-        marginBottom: 28,
-        boxShadow: '0 1px 4px rgba(0,0,0,0.07)',
-        maxHeight: 280,
-        overflowY: 'auto'
-      }}>
-        <h2 style={{margin: '1rem 0 0.7rem 1rem'}}>Users List</h2>
-        <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
-          {users.map(user => (
-            <li key={user._id} style={{
-              borderBottom: '1px solid #f1f1f1',
-              padding: '11px 18px',
-              fontWeight: 500
-            }}>
-              {user.email}
-            </li>
-          ))}
-        </ul>
+      {/* ===== Manage User Balances (Scrollable Table) ===== */}
+      <section style={{ marginTop: '2rem' }}>
+        <h2>Manage User Balances</h2>
+        <div style={{
+          background: '#fff',
+          borderRadius: 12,
+          boxShadow: '0 1px 4px rgba(0,0,0,0.07)',
+          maxHeight: 320, // Table ki height fix
+          overflowY: 'auto',
+          marginBottom: 28
+        }}>
+          <table border="1" cellPadding="8" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Balance</th>
+                <th>Amount</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map(user => (
+                <tr key={user._id}>
+                  <td>{user.email}</td>
+                  <td>₹{user.balance}</td>
+                  <td>
+                    <input
+                      type="number"
+                      value={editAmounts[user._id] || ''}
+                      onChange={e => handleBalanceChange(user._id, e.target.value)}
+                      placeholder="₹"
+                      style={{ width: '80px', padding: '0.25rem' }}
+                    />
+                  </td>
+                  <td>
+                    <button onClick={() => updateBalance(user._id, true)}>Add</button>{' '}
+                    <button onClick={() => updateBalance(user._id, false)}>Minus</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       {/* ===== Current Round Section ===== */}
@@ -265,7 +286,7 @@ const DashboardPage = () => {
             );
           })}
         </div>
-        {winnerChoice && <p style={{color:"green",fontWeight:"bold"}}>Set Winner: {winnerChoice.toUpperCase()}</p>}
+        {winnerChoice && <p style={{ color: "green", fontWeight: "bold" }}>Set Winner: {winnerChoice.toUpperCase()}</p>}
       </section>
 
       {/* ===== Search Users ===== */}
@@ -279,42 +300,6 @@ const DashboardPage = () => {
           style={{ marginRight: '0.5rem', padding: '0.5rem' }}
         />
         <button onClick={handleSearch}>Search</button>
-      </section>
-
-      {/* ===== Manage User Balances ===== */}
-      <section style={{ marginTop: '2rem' }}>
-        <h2>Manage User Balances</h2>
-        <table border="1" cellPadding="8" style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr>
-              <th>Email</th>
-              <th>Balance</th>
-              <th>Amount</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map(user => (
-              <tr key={user._id}>
-                <td>{user.email}</td>
-                <td>₹{user.balance}</td>
-                <td>
-                  <input
-                    type="number"
-                    value={editAmounts[user._id] || ''}
-                    onChange={e => handleBalanceChange(user._id, e.target.value)}
-                    placeholder="₹"
-                    style={{ width: '80px', padding: '0.25rem' }}
-                  />
-                </td>
-                <td>
-                  <button onClick={() => updateBalance(user._id, true)}>Add</button>{' '}
-                  <button onClick={() => updateBalance(user._id, false)}>Minus</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
       </section>
 
       {/* ===== Last 10 Wins Section ===== */}
