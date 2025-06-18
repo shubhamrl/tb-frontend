@@ -24,7 +24,6 @@ const IMAGE_LIST = [
   { name: 'rabbit',      src: '/images/rabbit.png'       }
 ];
 
-// WhatsApp Settings component (no changes needed)
 const WhatsappSettings = () => {
   const [deposit, setDeposit] = useState('');
   const [withdraw, setWithdraw] = useState('');
@@ -88,7 +87,6 @@ const DashboardPage = () => {
   const [totals, setTotals] = useState({});
   const [winnerChoice, setWinnerChoice] = useState(null);
 
-  // ===== Auto-refresh all important data every second =====
   useEffect(() => {
     const fetchAllData = async () => {
       try {
@@ -147,7 +145,6 @@ const DashboardPage = () => {
     setLastWins(Array.isArray(stored) ? stored : []);
   };
 
-  // ===== Winner set logic (admin) — payout/winner announcement on user timer only =====
   const handleSetWinner = async (choice) => {
     try {
       await api.post('/bets/set-winner', { choice, round: currentRound });
@@ -214,8 +211,6 @@ const DashboardPage = () => {
       {/* WhatsApp Number Settings */}
       <WhatsappSettings />
 
-     
-
       {/* ===== Current Round Section ===== */}
       <section className="current-round-section" style={{ marginTop: '2rem' }}>
         <h2>
@@ -246,7 +241,17 @@ const DashboardPage = () => {
         {winnerChoice && <p style={{ color: "green", fontWeight: "bold" }}>Set Winner: {winnerChoice.toUpperCase()}</p>}
       </section>
 
-      {/* ===== Search Users ===== */}
+      {/* ===== Last 10 Wins Section ===== */}
+      <section className="last-wins-section" style={{ marginTop: '2rem' }}>
+        <h2>Last 10 Wins</h2>
+        <ul className="last-wins-list">
+          {lastWins.map((winChoice, idx) => (
+            <li key={idx}>{winChoice.toUpperCase()}</li>
+          ))}
+        </ul>
+      </section>
+
+      {/* ===== Search Users Section (now below "Last 10 Wins") ===== */}
       <section style={{ marginTop: '2rem' }}>
         <h2>Search Users</h2>
         <input
@@ -259,16 +264,7 @@ const DashboardPage = () => {
         <button onClick={handleSearch}>Search</button>
       </section>
 
-      {/* ===== Last 10 Wins Section ===== */}
-      <section className="last-wins-section" style={{ marginTop: '2rem' }}>
-        <h2>Last 10 Wins</h2>
-        <ul className="last-wins-list">
-          {lastWins.map((winChoice, idx) => (
-            <li key={idx}>{winChoice.toUpperCase()}</li>
-          ))}
-        </ul>
-      </section>
-           {/* ===== Manage User Balances (Scrollable Table) ===== */}
+      {/* ===== Manage User Balances (Scrollable Table) ===== */}
       <section style={{ marginTop: '2rem' }}>
         <h2>Manage User Balances</h2>
         <div style={{
