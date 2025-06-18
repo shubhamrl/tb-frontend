@@ -72,12 +72,11 @@ const WhatsappSettings = () => {
 };
 
 const DashboardPage = () => {
-  const [deposits, setDeposits]       = useState([]);
-  const [withdrawals, setWithdrawals] = useState([]);
-  const [betsData, setBetsData] = useState({ round: '', totals: {} });
-  const [users, setUsers]             = useState([]);
+  const [users, setUsers] = useState([]);
   const [editAmounts, setEditAmounts] = useState({});
-  const [searchTerm, setSearchTerm]   = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [activeUsers, setActiveUsers] = useState(0);
   const [lastWins, setLastWins] = useState(() => {
     const stored = JSON.parse(localStorage.getItem('tbLastWins') || '[]');
     return Array.isArray(stored) ? stored : [];
@@ -108,23 +107,7 @@ const DashboardPage = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // These fetches as before
-  useEffect(() => {
-    const fetchAll = async () => {
-      try {
-        const [ depRes, witRes ] = await Promise.all([
-          api.get('/deposits'),
-          api.get('/withdrawals'),
-        ]);
-        setDeposits(depRes.data.deposits);
-        setWithdrawals(witRes.data.withdrawals);
-      } catch (err) {
-        console.error('Error fetching admin data:', err);
-      }
-    };
-    fetchAll();
-  }, []);
-
+  // Users data fetch
   const fetchUsers = async (search = '') => {
     try {
       const params = search.trim() ? { search } : {};
@@ -132,6 +115,8 @@ const DashboardPage = () => {
       const data = res.data;
       const list = Array.isArray(data) ? data : data.users || [];
       setUsers(list);
+      setTotalUsers(data.total || list.length);
+      setActiveUsers(data.active || 0); // API me aata hai to, warna calculate kar lo
     } catch (err) {
       console.error('Error fetching users:', err);
     }
@@ -190,7 +175,69 @@ const DashboardPage = () => {
   return (
     <div className="admin-dashboard-container" style={{ padding: '2rem' }}>
       <h1>Admin Dashboard</h1>
+
+      {/* ====== Total/Active Users Row ====== */}
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        marginBottom: 24 
+      }}>
+        <div style={{
+          background: '#f1f3f6',
+          padding: '18px 36px',
+          borderRadius: 14,
+          fontWeight: 'bold',
+          fontSize: 20,
+          minWidth: 150,
+          textAlign: 'center',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+        }}>
+          Total Users<br />
+          <span style={{ fontSize: 28, color: '#2d72e2' }}>{totalUsers}</span>
+        </div>
+        <div style={{
+          background: '#f1f3f6',
+          padding: '18px 36px',
+          borderRadius: 14,
+          fontWeight: 'bold',
+          fontSize: 20,
+          minWidth: 150,
+          textAlign: 'center',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+        }}>
+          Active Users<br />
+          <span style={{ fontSize: 28, color: '#18c964' }}>{activeUsers}</span>
+        </div>
+      </div>
+
+      {/* WhatsApp Number Settings */}
       <WhatsappSettings />
+
+      {/* ===== Users List (Scrollable Box) ===== */}
+      <section style={{
+        background: '#fff',
+        borderRadius: 14,
+        padding: '0.5rem',
+        marginBottom: 28,
+        boxShadow: '0 1px 4px rgba(0,0,0,0.07)',
+        maxHeight: 280,
+        overflowY: 'auto'
+      }}>
+        <h2 style={{margin: '1rem 0 0.7rem 1rem'}}>Users List</h2>
+        <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+          {users.map(user => (
+            <li key={user._id} style={{
+              borderBottom: '1px solid #f1f1f1',
+              padding: '11px 18px',
+              fontWeight: 500
+            }}>
+              {user.email}
+            </li>
+          ))}
+        </ul>
+      </section>
+
       {/* ===== Current Round Section ===== */}
       <section className="current-round-section" style={{ marginTop: '2rem' }}>
         <h2>
@@ -220,6 +267,7 @@ const DashboardPage = () => {
         </div>
         {winnerChoice && <p style={{color:"green",fontWeight:"bold"}}>Set Winner: {winnerChoice.toUpperCase()}</p>}
       </section>
+
       {/* ===== Search Users ===== */}
       <section style={{ marginTop: '2rem' }}>
         <h2>Search Users</h2>
@@ -232,6 +280,7 @@ const DashboardPage = () => {
         />
         <button onClick={handleSearch}>Search</button>
       </section>
+
       {/* ===== Manage User Balances ===== */}
       <section style={{ marginTop: '2rem' }}>
         <h2>Manage User Balances</h2>
@@ -267,6 +316,7 @@ const DashboardPage = () => {
           </tbody>
         </table>
       </section>
+
       {/* ===== Last 10 Wins Section ===== */}
       <section className="last-wins-section" style={{ marginTop: '2rem' }}>
         <h2>Last 10 Wins</h2>
