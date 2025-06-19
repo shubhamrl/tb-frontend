@@ -1,118 +1,72 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import api from '../services/api';
+import { useNavigate } from 'react-router-dom';
+import '../styles/userdashboard.css';
 
 const UserDashboard = () => {
-  const [user, setUser] = useState({ email: "", balance: 0, id: "" });
+  const [user, setUser] = useState({ id: '', email: '', balance: 0 });
+  const [numbers, setNumbers] = useState({ depositWhatsapp: '', withdrawWhatsapp: '' });
   const navigate = useNavigate();
 
-  // Example: Fetch user data from backend (modify URL as needed)
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        // Replace URL as per your backend route
-        const token = localStorage.getItem("token");
-        const res = await fetch("https://tb-backend-1.onrender.com/api/user/me", {
-          headers: { Authorization: `Bearer ${token}` },
+        const token = localStorage.getItem('token');
+        const res = await api.get('/users/me', {
+          headers: { Authorization: `Bearer ${token}` }
         });
-        const data = await res.json();
-        setUser(data.user);
+        setUser(res.data);
       } catch (err) {
-        // If not logged in, redirect to login
-        navigate("/login");
+        console.error('Failed to fetch user:', err);
       }
     };
     fetchUser();
-  }, [navigate]);
 
-  // WhatsApp deposit handler
-  const handleDeposit = () => {
-    const message = `नमस्ते, मेरा यूजर आईडी: ${user.id}, ईमेल: ${user.email}\nमुझे अपने अकाउंट में ₹ [AMOUNT] डिपॉजिट करना है। (न्यूनतम ₹100, अधिकतम ₹10,000)`;
-    window.open(
-      `https://wa.me/7770023792?text=${encodeURIComponent(message)}`,
-      "_blank"
-    );
+    api.get('/settings')
+      .then(res => setNumbers(res.data || {}))
+      .catch(() => {});
+  }, []);
+
+  const createWhatsAppLink = (action) => {
+    const message = `I want to ${action}. UserID: ${user.id}, Email: ${user.email}`;
+    const number =
+      action === 'deposit' ? numbers.depositWhatsapp
+      : action === 'withdraw' ? numbers.withdrawWhatsapp
+      : '';
+    if (!number) {
+      alert('WhatsApp number not available!');
+      return '#';
+    }
+    return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
   };
 
-  // WhatsApp withdrawal handler
-  const handleWithdraw = () => {
-    const message = `नमस्ते, मेरा यूजर आईडी: ${user.id}, ईमेल: ${user.email}\nमैं अपने अकाउंट से ₹ [AMOUNT] विड्रॉल करना चाहता हूँ। (न्यूनतम ₹200, अधिकतम ₹10,000)`;
-    window.open(
-      `https://wa.me/7770023792?text=${encodeURIComponent(message)}`,
-      "_blank"
-    );
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
   };
 
   return (
-    <div
-      style={{
-        maxWidth: "400px",
-        margin: "40px auto",
-        padding: "24px",
-        borderRadius: "20px",
-        boxShadow: "0 4px 16px rgba(0,0,0,0.09)",
-        background: "#fff",
-        fontFamily: "sans-serif",
-      }}
-    >
-      <h2 style={{ textAlign: "center", marginBottom: "18px" }}>यूजर डैशबोर्ड</h2>
-      <div style={{ marginBottom: "15px", fontWeight: 600 }}>
-        <div>ईमेल: {user.email}</div>
-        <div>बैलेंस: ₹{user.balance}</div>
-        <div>यूजर आईडी: {user.id}</div>
-      </div>
-      <div style={{ marginBottom: "32px" }}>
-        <button
-          style={{
-            width: "100%",
-            padding: "10px",
-            fontSize: "16px",
-            borderRadius: "8px",
-            background: "#1FA863",
-            color: "#fff",
-            border: "none",
-            cursor: "pointer",
-          }}
-          onClick={handleDeposit}
-        >
-          डिपॉजिट करें
+    <div className="dashboard-container">
+      <h1>Welcome, {user.email}</h1>
+      <p>Your Balance: ₹{user.balance}</p>
+
+      <div className="dashboard-buttons">
+        <button onClick={() => window.location.href = createWhatsAppLink('deposit')}>
+          Deposit
         </button>
-        <div
-          style={{
-            fontSize: "14px",
-            color: "#888",
-            marginTop: "2px",
-            textAlign: "center",
-          }}
-        >
-          (न्यूनतम ₹100 | अधिकतम ₹10,000)
-        </div>
-      </div>
-      <div>
-        <button
-          style={{
-            width: "100%",
-            padding: "10px",
-            fontSize: "16px",
-            borderRadius: "8px",
-            background: "#F44336",
-            color: "#fff",
-            border: "none",
-            cursor: "pointer",
-          }}
-          onClick={handleWithdraw}
-        >
-          विड्रॉल करें
+        <button onClick={() => window.location.href = createWhatsAppLink('withdraw')}>
+          Withdraw
         </button>
-        <div
-          style={{
-            fontSize: "14px",
-            color: "#888",
-            marginTop: "2px",
-            textAlign: "center",
-          }}
-        >
-          (न्यूनतम ₹200 | अधिकतम ₹10,000)
-        </div>
+      </div>
+
+      <div className="game-buttons">
+        <button onClick={() => navigate('/game/tb')}>Play Titali Bhavara</button>
+        <button onClick={() => navigate('/game/spin')}>Play Spin to Win</button>
+      </div>
+
+      {/* 🔴 Logout Button */}
+      <div className="logout-section" style={{ marginTop: '20px' }}>
+        <button onClick={handleLogout}>Logout</button>
       </div>
     </div>
   );
