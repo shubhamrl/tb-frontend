@@ -68,6 +68,28 @@ const UserDashboard = () => {
       <div className="logout-section" style={{ marginTop: '20px' }}>
         <button onClick={handleLogout}>Logout</button>
       </div>
+
+      {/* --- TIP SECTION --- */}
+      <div
+        className="tip-section"
+        style={{
+          marginTop: '32px',
+          background: '#FFFDE7',
+          border: '1px solid #FFD54F',
+          borderRadius: '10px',
+          padding: '16px',
+          color: '#6D4C00',
+          fontSize: '16px',
+          fontWeight: '500',
+          lineHeight: '1.6',
+        }}
+      >
+        <span style={{ fontWeight: 700 }}>TIP:</span>  
+        &nbsp;डिपॉजिट के लिए <b>न्यूनतम ₹100</b> और <b>अधिकतम ₹10,000</b>।  
+        विड्रॉल के लिए <b>न्यूनतम ₹200</b> और <b>अधिकतम ₹10,000</b>।  
+        कृपया इन्हीं लिमिट्स का पालन करें।  
+        अधिक जानकारी के लिए व्हाट्सएप सपोर्ट पर मैसेज करें।
+      </div>
     </div>
   );
 };
