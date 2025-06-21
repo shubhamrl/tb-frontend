@@ -1,33 +1,39 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import '../styles/auth.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await axios.post('https://tb-backend-1.onrender.com/api/auth/login', 
-        { email, password },
-        { headers: { 'Content-Type': 'application/json' } }
-      );
-      const { token, role } = res.data;
-      localStorage.setItem('token', token);
-      // Role-based redirect
-      if (role === 'admin') {
-        navigate('/admin/dashboard');
-      } else {
-        navigate('/dashboard');
-      }
-    } catch (err) {
-      console.error('Login failed:', err.response?.data || err.message);
-      alert(`Login failed: ${err.response?.data?.message || err.message}`);
+  e.preventDefault();
+  setLoading(true);
+  try {
+    const res = await axios.post(
+      'https://tb-backend-1.onrender.com/api/auth/login',
+      { email, password },
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+
+    // Ab token aayega response me
+    if (res.data.token) {
+      localStorage.setItem('token', res.data.token);
     }
-  };
+    if (res.data.user.role === 'admin') {
+      navigate('/admin');
+    } else {
+      navigate('/dashboard');
+    }
+  } catch (err) {
+    setLoading(false);
+    alert(`Login failed: ${err.response?.data?.message || err.message}`);
+  }
+};
+
 
   return (
     <div className="auth-container">
@@ -37,22 +43,23 @@ const Login = () => {
           type="email"
           placeholder="Email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={e => setEmail(e.target.value)}
           required
         />
         <input
           type="password"
           placeholder="Password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={e => setPassword(e.target.value)}
           required
         />
-        <button type="submit">Login</button>
-            <p style={{ marginTop: '10px' }}>
-  Don't have an account? <a href="/signup">Sign up here</a>
-</p>
-
+        <button type="submit" disabled={loading}>
+          {loading ? 'Logging in...' : 'Login'}
+        </button>
       </form>
+      <p style={{ marginTop: '10px' }}>
+        Don't have an account? <Link to="/signup">Sign up here</Link>
+      </p>
     </div>
   );
 };
