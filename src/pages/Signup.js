@@ -6,20 +6,28 @@ import '../styles/auth.css';
 const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
+      // API call
       await axios.post(
+        // 'http://localhost:5000/api/auth/signup',
         'https://tb-backend-1.onrender.com/api/auth/signup',
         { email, password },
         { headers: { 'Content-Type': 'application/json' } }
       );
-      navigate('/login');
+      setLoading(false);
+
+      // Signup success: go to OTP page and pass email in URL
+      navigate(`/verify-otp?email=${encodeURIComponent(email)}`);
     } catch (err) {
-      console.error('Signup failed:', err.response?.data || err.message);
-      alert(`Signup failed: ${err.response?.data?.message || err.message}`);
+      setLoading(false);
+      const msg = err.response?.data?.message || 'Signup failed';
+      alert(`Signup failed: ${msg}`);
     }
   };
 
@@ -41,10 +49,11 @@ const Signup = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit">Sign Up</button>
+        <button type="submit" disabled={loading}>
+          {loading ? 'Signing Up...' : 'Sign Up'}
+        </button>
       </form>
 
-      {/* 👇 Login link below form */}
       <p style={{ marginTop: '10px' }}>
         Already have an account? <Link to="/login">Login here</Link>
       </p>
