@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import OtpVerify from './pages/OtpVerify';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import UserDashboard from './pages/UserDashboard';
@@ -12,6 +13,7 @@ function App() {
   return (
     <Router>
      <Routes>
+      <Route path="/verify-otp" element={<OtpVerify />} />
   <Route
     path="/"
     element={token ? <Navigate to="/dashboard" /> : <Navigate to="/signup" />}
