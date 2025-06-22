@@ -10,30 +10,31 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  try {
-    const res = await axios.post(
-      'https://tb-backend-1.onrender.com/api/auth/login',
-      { email, password },
-      { headers: { 'Content-Type': 'application/json' } }
-    );
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await axios.post(
+        'https://tb-backend-1.onrender.com/api/auth/login',
+        { email, password },
+        { headers: { 'Content-Type': 'application/json' } }
+      );
 
-    // Ab token aayega response me
-    if (res.data.token) {
-      localStorage.setItem('token', res.data.token);
-    }
-    if (res.data.user.role === 'admin') {
-      navigate('/admin');
-    } else {
-      navigate('/dashboard');
-    }
-  } catch (err) {
-    setLoading(false);
-    alert(`Login failed: ${err.response?.data?.message || err.message}`);
-  }
-};
+      // Save token to localStorage
+      if (res.data.token) {
+        localStorage.setItem('token', res.data.token);
+      }
 
+      // Role-based redirect with replace (for perfect navigation)
+      if (res.data.user.role === 'admin') {
+        navigate('/admin', { replace: true });
+      } else {
+        navigate('/dashboard', { replace: true });
+      }
+    } catch (err) {
+      setLoading(false);
+      alert(`Login failed: ${err.response?.data?.message || err.message}`);
+    }
+  };
 
   return (
     <div className="auth-container">
