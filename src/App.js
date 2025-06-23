@@ -7,6 +7,9 @@ import UserDashboard from './pages/UserDashboard';
 import AdminDashboard from './pages/DashboardPage';
 import TBGamePage from './pages/TBGamePage';
 import SpinGamePage from './pages/SpinGamePage';
+import WhatsappSettingsPage from './pages/WhatsappSettingsPage';
+import ManageUserPage from './pages/ManageUserPage';
+import AdminRoundsSummary from './pages/AdminRoundsSummary';
 import AdminRoute from './components/AdminRoute';
 
 function App() {
@@ -39,6 +42,7 @@ function App() {
           element={token ? <UserDashboard /> : <Navigate to="/login" replace />}
         />
 
+        {/* ----- ADMIN PANEL ROUTES ------ */}
         <Route
           path="/admin"
           element={
@@ -47,7 +51,32 @@ function App() {
             </AdminRoute>
           }
         />
+        <Route
+          path="/admin/whatsapp"
+          element={
+            <AdminRoute>
+              <WhatsappSettingsPage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/manage-user"
+          element={
+            <AdminRoute>
+              <ManageUserPage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/summary"
+          element={
+            <AdminRoute>
+              <AdminRoundsSummary />
+            </AdminRoute>
+          }
+        />
 
+        {/* ----- GAMES ----- */}
         <Route
           path="/game/tb"
           element={token ? <TBGamePage /> : <Navigate to="/login" replace />}
