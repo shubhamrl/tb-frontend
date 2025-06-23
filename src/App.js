@@ -7,18 +7,18 @@ import UserDashboard from './pages/UserDashboard';
 import AdminDashboard from './pages/DashboardPage';
 import TBGamePage from './pages/TBGamePage';
 import SpinGamePage from './pages/SpinGamePage';
-import AdminRoute from './components/AdminRoute'; // Make sure path is correct
+import AdminRoute from './components/AdminRoute';
 
 function App() {
   const token = localStorage.getItem('token');
   const role = localStorage.getItem('role');
+  console.log("App.js => token:", token, "| role:", role);
 
   return (
     <Router>
       <Routes>
         <Route path="/verify-otp" element={<OtpVerify />} />
-        
-        {/* Home page route: now checks role */}
+
         <Route
           path="/"
           element={
@@ -34,13 +34,11 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
 
-        {/* User dashboard route */}
         <Route
           path="/dashboard"
           element={token ? <UserDashboard /> : <Navigate to="/login" replace />}
         />
 
-        {/* Admin dashboard route, fully protected */}
         <Route
           path="/admin"
           element={
@@ -50,7 +48,6 @@ function App() {
           }
         />
 
-        {/* Game pages, protected by token */}
         <Route
           path="/game/tb"
           element={token ? <TBGamePage /> : <Navigate to="/login" replace />}
