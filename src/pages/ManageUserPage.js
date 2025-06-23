@@ -1,7 +1,102 @@
-const ManageUserPage = () => (
-  <div style={{ padding: 32 }}>
-    <h2>Search / Manage User Page</h2>
-    <p>Yaha search user aur balance management ka code aayega.</p>
-  </div>
-);
+import React, { useEffect, useState } from 'react';
+import api from '../services/api';
+
+const ManageUserPage = () => {
+  const [users, setUsers] = useState([]);
+  const [editAmounts, setEditAmounts] = useState({});
+  const [searchTerm, setSearchTerm] = useState('');
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [activeUsers, setActiveUsers] = useState(0);
+
+  const fetchUsers = async (search = '') => {
+    try {
+      const params = search.trim() ? { search } : {};
+      const res = await api.get('/admin/users', { params });
+      const data = res.data;
+      const list = Array.isArray(data) ? data : data.users || [];
+      setUsers(list);
+      setTotalUsers(data.total || 0);
+      setActiveUsers(data.active || 0);
+    } catch (err) {
+      console.error('Error fetching users:', err);
+    }
+  };
+
+  useEffect(() => { fetchUsers(); }, []);
+
+  const handleSearch = () => { fetchUsers(searchTerm); };
+  const handleBalanceChange = (id, value) => { setEditAmounts(prev => ({ ...prev, [id]: value })); };
+  const updateBalance = async (id, isAdd) => {
+    try {
+      const val = Number(editAmounts[id] || 0);
+      const amount = isAdd ? val : -val;
+      const res = await api.put(`/admin/users/${id}/balance`, { amount });
+      setUsers(users.map(u =>
+        u._id === id ? { ...u, balance: res.data.balance } : u
+      ));
+      alert(`Balance updated: ₹${res.data.balance}`);
+      setEditAmounts(prev => ({ ...prev, [id]: '' }));
+    } catch (err) {
+      console.error('Error updating balance:', err);
+      alert('Error updating balance');
+    }
+  };
+
+  return (
+    <div style={{ padding: '2rem' }}>
+      <h2>Search Users</h2>
+      <input
+        type="text"
+        placeholder="Enter user ID or email"
+        value={searchTerm}
+        onChange={e => setSearchTerm(e.target.value)}
+        style={{ marginRight: '0.5rem', padding: '0.5rem' }}
+      />
+      <button onClick={handleSearch}>Search</button>
+
+      <h2 style={{ marginTop: '2rem' }}>Manage User Balances</h2>
+      <div style={{
+        background: '#fff',
+        borderRadius: 12,
+        boxShadow: '0 1px 4px rgba(0,0,0,0.07)',
+        maxHeight: 320,
+        overflowY: 'auto',
+        marginBottom: 28
+      }}>
+        <table border="1" cellPadding="8" style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Balance</th>
+              <th>Amount</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map(user => (
+              <tr key={user._id}>
+                <td>{user.email}</td>
+                <td>₹{user.balance}</td>
+                <td>
+                  <input
+                    type="number"
+                    value={editAmounts[user._id] || ''}
+                    onChange={e => handleBalanceChange(user._id, e.target.value)}
+                    placeholder="₹"
+                    style={{ width: '80px', padding: '0.25rem' }}
+                  />
+                </td>
+                <td>
+                  <button onClick={() => updateBalance(user._id, true)}>Add</button>{' '}
+                  <button onClick={() => updateBalance(user._id, false)}>Minus</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
 export default ManageUserPage;
