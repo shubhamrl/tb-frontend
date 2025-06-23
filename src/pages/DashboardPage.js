@@ -214,8 +214,7 @@ const DashboardPage = () => {
             </div>
           </div>
 
-          {/* WhatsApp Number Settings */}
-          <WhatsappSettings />
+        
 
           {/* ===== Current Round Section ===== */}
           <section className="current-round-section" style={{ marginTop: '2rem' }}>
@@ -257,63 +256,8 @@ const DashboardPage = () => {
             </ul>
           </section>
 
-          {/* ===== Search Users Section (now below "Last 10 Wins") ===== */}
-          <section style={{ marginTop: '2rem' }}>
-            <h2>Search Users</h2>
-            <input
-              type="text"
-              placeholder="Enter user ID or email"
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              style={{ marginRight: '0.5rem', padding: '0.5rem' }}
-            />
-            <button onClick={handleSearch}>Search</button>
-          </section>
 
-          {/* ===== Manage User Balances (Scrollable Table) ===== */}
-          <section style={{ marginTop: '2rem' }}>
-            <h2>Manage User Balances</h2>
-            <div style={{
-              background: '#fff',
-              borderRadius: 12,
-              boxShadow: '0 1px 4px rgba(0,0,0,0.07)',
-              maxHeight: 320, // Table ki height fix
-              overflowY: 'auto',
-              marginBottom: 28
-            }}>
-              <table border="1" cellPadding="8" style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr>
-                    <th>Email</th>
-                    <th>Balance</th>
-                    <th>Amount</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map(user => (
-                    <tr key={user._id}>
-                      <td>{user.email}</td>
-                      <td>₹{user.balance}</td>
-                      <td>
-                        <input
-                          type="number"
-                          value={editAmounts[user._id] || ''}
-                          onChange={e => handleBalanceChange(user._id, e.target.value)}
-                          placeholder="₹"
-                          style={{ width: '80px', padding: '0.25rem' }}
-                        />
-                      </td>
-                      <td>
-                        <button onClick={() => updateBalance(user._id, true)}>Add</button>{' '}
-                        <button onClick={() => updateBalance(user._id, false)}>Minus</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
+         
         </div>
       </div>
     </div>
