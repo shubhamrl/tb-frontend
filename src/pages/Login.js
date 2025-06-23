@@ -19,21 +19,18 @@ const Login = () => {
         { headers: { 'Content-Type': 'application/json' } }
       );
 
-      // Check what the backend returns
-      // console.log(res.data);
+      // Yaha console karo
+      console.log('API response:', res.data);
 
-      // Save token and role to localStorage
       if (res.data.token) {
         localStorage.setItem('token', res.data.token);
       }
-      // Role save logic—adjust if response changes
       if (res.data.role) {
         localStorage.setItem('role', res.data.role);
       } else if (res.data.user?.role) {
         localStorage.setItem('role', res.data.user.role);
       }
 
-      // Redirect based on role
       const userRole = res.data.role || res.data.user?.role;
       if (userRole === 'admin') {
         navigate('/admin', { replace: true });
