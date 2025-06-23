@@ -19,13 +19,23 @@ const Login = () => {
         { headers: { 'Content-Type': 'application/json' } }
       );
 
-      // Save token to localStorage
+      // Check what the backend returns
+      // console.log(res.data);
+
+      // Save token and role to localStorage
       if (res.data.token) {
         localStorage.setItem('token', res.data.token);
       }
+      // Role save logic—adjust if response changes
+      if (res.data.role) {
+        localStorage.setItem('role', res.data.role);
+      } else if (res.data.user?.role) {
+        localStorage.setItem('role', res.data.user.role);
+      }
 
-      // Role-based redirect with replace (for perfect navigation)
-      if (res.data.user.role === 'admin') {
+      // Redirect based on role
+      const userRole = res.data.role || res.data.user?.role;
+      if (userRole === 'admin') {
         navigate('/admin', { replace: true });
       } else {
         navigate('/dashboard', { replace: true });
@@ -34,6 +44,7 @@ const Login = () => {
       setLoading(false);
       alert(`Login failed: ${err.response?.data?.message || err.message}`);
     }
+    setLoading(false);
   };
 
   return (
