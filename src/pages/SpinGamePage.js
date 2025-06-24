@@ -48,7 +48,7 @@ const SpinGamePage = () => {
   // --- API Calls ---
   const fetchUser = async () => {
     try {
-      const res = await api.get('/user/profile');
+      const res = await api.get('api/user/profile');
       setBalance(res.data.balance);
     } catch {}
   };
