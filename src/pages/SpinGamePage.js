@@ -167,7 +167,7 @@ const SpinGamePage = () => {
       position: 'absolute',
       left: '50%',
       top: '186px', // 200px wheel, arrow niche
-      transform: 'translateX(-50%)',
+       transform: 'translateX(-50%) rotate(180deg)', 
       zIndex: 2,
       width: 0,
       height: 0,
