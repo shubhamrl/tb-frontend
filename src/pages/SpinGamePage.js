@@ -228,7 +228,7 @@ const SpinGamePage = () => {
       );
     })}
     {/* Center circle – no SPIN text */}
-    <circle cx={100} cy={100} r={40} fill="#dbeafe" />
+<text x={100} y={110} textAnchor="middle" fontSize={32}>🎡</text>
     {/* Center can be left blank or small logo */}
   </svg>
 </div>
