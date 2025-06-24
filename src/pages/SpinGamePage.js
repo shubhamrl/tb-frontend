@@ -1,179 +1,224 @@
 // src/pages/SpinGamePage.js
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
+import '../styles/spin.css';
 
-const NUMBERS = Array.from({ length: 10 }, (_, i) => i);
+const ROW1 = [0, 1, 2, 3, 4];
+const ROW2 = [5, 6, 7, 8, 9];
 
 const SpinGamePage = () => {
   const [balance, setBalance] = useState(0);
   const [round, setRound] = useState(0);
-  const [timer, setTimer] = useState(0);
-  const [selectedNumber, setSelectedNumber] = useState(null);
+  const [timer, setTimer] = useState(90);
+  const [selected, setSelected] = useState(null);
   const [betAmount, setBetAmount] = useState('');
-  const [placingBet, setPlacingBet] = useState(false);
+  const [userBets, setUserBets] = useState({}); // { [number]: amount }
   const [lastWins, setLastWins] = useState([]);
   const [winner, setWinner] = useState(null);
+  const [spinning, setSpinning] = useState(false);
+  const [spinAngle, setSpinAngle] = useState(0);
 
-  // Fetch user balance (example API)
-  const fetchBalance = async () => {
-    const res = await api.get('/user/profile'); // adjust if needed
-    setBalance(res.data.balance);
-  };
-
-  // Fetch round and timer
-  const fetchRound = async () => {
-    const res = await api.get('/spin/round');
-    setRound(res.data.round);
-    setTimer(res.data.timer);
-  };
-
-  // Fetch last 10 wins
-  const fetchLastWins = async () => {
-    const res = await api.get('/spin/last-wins');
-    setLastWins(res.data.wins || []);
-  };
-
-  // Fetch winner after round ends
-  const fetchWinner = async (r) => {
-    const res = await api.get(`/spin/winner/${r}`);
-    setWinner(res.data.winner);
-  };
-
-  // Live timer effect
+  // --- Fetch initial data ---
   useEffect(() => {
-    fetchBalance();
+    fetchUser();
     fetchRound();
-    fetchLastWins();
-    const interval = setInterval(() => {
-      fetchRound();
-    }, 1000);
-    return () => clearInterval(interval);
+    fetchLast10Wins();
+    // eslint-disable-next-line
   }, []);
 
-  // When timer reaches 0, fetch winner & update last wins
+  // --- Timer Logic ---
   useEffect(() => {
-    if (timer === 0 && round) {
-      fetchWinner(round);
-      setTimeout(() => {
-        fetchLastWins();
-        setWinner(null);
-      }, 3000); // after 3s, hide winner highlight
+    if (timer > 0) {
+      const interval = setInterval(() => setTimer((t) => t - 1), 1000);
+      if (timer === 16) {
+        // Bet close
+      }
+      if (timer === 10) {
+        startWheelSpin();
+      }
+      if (timer === 0) {
+        fetchWinner();
+        resetAfterRound();
+      }
+      return () => clearInterval(interval);
     }
-  }, [timer, round]);
+    // eslint-disable-next-line
+  }, [timer]);
 
-  // Place bet
-  const handleBet = async () => {
-    if (placingBet) return;
-    if (selectedNumber === null || !betAmount) return alert('Select number and amount!');
-    setPlacingBet(true);
+  // --- API Calls ---
+  const fetchUser = async () => {
     try {
-      const res = await api.post('/spin/bet', {
-        choice: selectedNumber,
-        amount: Number(betAmount)
-      });
+      const res = await api.get('/user/profile');
       setBalance(res.data.balance);
-      alert('Bet placed!');
-      setBetAmount('');
-      setSelectedNumber(null);
-    } catch (err) {
-      alert(err?.response?.data?.error || 'Bet failed!');
-    }
-    setPlacingBet(false);
+    } catch {}
   };
 
-  // Render wheel (simple SVG, update later for animation)
-  const renderWheel = () => (
-    <div className="wheel-container" style={{ position: 'relative', width: 220, height: 220, margin: 'auto' }}>
-      <svg width="220" height="220">
-        <circle cx="110" cy="110" r="100" fill="#eee" stroke="#333" strokeWidth="4" />
-        {NUMBERS.map((num, idx) => {
-          const angle = (idx / 10) * 2 * Math.PI;
-          const x = 110 + 80 * Math.cos(angle - Math.PI / 2);
-          const y = 110 + 80 * Math.sin(angle - Math.PI / 2);
-          return (
-            <text
-              key={num}
-              x={x}
-              y={y}
-              fontSize={winner === num ? 26 : 22}
-              fill={winner === num ? 'red' : '#333'}
-              fontWeight={winner === num ? 'bold' : 'normal'}
-              textAnchor="middle"
-              alignmentBaseline="middle"
-            >
-              {num}
-            </text>
-          );
-        })}
-      </svg>
-      {/* Arrow */}
-      <div style={{
-        position: 'absolute', left: '50%', top: 0, width: 0, height: 0,
-        borderLeft: '10px solid transparent',
-        borderRight: '10px solid transparent',
-        borderBottom: '35px solid orange',
-        transform: 'translateX(-50%)'
-      }} />
-    </div>
-  );
+  const fetchRound = async () => {
+    try {
+      const res = await api.get('/spin/round');
+      setRound(res.data.round);
+      setTimer(res.data.timer);
+      setUserBets(res.data.userBets || {});
+    } catch {}
+  };
 
+  const fetchLast10Wins = async () => {
+    try {
+      const res = await api.get('/spin/last-wins');
+      setLastWins(res.data.wins || []);
+    } catch {}
+  };
+
+  const fetchWinner = async () => {
+    try {
+      const res = await api.get(`/spin/winner/${round}`);
+      setWinner(res.data.winner);
+      fetchLast10Wins();
+      fetchUser();
+      setTimeout(() => setWinner(null), 5000);
+    } catch {}
+  };
+
+  // --- Wheel Animation ---
+  const startWheelSpin = () => {
+    setSpinning(true);
+    let fast = 0;
+    let slow = 0;
+    // Fast spin for 5 sec
+    const fastSpin = setInterval(() => {
+      setSpinAngle((prev) => prev + 30);
+      fast++;
+      if (fast >= 50) {
+        clearInterval(fastSpin);
+        // Slow spin for 5 sec
+        const slowSpin = setInterval(() => {
+          setSpinAngle((prev) => prev + 6);
+          slow++;
+          if (slow >= 50) {
+            clearInterval(slowSpin);
+            setSpinning(false);
+          }
+        }, 100);
+      }
+    }, 20);
+  };
+
+  // --- Round Reset ---
+  const resetAfterRound = () => {
+    setTimeout(() => {
+      setTimer(90);
+      setSelected(null);
+      setBetAmount('');
+      setUserBets({});
+      setSpinAngle(0);
+      setWinner(null);
+      fetchRound();
+    }, 6000); // next round after 6s
+  };
+
+  // --- Place Bet ---
+  const handlePlaceBet = async () => {
+    if (selected === null || !betAmount || Number(betAmount) <= 0) return;
+    try {
+      await api.post('/spin/bet', {
+        choice: selected,
+        amount: Number(betAmount),
+      });
+      setUserBets((b) => ({ ...b, [selected]: Number(betAmount) }));
+      fetchUser();
+      setBetAmount('');
+      // No alert, no popup, fast UI!
+    } catch (err) {
+      // Optional: Show small error below input
+    }
+  };
+
+  // --- UI Render ---
   return (
-    <div style={{ maxWidth: 400, margin: 'auto', padding: 16 }}>
-      <h2>Spin to Win</h2>
-      <div>Balance: ₹{balance}</div>
-      <div>Current Round: {round}</div>
-      <div>Time Left: <b>{timer}</b> sec</div>
-      <br />
+    <div className="spin-game-container">
+      {/* Top: Balance, Round, Timer */}
+      <div className="top-bar">
+        <span>Balance: ₹{balance}</span>
+        <span>Round: {round}</span>
+        <span className={timer <= 15 ? "timer closed" : "timer"}>
+          {timer > 0 ? `Time left: ${timer}s` : "Waiting..."}
+        </span>
+      </div>
 
-      {renderWheel()}
+      {/* Wheel */}
+      <div className="wheel-section">
+        <div
+          className={`spin-wheel ${spinning ? "spinning" : ""} ${winner !== null ? "winner-show" : ""}`}
+          style={{
+            transform: `rotate(${spinAngle}deg)`,
+            transition: spinning ? "transform 0.2s linear" : "none",
+          }}
+        >
+          <span className="wheel-center-text">
+            {winner !== null ? `Winner: ${winner}` : "SPIN"}
+          </span>
+        </div>
+      </div>
 
-      <div style={{ marginTop: 24 }}>
-        <b>Select Number:</b>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 8, margin: '12px 0' }}>
-          {NUMBERS.map(num => (
-            <button
+      {/* Numbers below wheel in two rows */}
+      <div className="numbers-section">
+        <div className="numbers-row">
+          {ROW1.map((num) => (
+            <div
               key={num}
-              style={{
-                padding: 12,
-                background: selectedNumber === num ? 'orange' : '#f1f1f1',
-                fontWeight: selectedNumber === num ? 'bold' : 'normal',
-                border: '1px solid #ccc',
-                borderRadius: 6
-              }}
-              onClick={() => setSelectedNumber(num)}
-              disabled={timer <= 15}
+              className={`number-box ${selected === num ? "selected" : ""}`}
+              onClick={() => timer > 15 && setSelected(num)}
             >
-              {num}
-            </button>
+              <div>{num}</div>
+              <div className="bet-amount">
+                {userBets[num] ? `₹${userBets[num]}` : ""}
+              </div>
+            </div>
           ))}
         </div>
+        <div className="numbers-row">
+          {ROW2.map((num) => (
+            <div
+              key={num}
+              className={`number-box ${selected === num ? "selected" : ""}`}
+              onClick={() => timer > 15 && setSelected(num)}
+            >
+              <div>{num}</div>
+              <div className="bet-amount">
+                {userBets[num] ? `₹${userBets[num]}` : ""}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Bet input & button */}
+      <div className="bet-section">
         <input
           type="number"
           min={1}
           placeholder="Bet Amount"
           value={betAmount}
-          onChange={e => setBetAmount(e.target.value)}
-          disabled={timer <= 15}
-          style={{ width: 100, padding: 8 }}
+          onChange={(e) => setBetAmount(e.target.value)}
+          disabled={timer <= 15 || selected === null}
         />
-        <button onClick={handleBet} disabled={timer <= 15 || placingBet} style={{ marginLeft: 10 }}>
+        <button
+          onClick={handlePlaceBet}
+          disabled={timer <= 15 || selected === null || !betAmount}
+        >
           Place Bet
         </button>
-        {timer <= 15 && <div style={{ color: 'red', marginTop: 8 }}>Betting Closed!</div>}
       </div>
+      {timer <= 15 && <div className="bet-section-closed">Betting Closed!</div>}
 
-      <hr style={{ margin: '32px 0 16px 0' }} />
-
-      <div>
-        <b>Last 10 Wins:</b>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+      {/* Last 10 wins */}
+      <div className="last10-wins-section">
+        <h4>Last 10 Wins</h4>
+        <div className="last10-list">
           {lastWins.map((win, idx) => (
-            <span key={idx} style={{
-              padding: '6px 10px', background: '#f6f6f6', borderRadius: 4,
-              color: win.winner === winner ? 'green' : '#111'
-            }}>
-              #{win.round}: <b>{win.winner}</b>
-            </span>
+            <div key={idx} className="last10-item">
+              {win.winner} <span>({win.round})</span>
+            </div>
           ))}
         </div>
       </div>
