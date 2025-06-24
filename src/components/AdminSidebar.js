@@ -1,4 +1,3 @@
-// src/components/AdminSidebar.js
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
@@ -55,6 +54,12 @@ const AdminSidebar = () => (
       style={({ isActive }) => isActive ? { ...linkStyle, ...activeStyle } : linkStyle}
     >
       Today Rounds Summary
+    </NavLink>
+    <NavLink
+      to="/admin/spin-winner"
+      style={({ isActive }) => isActive ? { ...linkStyle, ...activeStyle } : linkStyle}
+    >
+      Spin Winner (Manual)
     </NavLink>
   </nav>
 );
