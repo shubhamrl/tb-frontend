@@ -160,81 +160,79 @@ const SpinGamePage = () => {
       </div>
 
       {/* Wheel Section */}
-      <div className="wheel-section" style={{ position: "relative", width: 210, margin: "0 auto 25px auto" }}>
-        {/* Arrow */}
-        <div
-          style={{
-            position: 'absolute',
-            left: '50%',
-            top: '-38px',
-            transform: 'translateX(-50%)',
-            zIndex: 2,
-            width: 0,
-            height: 0,
-            borderLeft: '18px solid transparent',
-            borderRight: '18px solid transparent',
-            borderBottom: '40px solid #fb923c',
-          }}
-        />
-        {/* WHEEL */}
-        <svg
-          width={200}
-          height={200}
-          className="spin-wheel-svg"
-          style={{
-            display: 'block',
-            margin: 'auto',
-            borderRadius: '50%',
-            boxShadow: '0 2px 14px #b7b7b7',
-            background: 'linear-gradient(135deg, #a7c7e7 85%, #dbeafe 100%)',
-            transform: `rotate(${spinAngle}deg)`,
-            transition: spinning ? "transform 1.8s cubic-bezier(.34,1.56,.64,1)" : "transform 0.35s cubic-bezier(.34,1.56,.64,1)"
-          }}
-        >
-          {/* Segments */}
-          {Array.from({ length: 10 }).map((_, i) => {
-            const rotate = (i * 36);
-            return (
-              <g key={i}>
-                <path
-                  d={describeArc(100, 100, 95, i * 36, (i + 1) * 36)}
-                  fill={SEGMENT_COLORS[i % SEGMENT_COLORS.length]}
-                  stroke="#fff"
-                  strokeWidth="2"
-                />
-                {/* Number label */}
-                <text
-                  x={100}
-                  y={35}
-                  textAnchor="middle"
-                  fill="#222"
-                  fontSize="22"
-                  fontWeight={winner === i ? "bold" : "600"}
-                  transform={`rotate(${rotate} 100 100)`}
-                  style={{
-                    textShadow: winner === i ? "0 0 6px #f59e42" : "none",
-                    fill: winner === i ? "#dc2626" : "#222"
-                  }}
-                >
-                  {i}
-                </text>
-              </g>
-            );
-          })}
-          {/* Center circle */}
-          <circle cx={100} cy={100} r={40} fill="#dbeafe" />
+     <div className="wheel-section" style={{ position: "relative", width: 210, margin: "0 auto 25px auto" }}>
+  {/* Arrow – now at bottom */}
+  <div
+    style={{
+      position: 'absolute',
+      left: '50%',
+      top: '186px', // 200px wheel, arrow niche
+      transform: 'translateX(-50%)',
+      zIndex: 2,
+      width: 0,
+      height: 0,
+      borderLeft: '18px solid transparent',
+      borderRight: '18px solid transparent',
+      borderTop: '40px solid #fb923c',
+    }}
+  />
+  {/* WHEEL */}
+  <svg
+    width={200}
+    height={200}
+    className="spin-wheel-svg"
+    style={{
+      display: 'block',
+      margin: 'auto',
+      borderRadius: '50%',
+      boxShadow: '0 2px 14px #b7b7b7',
+      background: 'linear-gradient(135deg, #a7c7e7 85%, #dbeafe 100%)',
+      transform: `rotate(${spinAngle}deg)`,
+      transition: spinning ? "transform 1.8s cubic-bezier(.34,1.56,.64,1)" : "transform 0.35s cubic-bezier(.34,1.56,.64,1)"
+    }}
+  >
+    {/* Segments */}
+    {Array.from({ length: 10 }).map((_, i) => {
+      const rotate = (i * 36);
+      // Text position (radius = 75), angle = middle of each segment
+      const angle = (i * 36 + 18 - 90) * (Math.PI / 180); // +18 for center, -90 to start at top
+      const x = 100 + 75 * Math.cos(angle);
+      const y = 100 + 75 * Math.sin(angle);
+      return (
+        <g key={i}>
+          <path
+            d={describeArc(100, 100, 95, i * 36, (i + 1) * 36)}
+            fill={SEGMENT_COLORS[i % SEGMENT_COLORS.length]}
+            stroke="#fff"
+            strokeWidth="2"
+          />
+          {/* Number label */}
           <text
-            x={100}
-            y={110}
+            x={x}
+            y={y}
             textAnchor="middle"
-            fontSize={winner !== null ? 22 : 24}
-            fontWeight="700"
-            fill="#0f172a"
+            alignmentBaseline="middle"
+            fill="#222"
+            fontSize="22"
+            fontWeight={winner === i ? "bold" : "600"}
+            style={{
+              textShadow: winner === i ? "0 0 6px #f59e42" : "none",
+              fill: winner === i ? "#dc2626" : "#222",
+              userSelect: 'none',
+            }}
+            transform={`rotate(${rotate + 18} ${x} ${y})`}
           >
-            {winner !== null ? `WIN: ${winner}` : "SPIN"}
+            {i}
           </text>
-        </svg>
-      </div>
+        </g>
+      );
+    })}
+    {/* Center circle – no SPIN text */}
+    <circle cx={100} cy={100} r={40} fill="#dbeafe" />
+    {/* Center can be left blank or small logo */}
+  </svg>
+</div>
+
 
       {/* Numbers below wheel in two rows */}
       <div className="numbers-section">
