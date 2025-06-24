@@ -162,31 +162,32 @@ const SpinGamePage = () => {
       {/* Wheel Section */}
      <div className="wheel-section" style={{ position: "relative", width: 210, margin: "0 auto 25px auto" }}>
   {/* Arrow – now at bottom */}
-  <div
+ <div
     style={{
       position: 'absolute',
       left: '50%',
-      top: '186px', // 200px wheel, arrow niche
-       transform: 'translateX(-50%) rotate(180deg)', 
+      top: 'calc(100% - 4px)',
+      transform: 'translateX(-50%) rotate(180deg)',
       zIndex: 2,
       width: 0,
       height: 0,
-      borderLeft: '18px solid transparent',
-      borderRight: '18px solid transparent',
-      borderTop: '40px solid #fb923c',
+      borderLeft: '14px solid transparent',
+      borderRight: '14px solid transparent',
+      borderTop: '32px solid #fb923c',
     }}
   />
-  {/* WHEEL */}
+  {/* Wheel */}
   <svg
-    width={200}
-    height={200}
+    width="100%"
+    height="100%"
+    viewBox="0 0 200 200"
     className="spin-wheel-svg"
     style={{
       display: 'block',
       margin: 'auto',
       borderRadius: '50%',
-      boxShadow: '0 2px 14px #b7b7b7',
       background: 'linear-gradient(135deg, #a7c7e7 85%, #dbeafe 100%)',
+      boxShadow: '0 2px 14px #b7b7b7',
       transform: `rotate(${spinAngle}deg)`,
       transition: spinning ? "transform 1.8s cubic-bezier(.34,1.56,.64,1)" : "transform 0.35s cubic-bezier(.34,1.56,.64,1)"
     }}
