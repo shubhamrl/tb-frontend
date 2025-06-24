@@ -10,6 +10,7 @@ import SpinGamePage from './pages/SpinGamePage';
 import WhatsappSettingsPage from './pages/WhatsappSettingsPage';
 import ManageUserPage from './pages/ManageUserPage';
 import AdminRoundsSummary from './pages/AdminRoundsSummary';
+import SpinWinnerAdmin from './pages/SpinWinnerAdmin';   // <<=== naya import
 import AdminRoute from './components/AdminRoute';
 
 function App() {
@@ -72,6 +73,15 @@ function App() {
           element={
             <AdminRoute>
               <AdminRoundsSummary />
+            </AdminRoute>
+          }
+        />
+        {/* ----- Spin Winner (Manual) Admin Route Added ------ */}
+        <Route
+          path="/admin/spin-winner"
+          element={
+            <AdminRoute>
+              <SpinWinnerAdmin />
             </AdminRoute>
           }
         />
