@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
+// src/pages/SpinGamePage.js
+
+import React, { useEffect, useState, useRef } from 'react';
 import api from '../services/api';
 import '../styles/spin.css';
 
-// --- Helper functions for SVG arc (for colorful wheel segments) ---
+// Helper for SVG arc (same as before)
 function describeArc(cx, cy, r, startAngle, endAngle) {
   var start = polarToCartesian(cx, cy, r, endAngle);
   var end = polarToCartesian(cx, cy, r, startAngle);
@@ -31,6 +33,7 @@ const SEGMENT_COLORS = [
 ];
 
 const SpinGamePage = () => {
+  // State
   const [balance, setBalance] = useState(0);
   const [round, setRound] = useState(0);
   const [timer, setTimer] = useState(90);
@@ -42,95 +45,67 @@ const SpinGamePage = () => {
   const [spinning, setSpinning] = useState(false);
   const [spinAngle, setSpinAngle] = useState(0);
 
-  // --- Fetch initial data ---
-  useEffect(() => {
-    fetchUser();
-    fetchRound();
-    fetchLast10Wins();
-    // eslint-disable-next-line
-  }, []);
+  // For advanced animation
+  const spinningRef = useRef(false);
+  const spinTargetAngleRef = useRef(0);
+  const spinStartAngleRef = useRef(0);
 
-  // --- Timer Logic ---
-  useEffect(() => {
-    if (timer > 0) {
-      const interval = setInterval(() => setTimer((t) => t - 1), 1000);
-      if (timer === 10) {
-        startWheelSpin();
-      }
-      if (timer === 0) {
-        fetchWinner();
-        resetAfterRound();
-      }
-      return () => clearInterval(interval);
-    }
-    // eslint-disable-next-line
-  }, [timer]);
-
-  // --- API Calls ---
+  // 1. Fetch User Balance
   const fetchUser = async () => {
     try {
-      const res = await api.get('/users/me');
-      setBalance(res.data.balance);
+      const res = await api.get('/user/me');
+      setBalance(res.data.balance ?? (res.data.user?.balance ?? 0));
     } catch {}
   };
 
+  // 2. Fetch Round & Timer
   const fetchRound = async () => {
     try {
       const res = await api.get('/spin/round');
       setRound(res.data.round);
       setTimer(res.data.timer);
-      setUserBets(res.data.userBets || {});
     } catch {}
   };
 
-  const fetchLast10Wins = async () => {
+  // 3. Fetch Last 10 Wins
+  const fetchLastWins = async () => {
     try {
       const res = await api.get('/spin/last-wins');
       setLastWins(res.data.wins || []);
     } catch {}
   };
 
-  const fetchWinner = async () => {
+  // 4. Fetch User's Bets for Current Round
+  const fetchUserBets = async () => {
     try {
-      const res = await api.get(`/spin/winner/${round}`);
-      setWinner(res.data.winner);
-
-      // Animate wheel to winner
-      if (typeof res.data.winner === 'number') {
-        setSpinning(true);
-        // 36deg per segment, +360*5 for multiple spins before stopping
-        const finalAngle = (360 - (res.data.winner * 36)) + 360 * 5;
-        setTimeout(() => setSpinAngle(finalAngle), 100); // Small delay before spin
-        setTimeout(() => setSpinning(false), 4800);
-      }
-
-      fetchLast10Wins();
-      fetchUser();
-      setTimeout(() => setWinner(null), 5000);
+      // Get all bets of user for this round (may need endpoint, else calculate client-side)
+      const res = await api.get(`/spin/bets/${round}`);
+      const thisUserId = JSON.parse(atob(localStorage.getItem('token').split('.')[1])).id;
+      const myBets = res.data.bets.filter(b => b.user === thisUserId);
+      const betsObj = {};
+      myBets.forEach(b => { betsObj[b.choice] = (betsObj[b.choice] || 0) + b.amount; });
+      setUserBets(betsObj);
     } catch {}
   };
 
-  // --- Wheel Animation ---
-  const startWheelSpin = () => {
-    setSpinning(true);
-    setSpinAngle(prev => prev + 600); // Fast spin first
-    setTimeout(() => setSpinning(false), 1000);
-  };
+  // Live update: Timer/round/bets
+  useEffect(() => {
+    fetchUser();
+    fetchRound();
+    fetchLastWins();
 
-  // --- Round Reset ---
-  const resetAfterRound = () => {
-    setTimeout(() => {
-      setTimer(90);
-      setSelected(null);
-      setBetAmount('');
-      setUserBets({});
-      setSpinAngle(0);
-      setWinner(null);
+    const interval = setInterval(() => {
       fetchRound();
-    }, 6000); // next round after 6s
-  };
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
-  // --- Place Bet ---
+  useEffect(() => {
+    if (round) fetchUserBets();
+    // eslint-disable-next-line
+  }, [round]);
+
+  // 5. Bet Placement
   const handlePlaceBet = async () => {
     if (selected === null || !betAmount || Number(betAmount) <= 0) return;
     try {
@@ -138,13 +113,85 @@ const SpinGamePage = () => {
         choice: selected,
         amount: Number(betAmount),
       });
-      setUserBets((b) => ({ ...b, [selected]: Number(betAmount) }));
       fetchUser();
+      fetchUserBets();
       setBetAmount('');
-      // No alert, no popup, fast UI!
-    } catch (err) {
-      // Optional: Show small error below input
+      // No alert, UI updates instantly!
+    } catch (err) {}
+  };
+
+  // Wheel Spin Logic: Fast (timer 10-6), Slow (timer 5-0), Stop at Winner
+  useEffect(() => {
+    if (timer === 10) {
+      startFastSpin();
     }
+    if (timer === 5) {
+      startSlowSpin();
+    }
+    if (timer === 0 && round) {
+      // Get winner and stop wheel at winner
+      fetchWinnerAndSpin();
+    }
+    // eslint-disable-next-line
+  }, [timer, round]);
+
+  // Fast Spin
+  const startFastSpin = () => {
+    spinningRef.current = true;
+    let angle = spinAngle;
+    let step = 27; // Fast speed
+    let count = 0;
+    const fastSpin = setInterval(() => {
+      angle += step;
+      setSpinAngle(angle);
+      count++;
+      if (count >= 25) { // ~5sec
+        clearInterval(fastSpin);
+      }
+    }, 50);
+  };
+
+  // Slow Spin
+  const startSlowSpin = () => {
+    spinningRef.current = true;
+    let angle = spinAngle;
+    let step = 7; // Slow speed
+    let count = 0;
+    const slowSpin = setInterval(() => {
+      angle += step;
+      setSpinAngle(angle);
+      count++;
+      if (count >= 35) { // 5 sec
+        clearInterval(slowSpin);
+        spinningRef.current = false;
+      }
+    }, 70);
+  };
+
+  // Fetch Winner and Final Spin to Winner
+  const fetchWinnerAndSpin = async () => {
+    try {
+      const res = await api.get(`/spin/winner/${round}`);
+      setWinner(res.data.winner);
+
+      // Calculate final angle so winner number comes at arrow (bottom, angle 90deg)
+      const winnerNum = res.data.winner;
+      const finalAngle =
+        360 * 4 + // 4 full rounds for drama
+        (360 - (winnerNum * 36)) - 90; // winner segment to bottom (90deg)
+      setTimeout(() => {
+        setSpinning(true);
+        setSpinAngle(finalAngle);
+        setTimeout(() => {
+          setSpinning(false);
+          fetchLastWins();
+          fetchUser();
+          setUserBets({});
+        }, 2000); // 2s for final slow spin
+      }, 500); // 0.5s delay before final spin
+      // After few sec, reset winner for next round
+      setTimeout(() => setWinner(null), 4800);
+    } catch (err) {}
   };
 
   // --- UI Render ---
@@ -160,80 +207,77 @@ const SpinGamePage = () => {
       </div>
 
       {/* Wheel Section */}
-     <div className="wheel-section" style={{ position: "relative", width: 210, margin: "0 auto 25px auto" }}>
-  {/* Arrow – now at bottom */}
- <div
-    style={{
-      position: 'absolute',
-      left: '50%',
-      top: 'calc(100% - 4px)',
-      transform: 'translateX(-50%) rotate(180deg)',
-      zIndex: 2,
-      width: 0,
-      height: 0,
-      borderLeft: '14px solid transparent',
-      borderRight: '14px solid transparent',
-      borderTop: '32px solid #fb923c',
-    }}
-  />
-  {/* Wheel */}
-  <svg
-    width="100%"
-    height="100%"
-    viewBox="0 0 200 200"
-    className="spin-wheel-svg"
-    style={{
-      display: 'block',
-      margin: 'auto',
-      borderRadius: '50%',
-      background: 'linear-gradient(135deg, #a7c7e7 85%, #dbeafe 100%)',
-      boxShadow: '0 2px 14px #b7b7b7',
-      transform: `rotate(${spinAngle}deg)`,
-      transition: spinning ? "transform 1.8s cubic-bezier(.34,1.56,.64,1)" : "transform 0.35s cubic-bezier(.34,1.56,.64,1)"
-    }}
-  >
-    {/* Segments */}
-    {Array.from({ length: 10 }).map((_, i) => {
-      const rotate = (i * 36);
-      // Text position (radius = 75), angle = middle of each segment
-      const angle = (i * 36 + 18 - 90) * (Math.PI / 180); // +18 for center, -90 to start at top
-      const x = 100 + 75 * Math.cos(angle);
-      const y = 100 + 75 * Math.sin(angle);
-      return (
-        <g key={i}>
-          <path
-            d={describeArc(100, 100, 95, i * 36, (i + 1) * 36)}
-            fill={SEGMENT_COLORS[i % SEGMENT_COLORS.length]}
-            stroke="#fff"
-            strokeWidth="2"
-          />
-          {/* Number label */}
-          <text
-            x={x}
-            y={y}
-            textAnchor="middle"
-            alignmentBaseline="middle"
-            fill="#222"
-            fontSize="22"
-            fontWeight={winner === i ? "bold" : "600"}
-            style={{
-              textShadow: winner === i ? "0 0 6px #f59e42" : "none",
-              fill: winner === i ? "#dc2626" : "#222",
-              userSelect: 'none',
-            }}
-            transform={`rotate(${rotate + 18} ${x} ${y})`}
-          >
-            {i}
-          </text>
-        </g>
-      );
-    })}
-    {/* Center circle – no SPIN text */}
-<text x={100} y={110} textAnchor="middle" fontSize={32}>🎡</text>
-    {/* Center can be left blank or small logo */}
-  </svg>
-</div>
-
+      <div className="wheel-section" style={{ position: "relative", width: "100%", maxWidth: 240, margin: "0 auto 25px auto" }}>
+        {/* Arrow */}
+        <div
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: 'calc(100% - 4px)',
+            transform: 'translateX(-50%) rotate(180deg)',
+            zIndex: 2,
+            width: 0,
+            height: 0,
+            borderLeft: '14px solid transparent',
+            borderRight: '14px solid transparent',
+            borderTop: '32px solid #fb923c',
+          }}
+        />
+        {/* Wheel */}
+        <svg
+          width="100%"
+          height="100%"
+          viewBox="0 0 200 200"
+          className="spin-wheel-svg"
+          style={{
+            display: 'block',
+            margin: 'auto',
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #a7c7e7 85%, #dbeafe 100%)',
+            boxShadow: '0 2px 14px #b7b7b7',
+            transform: `rotate(${spinAngle}deg)`,
+            transition: spinning ? "transform 2.2s cubic-bezier(.34,1.56,.64,1)" : "transform 0.5s cubic-bezier(.34,1.56,.64,1)"
+          }}
+        >
+          {/* Segments */}
+          {Array.from({ length: 10 }).map((_, i) => {
+            // For number placement in segment
+            const angle = (i * 36 + 18 - 90) * (Math.PI / 180);
+            const x = 100 + 75 * Math.cos(angle);
+            const y = 100 + 75 * Math.sin(angle);
+            return (
+              <g key={i}>
+                <path
+                  d={describeArc(100, 100, 95, i * 36, (i + 1) * 36)}
+                  fill={SEGMENT_COLORS[i % SEGMENT_COLORS.length]}
+                  stroke="#fff"
+                  strokeWidth="2"
+                />
+                {/* Number label */}
+                <text
+                  x={x}
+                  y={y}
+                  textAnchor="middle"
+                  alignmentBaseline="middle"
+                  fill="#222"
+                  fontSize="22"
+                  fontWeight={winner === i ? "bold" : "600"}
+                  style={{
+                    textShadow: winner === i ? "0 0 6px #f59e42" : "none",
+                    fill: winner === i ? "#dc2626" : "#222",
+                    userSelect: 'none',
+                  }}
+                  transform={`rotate(${i * 36 + 18} ${x} ${y})`}
+                >
+                  {i}
+                </text>
+              </g>
+            );
+          })}
+          {/* Center circle – blank */}
+          <circle cx={100} cy={100} r={40} fill="#dbeafe" />
+        </svg>
+      </div>
 
       {/* Numbers below wheel in two rows */}
       <div className="numbers-section">
@@ -284,7 +328,6 @@ const SpinGamePage = () => {
           Place Bet
         </button>
       </div>
-      {/* NO Betting Closed message here */}
 
       {/* Last 10 wins */}
       <div className="last10-wins-section">
