@@ -1,10 +1,16 @@
 // src/pages/SpinGamePage.js
-
 import React, { useEffect, useState, useRef } from 'react';
 import api from '../services/api';
 import '../styles/spin.css';
 
-// Helper for SVG arc (same as before)
+const ROW1 = [0, 1, 2, 3, 4];
+const ROW2 = [5, 6, 7, 8, 9];
+const SEGMENT_COLORS = [
+  '#FFEB3B', '#FF9800', '#8BC34A', '#03A9F4', '#E91E63',
+  '#00BCD4', '#9C27B0', '#CDDC39', '#FF5722', '#607D8B'
+];
+
+// Helper for SVG arc
 function describeArc(cx, cy, r, startAngle, endAngle) {
   var start = polarToCartesian(cx, cy, r, endAngle);
   var end = polarToCartesian(cx, cy, r, startAngle);
@@ -25,171 +31,89 @@ function polarToCartesian(cx, cy, r, angleInDegrees) {
   };
 }
 
-const ROW1 = [0, 1, 2, 3, 4];
-const ROW2 = [5, 6, 7, 8, 9];
-const SEGMENT_COLORS = [
-  '#FFEB3B', '#FF9800', '#8BC34A', '#03A9F4', '#E91E63',
-  '#00BCD4', '#9C27B0', '#CDDC39', '#FF5722', '#607D8B'
-];
-
 const SpinGamePage = () => {
-  // State
   const [balance, setBalance] = useState(0);
-  const [round, setRound] = useState(0);
+  const [round, setRound] = useState(1);
   const [timer, setTimer] = useState(90);
   const [selected, setSelected] = useState(null);
   const [betAmount, setBetAmount] = useState('');
-  const [userBets, setUserBets] = useState({}); // { [number]: amount }
+  const [userBets, setUserBets] = useState({});
   const [lastWins, setLastWins] = useState([]);
   const [winner, setWinner] = useState(null);
   const [spinning, setSpinning] = useState(false);
   const [spinAngle, setSpinAngle] = useState(0);
 
-  // For advanced animation
-  const spinningRef = useRef(false);
-  const spinTargetAngleRef = useRef(0);
-  const spinStartAngleRef = useRef(0);
-
-  // 1. Fetch User Balance
-  const fetchUser = async () => {
-    try {
-      const res = await api.get('/user/me');
-      setBalance(res.data.balance ?? (res.data.user?.balance ?? 0));
-    } catch {}
-  };
-
-  // 2. Fetch Round & Timer
-  const fetchRound = async () => {
-    try {
-      const res = await api.get('/spin/round');
-      setRound(res.data.round);
-      setTimer(res.data.timer);
-    } catch {}
-  };
-
-  // 3. Fetch Last 10 Wins
-  const fetchLastWins = async () => {
-    try {
-      const res = await api.get('/spin/last-wins');
-      setLastWins(res.data.wins || []);
-    } catch {}
-  };
-
-  // 4. Fetch User's Bets for Current Round
-  const fetchUserBets = async () => {
-    try {
-      // Get all bets of user for this round (may need endpoint, else calculate client-side)
-      const res = await api.get(`/spin/bets/${round}`);
-      const thisUserId = JSON.parse(atob(localStorage.getItem('token').split('.')[1])).id;
-      const myBets = res.data.bets.filter(b => b.user === thisUserId);
-      const betsObj = {};
-      myBets.forEach(b => { betsObj[b.choice] = (betsObj[b.choice] || 0) + b.amount; });
-      setUserBets(betsObj);
-    } catch {}
-  };
-
-  // Live update: Timer/round/bets
+  // Poll live-state every second for round/timer/balance/userBets/lastWins
   useEffect(() => {
-    fetchUser();
-    fetchRound();
-    fetchLastWins();
+    let interval;
+    const fetchAll = async () => {
+      try {
+        // 1. Round & Timer
+        const roundRes = await api.get('/spin/round');
+        setRound(roundRes.data.round);
+        setTimer(roundRes.data.timer);
 
-    const interval = setInterval(() => {
-      fetchRound();
-    }, 1000);
+        // 2. Balance
+        const userRes = await api.get('/user/me');
+        setBalance(userRes.data.balance ?? (userRes.data.user?.balance ?? 0));
+
+        // 3. User bets
+        const betsRes = await api.get(`/spin/bets/${roundRes.data.round}`);
+        const thisUserId = JSON.parse(atob(localStorage.getItem('token').split('.')[1])).id;
+        const myBets = betsRes.data.bets.filter(b => b.user === thisUserId);
+        const betsObj = {};
+        myBets.forEach(b => { betsObj[b.choice] = (betsObj[b.choice] || 0) + b.amount; });
+        setUserBets(betsObj);
+
+        // 4. Last 10 wins
+        const winsRes = await api.get('/spin/last-wins');
+        setLastWins(winsRes.data.wins || []);
+      } catch {}
+    };
+    fetchAll();
+    interval = setInterval(fetchAll, 1000);
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    if (round) fetchUserBets();
-    // eslint-disable-next-line
-  }, [round]);
-
-  // 5. Bet Placement
+  // Place Bet
   const handlePlaceBet = async () => {
     if (selected === null || !betAmount || Number(betAmount) <= 0) return;
     try {
       await api.post('/spin/bet', {
         choice: selected,
-        amount: Number(betAmount),
+        amount: Number(betAmount)
       });
-      fetchUser();
-      fetchUserBets();
       setBetAmount('');
-      // No alert, UI updates instantly!
-    } catch (err) {}
+      // Polling will auto update state
+    } catch (err) {
+      alert(err.response?.data?.error || "Bet failed");
+    }
   };
 
-  // Wheel Spin Logic: Fast (timer 10-6), Slow (timer 5-0), Stop at Winner
+  // Spin Animation & Winner Logic
   useEffect(() => {
-    if (timer === 10) {
-      startFastSpin();
-    }
-    if (timer === 5) {
-      startSlowSpin();
-    }
     if (timer === 0 && round) {
-      // Get winner and stop wheel at winner
+      // Get winner and spin wheel to winner
       fetchWinnerAndSpin();
     }
     // eslint-disable-next-line
   }, [timer, round]);
 
-  // Fast Spin
-  const startFastSpin = () => {
-    spinningRef.current = true;
-    let angle = spinAngle;
-    let step = 27; // Fast speed
-    let count = 0;
-    const fastSpin = setInterval(() => {
-      angle += step;
-      setSpinAngle(angle);
-      count++;
-      if (count >= 25) { // ~5sec
-        clearInterval(fastSpin);
-      }
-    }, 50);
-  };
-
-  // Slow Spin
-  const startSlowSpin = () => {
-    spinningRef.current = true;
-    let angle = spinAngle;
-    let step = 7; // Slow speed
-    let count = 0;
-    const slowSpin = setInterval(() => {
-      angle += step;
-      setSpinAngle(angle);
-      count++;
-      if (count >= 35) { // 5 sec
-        clearInterval(slowSpin);
-        spinningRef.current = false;
-      }
-    }, 70);
-  };
-
-  // Fetch Winner and Final Spin to Winner
   const fetchWinnerAndSpin = async () => {
     try {
       const res = await api.get(`/spin/winner/${round}`);
       setWinner(res.data.winner);
 
-      // Calculate final angle so winner number comes at arrow (bottom, angle 90deg)
+      // Calculate angle for spin animation
       const winnerNum = res.data.winner;
       const finalAngle =
-        360 * 4 + // 4 full rounds for drama
-        (360 - (winnerNum * 36)) - 90; // winner segment to bottom (90deg)
+        360 * 4 +
+        (360 - (winnerNum * 36)) - 90;
+      setSpinning(true);
+      setSpinAngle(finalAngle);
       setTimeout(() => {
-        setSpinning(true);
-        setSpinAngle(finalAngle);
-        setTimeout(() => {
-          setSpinning(false);
-          fetchLastWins();
-          fetchUser();
-          setUserBets({});
-        }, 2000); // 2s for final slow spin
-      }, 500); // 0.5s delay before final spin
-      // After few sec, reset winner for next round
+        setSpinning(false);
+      }, 2200);
       setTimeout(() => setWinner(null), 4800);
     } catch (err) {}
   };
@@ -241,7 +165,6 @@ const SpinGamePage = () => {
         >
           {/* Segments */}
           {Array.from({ length: 10 }).map((_, i) => {
-            // For number placement in segment
             const angle = (i * 36 + 18 - 90) * (Math.PI / 180);
             const x = 100 + 75 * Math.cos(angle);
             const y = 100 + 75 * Math.sin(angle);
@@ -335,7 +258,7 @@ const SpinGamePage = () => {
         <div className="last10-list">
           {lastWins.map((win, idx) => (
             <div key={idx} className="last10-item">
-              {win.winner} <span>({win.round})</span>
+              {win.winner !== undefined ? win.winner : '-'} <span>({win.round})</span>
             </div>
           ))}
         </div>
