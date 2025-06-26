@@ -1,5 +1,5 @@
 import React from "react";
-
+ 
 const SpinWinnerAdmin = () => {
   return (
     <div>
