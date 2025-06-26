@@ -16,7 +16,7 @@ export default function ReferralPage() {
       setUser(res.data);
       // Generate referral link
       setReferralLink(`${window.location.origin}/signup?ref=${res.data.id}`);
-      // Get earnings & referral history (if backend not giving, use res.data.referralEarnings, res.data.referralHistory)
+      // Get earnings & referral history
       setEarnings(res.data.referralEarnings || 0);
       setHistory(res.data.referralHistory || []);
     };
