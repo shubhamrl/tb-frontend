@@ -23,6 +23,8 @@ const Signup = () => {
       const signupData = { email, password };
       if (referrerId) signupData.referrerId = referrerId;
 
+        console.log("SIGNUP DATA SENDING:", signupData);
+
       await axios.post(
         'https://tb-backend-1.onrender.com/api/auth/signup',
         signupData,
