@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/userdashboard.css';
 
 const UserDashboard = () => {
-  const [user, setUser] = useState({ id: '', email: '', balance: 0 });
+  const [user, setUser] = useState({ id: '', email: '', balance: 0, referralEarnings: 0 });
   const [numbers, setNumbers] = useState({ depositWhatsapp: '', withdrawWhatsapp: '' });
   const navigate = useNavigate();
 
@@ -50,6 +50,47 @@ const UserDashboard = () => {
       <h1>Welcome, {user.email}</h1>
       <p>Your Balance: ₹{user.balance}</p>
 
+      {/* ---------- Referral Button + Quick Earning ---------- */}
+      <div style={{
+        margin: '24px 0 18px 0',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 22
+      }}>
+        <button
+          style={{
+            padding: "13px 35px",
+            background: "#fb923c",
+            color: "#fff",
+            fontWeight: 600,
+            border: "none",
+            borderRadius: 9,
+            cursor: "pointer",
+            fontSize: "1.15rem",
+            letterSpacing: 0.5,
+            boxShadow: '0 2px 12px #ffebc2',
+            transition: "all 0.2s"
+          }}
+          onClick={() => navigate('/referral')}
+        >
+          🎁 Refer & Earn ₹100
+        </button>
+        {/* Quick referral earning (optional, hide if not needed) */}
+        <div style={{
+          background: "#f9fbe7",
+          color: "#16a34a",
+          fontWeight: 700,
+          fontSize: "1.1rem",
+          borderRadius: 6,
+          padding: "10px 18px",
+          border: "1px solid #dbeafe"
+        }}>
+          Referral Earnings: ₹{user.referralEarnings || 0}
+        </div>
+      </div>
+      {/* ---------------------------------------------------- */}
+
       <div className="dashboard-buttons">
         <button onClick={() => window.location.href = createWhatsAppLink('deposit')}>
           Deposit
@@ -84,10 +125,10 @@ const UserDashboard = () => {
           lineHeight: '1.6',
         }}
       >
-        <span style={{ fontWeight: 700 }}>TIP:</span>  
-        &nbsp;डिपॉजिट के लिए <b>न्यूनतम ₹100</b> और <b>अधिकतम ₹10,000</b>।  
-        विड्रॉल के लिए <b>न्यूनतम ₹200</b> और <b>अधिकतम ₹10,000</b>।  
-        कृपया इन्हीं लिमिट्स का पालन करें।  
+        <span style={{ fontWeight: 700 }}>TIP:</span>
+        &nbsp;डिपॉजिट के लिए <b>न्यूनतम ₹100</b> और <b>अधिकतम ₹10,000</b>।
+        विड्रॉल के लिए <b>न्यूनतम ₹200</b> और <b>अधिकतम ₹10,000</b>।
+        कृपया इन्हीं लिमिट्स का पालन करें।
         अधिक जानकारी के लिए व्हाट्सएप सपोर्ट पर मैसेज करें।
       </div>
     </div>
