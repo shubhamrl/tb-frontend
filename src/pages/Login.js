@@ -53,28 +53,30 @@ const Login = () => {
           onChange={e => setEmail(e.target.value)}
           required
         />
-        <div style={{ position: 'relative' }}>
+        <div style={{ position: 'relative', width: '100%' }}>
           <input
             type={showPassword ? 'text' : 'password'}
             placeholder="Password"
             value={password}
             onChange={e => setPassword(e.target.value)}
             required
-            style={{ paddingRight: '60px' }}
+            style={{ width: '100%', paddingRight: '70px' }}
           />
           <button
             type="button"
             onClick={() => setShowPassword((prev) => !prev)}
             style={{
               position: 'absolute',
-              right: '5px',
+              right: '8px',
               top: '50%',
               transform: 'translateY(-50%)',
               background: 'none',
               border: 'none',
+              color: '#007bff',
               cursor: 'pointer',
+              fontSize: '13px',
               padding: 0,
-              fontSize: '14px'
+              outline: 'none'
             }}
             tabIndex={-1}
           >
