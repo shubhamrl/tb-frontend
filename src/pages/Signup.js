@@ -1,3 +1,4 @@
+// src/pages/Signup.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
@@ -12,22 +13,22 @@ const Signup = () => {
   // Get ref from URL param
   const location = useLocation();
   const query = new URLSearchParams(location.search);
-  const referrerId = query.get('ref'); // Ye null ho sakta hai, toh koi problem nahi
+  const referrerId = query.get('ref'); // null if not present
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      // API call with referrerId
+      // Pass referrerId only if present
+      const signupData = { email, password };
+      if (referrerId) signupData.referrerId = referrerId;
+
       await axios.post(
-        // 'http://localhost:5000/api/auth/signup',
         'https://tb-backend-1.onrender.com/api/auth/signup',
-        { email, password, referrerId }, // ← yahan pass ho raha hai
+        signupData,
         { headers: { 'Content-Type': 'application/json' } }
       );
       setLoading(false);
-
-      // Signup success: go to OTP page and pass email in URL
       navigate(`/verify-otp?email=${encodeURIComponent(email)}`);
     } catch (err) {
       setLoading(false);
