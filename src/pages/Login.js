@@ -6,6 +6,7 @@ import '../styles/auth.css';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -18,9 +19,6 @@ const Login = () => {
         { email, password },
         { headers: { 'Content-Type': 'application/json' } }
       );
-
-      // Yaha console karo
-      console.log('API response:', res.data);
 
       if (res.data.token) {
         localStorage.setItem('token', res.data.token);
@@ -55,13 +53,39 @@ const Login = () => {
           onChange={e => setEmail(e.target.value)}
           required
         />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          required
-        />
+        <div style={{ position: 'relative' }}>
+          <input
+            type={showPassword ? 'text' : 'password'}
+            placeholder="Password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+            style={{ paddingRight: '60px' }}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            style={{
+              position: 'absolute',
+              right: '5px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+              fontSize: '14px'
+            }}
+            tabIndex={-1}
+          >
+            {showPassword ? 'Hide' : 'Show'}
+          </button>
+        </div>
+        <div style={{ textAlign: 'right', margin: '5px 0 10px 0' }}>
+          <Link to="/forgot-password" style={{ fontSize: '13px' }}>
+            Forgot Password?
+          </Link>
+        </div>
         <button type="submit" disabled={loading}>
           {loading ? 'Logging in...' : 'Login'}
         </button>
