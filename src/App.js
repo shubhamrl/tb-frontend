@@ -14,6 +14,7 @@ import SpinWinnerAdmin from './pages/SpinWinnerAdmin';
 import ReferralPage from './pages/ReferralPage'; // 👈 Referral page import
 import AdminRoute from './components/AdminRoute';
 import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 function App() {
   const token = localStorage.getItem('token');
