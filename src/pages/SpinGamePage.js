@@ -89,25 +89,23 @@ const SpinGamePage = () => {
   };
 
   // Auto spinning logic (wheel spin in last 10 sec, then stop on winner)
-  useEffect(() => {
-    if (timer <= 10 && timer > 0 && !isAutoSpinning) {
-      setIsAutoSpinning(true);
-      spinIntervalRef.current = setInterval(() => {
-        setSpinAngle(prev => prev + 32);
-      }, 60);
-    }
-    if ((timer > 10 || timer === 0) && isAutoSpinning) {
-      setIsAutoSpinning(false);
-      clearInterval(spinIntervalRef.current);
-    }
-    if (timer === 0) {
-      setIsAutoSpinning(false);
-      clearInterval(spinIntervalRef.current);
-      fetchWinnerAndSpin();
-    }
-    return () => clearInterval(spinIntervalRef.current);
-    // eslint-disable-next-line
-  }, [timer]);
+
+
+useEffect(() => {
+  if (timer === 10 && !isAutoSpinning) {
+    setIsAutoSpinning(true);
+    spinIntervalRef.current = setInterval(() => {
+      setSpinAngle(prev => prev + 32);
+    }, 60);
+  }
+  if (timer === 0 && isAutoSpinning) {
+    setIsAutoSpinning(false);
+    clearInterval(spinIntervalRef.current);
+    fetchWinnerAndSpin();
+  }
+  return () => clearInterval(spinIntervalRef.current);
+  // eslint-disable-next-line
+}, [timer]);
 
   // Winner par rukwao (arrow ke aage winner)
   const fetchWinnerAndSpin = async () => {
