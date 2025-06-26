@@ -10,7 +10,6 @@ const SEGMENT_COLORS = [
   '#00BCD4', '#9C27B0', '#CDDC39', '#FF5722', '#607D8B'
 ];
 
-// Helper for SVG arc
 function describeArc(cx, cy, r, startAngle, endAngle) {
   var start = polarToCartesian(cx, cy, r, endAngle);
   var end = polarToCartesian(cx, cy, r, startAngle);
@@ -43,21 +42,22 @@ const SpinGamePage = () => {
   const [spinning, setSpinning] = useState(false);
   const [spinAngle, setSpinAngle] = useState(0);
 
-  // Poll live-state every second for round/timer/balance/userBets/lastWins
+  // NEW: For auto spinning wheel in last 10 sec
+  const spinIntervalRef = useRef(null);
+  const [isAutoSpinning, setIsAutoSpinning] = useState(false);
+
+  // Poll everything every 1s
   useEffect(() => {
-    let interval;
     const fetchAll = async () => {
       try {
-        // 1. Round & Timer
         const roundRes = await api.get('/spin/round');
         setRound(roundRes.data.round);
         setTimer(roundRes.data.timer);
 
-        // 2. Balance
-        const userRes = await api.get('/user/me');
-        setBalance(userRes.data.balance ?? (userRes.data.user?.balance ?? 0));
+        // /api/users/me is used here (not /user/me)
+        const userRes = await api.get('/users/me');
+        setBalance(userRes.data.balance ?? 0);
 
-        // 3. User bets
         const betsRes = await api.get(`/spin/bets/${roundRes.data.round}`);
         const thisUserId = JSON.parse(atob(localStorage.getItem('token').split('.')[1])).id;
         const myBets = betsRes.data.bets.filter(b => b.user === thisUserId);
@@ -65,13 +65,12 @@ const SpinGamePage = () => {
         myBets.forEach(b => { betsObj[b.choice] = (betsObj[b.choice] || 0) + b.amount; });
         setUserBets(betsObj);
 
-        // 4. Last 10 wins
         const winsRes = await api.get('/spin/last-wins');
         setLastWins(winsRes.data.wins || []);
       } catch {}
     };
     fetchAll();
-    interval = setInterval(fetchAll, 1000);
+    const interval = setInterval(fetchAll, 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -84,33 +83,46 @@ const SpinGamePage = () => {
         amount: Number(betAmount)
       });
       setBetAmount('');
-      // Polling will auto update state
     } catch (err) {
       alert(err.response?.data?.error || "Bet failed");
     }
   };
 
-  // Spin Animation & Winner Logic
+  // Auto spinning logic (wheel spin in last 10 sec, then stop on winner)
   useEffect(() => {
-    if (timer === 0 && round) {
-      // Get winner and spin wheel to winner
+    if (timer <= 10 && timer > 0 && !isAutoSpinning) {
+      setIsAutoSpinning(true);
+      spinIntervalRef.current = setInterval(() => {
+        setSpinAngle(prev => prev + 32);
+      }, 60);
+    }
+    if ((timer > 10 || timer === 0) && isAutoSpinning) {
+      setIsAutoSpinning(false);
+      clearInterval(spinIntervalRef.current);
+    }
+    if (timer === 0) {
+      setIsAutoSpinning(false);
+      clearInterval(spinIntervalRef.current);
       fetchWinnerAndSpin();
     }
+    return () => clearInterval(spinIntervalRef.current);
     // eslint-disable-next-line
-  }, [timer, round]);
+  }, [timer]);
 
+  // Winner par rukwao (arrow ke aage winner)
   const fetchWinnerAndSpin = async () => {
     try {
       const res = await api.get(`/spin/winner/${round}`);
       setWinner(res.data.winner);
 
-      // Calculate angle for spin animation
       const winnerNum = res.data.winner;
-      const finalAngle =
-        360 * 4 +
-        (360 - (winnerNum * 36)) - 90;
+      const currentSpin = spinAngle % 360;
+      const targetAngle = (360 - (winnerNum * 36)) - 90;
+      const finalAngle = currentSpin + (4 * 360) + (targetAngle - currentSpin);
+
       setSpinning(true);
       setSpinAngle(finalAngle);
+
       setTimeout(() => {
         setSpinning(false);
       }, 2200);
@@ -121,7 +133,6 @@ const SpinGamePage = () => {
   // --- UI Render ---
   return (
     <div className="spin-game-container">
-      {/* Top: Balance, Round, Timer */}
       <div className="top-bar">
         <span>Balance: ₹{balance}</span>
         <span>Round: {round}</span>
@@ -129,10 +140,7 @@ const SpinGamePage = () => {
           {timer > 0 ? `Time left: ${timer}s` : "Waiting..."}
         </span>
       </div>
-
-      {/* Wheel Section */}
       <div className="wheel-section" style={{ position: "relative", width: "100%", maxWidth: 240, margin: "0 auto 25px auto" }}>
-        {/* Arrow */}
         <div
           style={{
             position: 'absolute',
@@ -147,7 +155,6 @@ const SpinGamePage = () => {
             borderTop: '32px solid #fb923c',
           }}
         />
-        {/* Wheel */}
         <svg
           width="100%"
           height="100%"
@@ -160,10 +167,13 @@ const SpinGamePage = () => {
             background: 'linear-gradient(135deg, #a7c7e7 85%, #dbeafe 100%)',
             boxShadow: '0 2px 14px #b7b7b7',
             transform: `rotate(${spinAngle}deg)`,
-            transition: spinning ? "transform 2.2s cubic-bezier(.34,1.56,.64,1)" : "transform 0.5s cubic-bezier(.34,1.56,.64,1)"
+            transition: spinning
+              ? "transform 2.2s cubic-bezier(.34,1.56,.64,1)"
+              : isAutoSpinning
+              ? "transform 0.08s linear"
+              : "transform 0.5s cubic-bezier(.34,1.56,.64,1)"
           }}
         >
-          {/* Segments */}
           {Array.from({ length: 10 }).map((_, i) => {
             const angle = (i * 36 + 18 - 90) * (Math.PI / 180);
             const x = 100 + 75 * Math.cos(angle);
@@ -176,7 +186,6 @@ const SpinGamePage = () => {
                   stroke="#fff"
                   strokeWidth="2"
                 />
-                {/* Number label */}
                 <text
                   x={x}
                   y={y}
@@ -197,12 +206,9 @@ const SpinGamePage = () => {
               </g>
             );
           })}
-          {/* Center circle – blank */}
           <circle cx={100} cy={100} r={40} fill="#dbeafe" />
         </svg>
       </div>
-
-      {/* Numbers below wheel in two rows */}
       <div className="numbers-section">
         <div className="numbers-row">
           {ROW1.map((num) => (
@@ -233,8 +239,6 @@ const SpinGamePage = () => {
           ))}
         </div>
       </div>
-
-      {/* Bet input & button */}
       <div className="bet-section">
         <input
           type="number"
@@ -251,8 +255,6 @@ const SpinGamePage = () => {
           Place Bet
         </button>
       </div>
-
-      {/* Last 10 wins */}
       <div className="last10-wins-section">
         <h4>Last 10 Wins</h4>
         <div className="last10-list">
