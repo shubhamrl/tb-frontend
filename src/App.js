@@ -10,7 +10,8 @@ import SpinGamePage from './pages/SpinGamePage';
 import WhatsappSettingsPage from './pages/WhatsappSettingsPage';
 import ManageUserPage from './pages/ManageUserPage';
 import AdminRoundsSummary from './pages/AdminRoundsSummary';
-import SpinWinnerAdmin from './pages/SpinWinnerAdmin';   // <<=== naya import
+import SpinWinnerAdmin from './pages/SpinWinnerAdmin';
+import ReferralPage from './pages/ReferralPage'; // 👈 Referral page import
 import AdminRoute from './components/AdminRoute';
 
 function App() {
@@ -41,6 +42,12 @@ function App() {
         <Route
           path="/dashboard"
           element={token ? <UserDashboard /> : <Navigate to="/login" replace />}
+        />
+
+        {/* NEW: Referral page route */}
+        <Route
+          path="/referral"
+          element={token ? <ReferralPage /> : <Navigate to="/login" replace />}
         />
 
         {/* ----- ADMIN PANEL ROUTES ------ */}
