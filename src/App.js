@@ -13,6 +13,7 @@ import AdminRoundsSummary from './pages/AdminRoundsSummary';
 import SpinWinnerAdmin from './pages/SpinWinnerAdmin';
 import ReferralPage from './pages/ReferralPage'; // 👈 Referral page import
 import AdminRoute from './components/AdminRoute';
+import ForgotPassword from './pages/ForgotPassword';
 
 function App() {
   const token = localStorage.getItem('token');
@@ -35,7 +36,7 @@ function App() {
               : <Navigate to="/signup" replace />
           }
         />
-
+<Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
 
