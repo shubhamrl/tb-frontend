@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import '../styles/auth.css';
 
 const Signup = () => {
@@ -9,15 +9,20 @@ const Signup = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Get ref from URL param
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+  const referrerId = query.get('ref'); // Ye null ho sakta hai, toh koi problem nahi
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      // API call
+      // API call with referrerId
       await axios.post(
         // 'http://localhost:5000/api/auth/signup',
         'https://tb-backend-1.onrender.com/api/auth/signup',
-        { email, password },
+        { email, password, referrerId }, // ← yahan pass ho raha hai
         { headers: { 'Content-Type': 'application/json' } }
       );
       setLoading(false);
