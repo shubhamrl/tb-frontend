@@ -1,4 +1,3 @@
-// src/pages/ReferralPage.js
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 
@@ -11,12 +10,9 @@ export default function ReferralPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      // Get logged in user data
       const res = await api.get('/users/me');
       setUser(res.data);
-      // Generate referral link
       setReferralLink(`${window.location.origin}/signup?ref=${res.data.id}`);
-      // Get earnings & referral history
       setEarnings(res.data.referralEarnings || 0);
       setHistory(res.data.referralHistory || []);
     };
@@ -48,12 +44,45 @@ export default function ReferralPage() {
           {copied ? "Copied!" : "Copy"}
         </button>
       </div>
+
+      {/* ==== SOCIAL SHARE SECTION HERE ==== */}
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
         <span style={{ color: "#888", fontSize: 14 }}>Share Via Social</span>
-        <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink)}`} target="_blank" rel="noopener noreferrer" style={{ color: "#2563eb", fontWeight: 500 }}>Facebook</a>
-        <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(referralLink)}`} target="_blank" rel="noopener noreferrer" style={{ color: "#1d9bf0", fontWeight: 500 }}>Twitter</a>
-        <a href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(referralLink)}`} target="_blank" rel="noopener noreferrer" style={{ color: "#2563eb", fontWeight: 500 }}>LinkedIn</a>
+        <a
+          href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: "#2563eb", fontWeight: 500 }}
+        >
+          Facebook
+        </a>
+        <a
+          href={`https://x.com/intent/tweet?url=${encodeURIComponent(referralLink)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: "#111", fontWeight: 500 }}
+        >
+          X (Twitter)
+        </a>
+        <a
+          href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(referralLink)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: "#2563eb", fontWeight: 500 }}
+        >
+          LinkedIn
+        </a>
+        <a
+          href={`https://wa.me/?text=${encodeURIComponent(referralLink)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: "#25D366", fontWeight: 500 }}
+        >
+          WhatsApp
+        </a>
       </div>
+      {/* ==== END SOCIAL SHARE ==== */}
+
       {/* Earnings & History */}
       <div style={{ marginTop: 32 }}>
         <div style={{ marginBottom: 14, fontSize: 17 }}>
