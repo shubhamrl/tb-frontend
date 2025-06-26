@@ -1,3 +1,4 @@
+// src/pages/UserDashboard.js
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
@@ -76,7 +77,6 @@ const UserDashboard = () => {
         >
           🎁 Refer & Earn ₹100
         </button>
-        {/* Quick referral earning (optional, hide if not needed) */}
         <div style={{
           background: "#f9fbe7",
           color: "#16a34a",
@@ -89,7 +89,6 @@ const UserDashboard = () => {
           Referral Earnings: ₹{user.referralEarnings || 0}
         </div>
       </div>
-      {/* ---------------------------------------------------- */}
 
       <div className="dashboard-buttons">
         <button onClick={() => window.location.href = createWhatsAppLink('deposit')}>
@@ -105,12 +104,10 @@ const UserDashboard = () => {
         <button onClick={() => navigate('/game/spin')}>Play Spin to Win</button>
       </div>
 
-      {/* 🔴 Logout Button */}
       <div className="logout-section" style={{ marginTop: '20px' }}>
         <button onClick={handleLogout}>Logout</button>
       </div>
 
-      {/* --- TIP SECTION --- */}
       <div
         className="tip-section"
         style={{
