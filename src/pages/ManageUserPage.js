@@ -42,6 +42,19 @@ const ManageUserPage = () => {
     }
   };
 
+  // === NEW: Reward referral handler ===
+  const handleReward = async (userId) => {
+    if (!window.confirm("Are you sure to give referral reward?")) return;
+    try {
+      await api.post(`/admin/users/${userId}/reward-referral`);
+      alert('Referral reward given!');
+      // Reload user list for status
+      fetchUsers(searchTerm);
+    } catch (err) {
+      alert(err?.response?.data?.message || "Reward failed");
+    }
+  };
+
   return (
     <div style={{ padding: '2rem' }}>
       <h2>Search Users</h2>
@@ -70,6 +83,7 @@ const ManageUserPage = () => {
               <th>Balance</th>
               <th>Amount</th>
               <th>Actions</th>
+              <th>Referral Reward</th> {/* NEW column */}
             </tr>
           </thead>
           <tbody>
@@ -90,10 +104,37 @@ const ManageUserPage = () => {
                   <button onClick={() => updateBalance(user._id, true)}>Add</button>{' '}
                   <button onClick={() => updateBalance(user._id, false)}>Minus</button>
                 </td>
+                {/* NEW: Referral reward button */}
+                <td>
+                  {(user.referrerId && !user.referralRewarded) ? (
+                    <button
+                      style={{
+                        background: '#22c55e',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: 6,
+                        padding: '7px 16px',
+                        fontWeight: 700,
+                        cursor: 'pointer'
+                      }}
+                      onClick={() => handleReward(user._id)}
+                    >
+                      Reward
+                    </button>
+                  ) : user.referralRewarded ? (
+                    <span style={{ color: "#16a34a", fontWeight: 600 }}>Rewarded</span>
+                  ) : (
+                    "-"
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
+      </div>
+      <div>
+        <b>Total Users:</b> {totalUsers} &nbsp; | &nbsp;
+        <b>Active (last 10 min):</b> {activeUsers}
       </div>
     </div>
   );
