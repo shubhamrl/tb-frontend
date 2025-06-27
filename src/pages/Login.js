@@ -53,31 +53,17 @@ const Login = () => {
           onChange={e => setEmail(e.target.value)}
           required
         />
-        <div style={{ position: 'relative', width: '100%' }}>
+        <div className="auth-password-wrapper">
           <input
             type={showPassword ? 'text' : 'password'}
             placeholder="Password"
             value={password}
             onChange={e => setPassword(e.target.value)}
             required
-            style={{ width: '100%', paddingRight: '70px' }}
           />
           <button
             type="button"
             onClick={() => setShowPassword((prev) => !prev)}
-            style={{
-              position: 'absolute',
-              right: '8px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              background: 'none',
-              border: 'none',
-              color: '#007bff',
-              cursor: 'pointer',
-              fontSize: '13px',
-              padding: 0,
-              outline: 'none'
-            }}
             tabIndex={-1}
           >
             {showPassword ? 'Hide' : 'Show'}
