@@ -6,6 +6,66 @@
   position: relative;
 }
 
+/* ===== Sticky Header: Round | Timer | Balance (ROW, always on top) ===== */
+.tb-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(22, 75, 83, 0.99);
+  display: flex;
+  flex-direction: row;   /* ek line me, left-center-right */
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px 10px 24px;
+  box-shadow: 0 3px 18px rgba(16,90,120,0.09);
+  border-top-left-radius: 22px;
+  border-top-right-radius: 22px;
+  min-height: 68px;
+  margin-bottom: 18px;
+  gap: 8px;
+}
+
+.tb-sticky-header .tb-round {
+  font-size: 1.18rem;
+  color: #fff;
+  font-weight: 700;
+  flex: 1;
+  text-align: left;
+}
+.tb-sticky-header .tb-timer {
+  font-size: 1.13rem;
+  color: #ffc107;
+  font-weight: 700;
+  flex: 1;
+  text-align: center;
+}
+.tb-sticky-header .tb-balance {
+  font-size: 1.13rem;
+  color: #ffd600;
+  font-weight: 700;
+  flex: 1;
+  text-align: right;
+}
+
+@media (max-width: 600px) {
+  .tb-sticky-header {
+    padding: 9px 8px 6px 8px;
+    min-height: 54px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    font-size: 1rem;
+    gap: 0;
+  }
+  .tb-sticky-header .tb-round,
+  .tb-sticky-header .tb-timer,
+  .tb-sticky-header .tb-balance {
+    font-size: 0.98rem;
+    flex: 1;
+  }
+}
+
+/* ====== Rest of your previous CSS (image grid, cards, etc) ====== */
+
 .game-header {
   display: flex;
   justify-content: space-between;
@@ -186,47 +246,3 @@
     gap: 0.75rem;
   }
 }
-
-
-/* ----- Sticky header for Titali Bhavara ----- */
-.tb-sticky-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: rgba(22, 75, 83, 0.99);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 16px 0 10px 0;
-  box-shadow: 0 3px 18px rgba(16,90,120,0.09);
-  border-top-left-radius: 22px;
-  border-top-right-radius: 22px;
-  min-height: 75px;
-  margin-bottom: 18px;
-}
-
-.tb-sticky-header > * {
-  margin-bottom: 4px;
-  color: #fff;
-  font-weight: 600;
-  font-size: 1.14rem;
-  letter-spacing: 0.3px;
-}
-
-.tb-round { font-size: 1.18rem; }
-.tb-timer { font-size: 1.13rem; color: #ffc107; }
-.tb-balance { font-size: 1.13rem; color: #ffd600; }
-
-@media (max-width: 600px) {
-  .tb-sticky-header {
-    padding: 9px 0 6px 0;
-    min-height: 58px;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-  }
-  .tb-sticky-header > * {
-    font-size: 1.01rem;
-    margin-bottom: 2.5px;
-  }
-}
-
