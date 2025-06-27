@@ -46,28 +46,47 @@ body, .auth-bg {
   outline: none;
   margin-bottom: 0;
   transition: box-shadow 0.18s;
+  width: 100%;
+  box-sizing: border-box;
 }
 .auth-container input:focus {
   box-shadow: 0 0 0 2px #19bccf44;
 }
 
-/* Show/Hide password button */
-.auth-container form > div {
+/* Password wrapper fix */
+.auth-password-wrapper {
+  display: flex;
+  align-items: center;
   position: relative;
+  width: 100%;
+  gap: 0;
 }
-.auth-container form button[type="button"] {
+
+.auth-password-wrapper input[type="password"],
+.auth-password-wrapper input[type="text"] {
+  flex: 1;
+  width: 100%;
+  margin: 0;
+  padding-right: 65px; /* space for show/hide btn */
+  box-sizing: border-box;
+}
+
+.auth-password-wrapper button[type="button"] {
   position: absolute;
-  right: 9px;
+  right: 15px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
   color: #fb923c;
   cursor: pointer;
-  font-size: 0.98rem;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 600;
   padding: 0;
   outline: none;
+  height: 28px;
+  min-width: 35px;
+  z-index: 2;
 }
 
 /* Main action buttons */
@@ -145,6 +164,15 @@ body, .auth-bg {
     font-size: 0.97rem;
     padding: 11px 10px;
     border-radius: 7px;
+  }
+  .auth-password-wrapper button[type="button"] {
+    right: 7vw;
+    font-size: 0.97rem;
+    min-width: 31px;
+  }
+  .auth-password-wrapper input[type="password"],
+  .auth-password-wrapper input[type="text"] {
+    padding-right: 50px;
   }
   .auth-container p {
     font-size: 14px;
