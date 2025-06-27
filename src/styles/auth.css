@@ -1,47 +1,153 @@
+/* src/styles/auth.css */
+
+/* BG for whole auth area */
+body, .auth-bg {
+  min-height: 100vh;
+  background: radial-gradient(circle at 30% 30%, #0fa3a3 60%, #256a72 100%);
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
 .auth-container {
   max-width: 400px;
-  margin: 80px auto;
-  padding: 30px;
-  background-color: #f9f9f9;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 60px auto;
+  padding: 32px 20px 25px 20px;
+  background: rgba(22, 75, 83, 0.96);
+  border-radius: 22px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.22);
   text-align: center;
+  position: relative;
+  transition: box-shadow 0.2s;
 }
 
 .auth-container h2 {
-  margin-bottom: 20px;
-  color: #333;
+  margin-bottom: 24px;
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 .auth-container form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 18px;
 }
 
+/* Input fields */
 .auth-container input {
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 16px;
-}
-
-.auth-container button {
-  padding: 12px;
-  background-color: #4CAF50;
-  color: white;
+  padding: 13px 15px;
   border: none;
-  font-weight: bold;
-  font-size: 16px;
-  border-radius: 8px;
+  border-radius: 11px;
+  font-size: 1.09rem;
+  background: #e7f7fa;
+  color: #185453;
+  font-weight: 500;
+  outline: none;
+  margin-bottom: 0;
+  transition: box-shadow 0.18s;
+}
+.auth-container input:focus {
+  box-shadow: 0 0 0 2px #19bccf44;
+}
+
+/* Show/Hide password button */
+.auth-container form > div {
+  position: relative;
+}
+.auth-container form button[type="button"] {
+  position: absolute;
+  right: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #fb923c;
   cursor: pointer;
-  transition: background 0.3s ease;
+  font-size: 0.98rem;
+  font-weight: 500;
+  padding: 0;
+  outline: none;
 }
 
-.auth-container button:hover {
-  background-color: #45a049;
+/* Main action buttons */
+.auth-container button[type="submit"] {
+  background: #fb923c;
+  color: #fff;
+  border: none;
+  border-radius: 13px;
+  padding: 13px 0;
+  font-size: 1.14rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 13px #ffebc2;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: background 0.18s;
+}
+.auth-container button[type="submit"]:hover {
+  background: #fb7c05;
 }
 
+/* Forgot password link */
+.auth-container a, .auth-container a:visited {
+  color: #fb923c;
+  text-decoration: underline;
+  font-weight: 500;
+}
+.auth-container a:hover {
+  color: #fb7c05;
+  text-decoration: underline;
+}
+
+/* 'Don't have an account' and 'Already have an account' */
 .auth-container p {
-  font-size: 14px;
+  font-size: 15px;
+  color: #e6f9f6;
+  margin-top: 16px;
+  margin-bottom: 0;
+}
+.auth-container p a {
+  font-weight: 600;
+  font-size: 1em;
+}
+
+/* Error message (if any) */
+.auth-error, .error-msg {
+  color: #ff5b38;
+  background: #fff1ef;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 7px;
+  text-align: center;
+  font-size: 1rem;
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+  .auth-container {
+    max-width: 98vw;
+    margin: 16vw 2vw 0 2vw;
+    padding: 17vw 4vw 9vw 4vw;
+    border-radius: 13px;
+    min-width: 0;
+  }
+  .auth-container h2 {
+    font-size: 1.12rem;
+    margin-bottom: 16px;
+  }
+  .auth-container button[type="submit"] {
+    font-size: 1.01rem;
+    padding: 11px 0;
+    border-radius: 8px;
+  }
+  .auth-container input {
+    font-size: 0.97rem;
+    padding: 11px 10px;
+    border-radius: 7px;
+  }
+  .auth-container p {
+    font-size: 14px;
+    margin-top: 9px;
+  }
 }
