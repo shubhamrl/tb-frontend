@@ -186,3 +186,47 @@
     gap: 0.75rem;
   }
 }
+
+
+/* ----- Sticky header for Titali Bhavara ----- */
+.tb-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(22, 75, 83, 0.99);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0 10px 0;
+  box-shadow: 0 3px 18px rgba(16,90,120,0.09);
+  border-top-left-radius: 22px;
+  border-top-right-radius: 22px;
+  min-height: 75px;
+  margin-bottom: 18px;
+}
+
+.tb-sticky-header > * {
+  margin-bottom: 4px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.14rem;
+  letter-spacing: 0.3px;
+}
+
+.tb-round { font-size: 1.18rem; }
+.tb-timer { font-size: 1.13rem; color: #ffc107; }
+.tb-balance { font-size: 1.13rem; color: #ffd600; }
+
+@media (max-width: 600px) {
+  .tb-sticky-header {
+    padding: 9px 0 6px 0;
+    min-height: 58px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+  }
+  .tb-sticky-header > * {
+    font-size: 1.01rem;
+    margin-bottom: 2.5px;
+  }
+}
+
