@@ -1,4 +1,6 @@
 /* userdashboard.css */
+
+/* BG for whole app */
 body {
   background: radial-gradient(circle at 30% 30%, #0fa3a3 60%, #256a72 100%);
   min-height: 100vh;
@@ -6,196 +8,172 @@ body {
   font-family: 'Segoe UI', sans-serif;
 }
 
-.dashboard-outer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-}
-
-.dashboard-card {
-  background: rgba(24, 78, 82, 0.90);
-  border-radius: 24px;
-  box-shadow: 0 8px 36px rgba(0,0,0,0.2);
-  padding: 40px 0;
-  display: flex;
-  flex-direction: row;
-  width: 700px;
-  max-width: 98vw;
+/* Main dashboard card */
+.dashboard-container {
+  max-width: 410px;
+  margin: 46px auto;
+  background: rgba(22, 75, 83, 0.96);
+  border-radius: 22px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.22);
+  text-align: center;
+  padding: 0 0 26px 0;
   position: relative;
-  gap: 0;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
 }
 
-.profile-section {
-  flex: 1.5;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0 32px;
+.dashboard-container h1 {
+  color: #fff;
+  font-weight: 500;
+  font-size: 1.32rem;
+  letter-spacing: 0.5px;
+  margin: 0;
+  padding-top: 36px;
 }
 
-.profile-pic-container {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.09);
-  box-shadow: 0 0 0 6px rgba(255,255,255,0.15);
+.dashboard-container p {
+  font-size: 18px;
+  color: #fbfbfb;
+  margin: 14px 0 24px 0;
+  font-weight: 400;
+}
+
+/* Referral/Earnings box */
+.dashboard-container > div:first-of-type {
+  flex-wrap: wrap;
+  margin: 18px 0 13px 0 !important;
+}
+
+/* Buttons Section */
+.dashboard-buttons,
+.game-buttons,
+.logout-section {
   display: flex;
   justify-content: center;
-  align-items: center;
-  margin-bottom: 18px;
-  margin-top: 12px;
+  gap: 14px;
+  margin-top: 20px;
+  flex-wrap: wrap;
 }
 
-.profile-pic {
-  width: 124px;
-  height: 124px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #fff;
-}
-
-.profile-section h2 {
-  color: #fff;
-  margin-bottom: 6px;
-  margin-top: 0;
-  font-weight: 500;
-  font-size: 1.2rem;
-}
-
-.profile-section .profile-name {
-  color: #fff;
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-top: 4px;
-}
-
-.profile-section .profile-badge {
-  margin-top: 8px;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-
-.profile-section .badge-icon {
-  background: #31cf4b;
+.dashboard-buttons button,
+.game-buttons button,
+.logout-section button {
+  padding: 13px 29px;
+  font-size: 1.06rem;
+  border: none;
+  border-radius: 12px;
+  background-color: #06a497;
   color: white;
-  border-radius: 50%;
-  padding: 4px 7px 4px 7px;
-  font-size: 1.1rem;
-  display: flex;
-  align-items: center;
-}
-
-.profile-section .badge-label {
-  color: #31cf4b;
-  font-weight: 500;
-  font-size: 0.97rem;
-  background: rgba(255,255,255,0.11);
-  border-radius: 12px;
-  padding: 2px 10px;
-  letter-spacing: 0.01em;
-}
-
-.tabs-section {
-  flex: 2.2;
-  display: flex;
-  flex-direction: column;
-  background: rgba(25, 85, 90, 0.77);
-  border-top-right-radius: 24px;
-  border-bottom-right-radius: 24px;
-  padding: 24px 28px;
-  min-width: 280px;
-}
-
-.tabs-header {
-  display: flex;
-  gap: 14px;
-  margin-bottom: 22px;
-}
-
-.tab-btn {
-  background: rgba(255,255,255,0.12);
-  border: none;
-  color: #fff;
   font-weight: 600;
-  font-size: 1rem;
-  padding: 9px 28px;
-  border-radius: 16px;
   cursor: pointer;
-  transition: background 0.2s;
+  box-shadow: 0 2px 13px #0fa3a360;
+  transition: background 0.21s, box-shadow 0.23s;
+  outline: none;
+}
+.dashboard-buttons button:hover,
+.game-buttons button:hover,
+.logout-section button:hover {
+  background-color: #007c76;
+  box-shadow: 0 2px 22px #0fa3a380;
 }
 
-.tab-btn.active, .tab-btn:focus {
-  background: rgba(255,255,255,0.25);
-  color: #151b1d;
+/* Refer Button & Earnings */
+.dashboard-container > div:first-of-type button {
+  background: #fb923c;
+  box-shadow: 0 2px 13px #ffebc2;
+  font-size: 1.13rem;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 13px 33px;
 }
-
-.gifts-list {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  margin-top: 4px;
+.dashboard-container > div:first-of-type button:hover {
+  background: #fb7c05;
 }
-
-.gift-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: #fff;
-  background: rgba(255,255,255,0.08);
-  padding: 8px 18px;
-  border-radius: 12px;
-  transition: background 0.18s;
-}
-
-.gift-item .gift-left {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.gift-item img {
-  width: 36px;
-  height: 36px;
-  object-fit: contain;
+.dashboard-container > div:first-of-type > div {
+  background: #f9fbe7;
+  color: #16a34a;
+  font-weight: 700;
+  font-size: 1.1rem;
   border-radius: 7px;
-  background: rgba(255,255,255,0.09);
+  padding: 10px 18px;
+  border: 1px solid #dbeafe;
+  margin: 0;
 }
 
-.gift-item .gift-name {
+/* Tip box */
+.tip-section {
+  margin-top: 30px;
+  background: #FFFDE7;
+  border: 1px solid #FFD54F;
+  border-radius: 12px;
+  padding: 14px;
+  color: #6D4C00;
+  font-size: 15.5px;
   font-weight: 500;
-  font-size: 1rem;
+  line-height: 1.6;
+  text-align: left;
+  box-shadow: 0 1px 6px #ffe08260;
 }
 
-.gift-item .gift-delete {
-  background: transparent;
-  border: none;
-  color: #fff;
-  font-size: 1.15rem;
-  cursor: pointer;
-  transition: color 0.2s;
-  padding: 2px 7px;
-  border-radius: 8px;
+/* --------- Responsive Styles ---------- */
+@media (max-width: 600px) {
+  .dashboard-container {
+    max-width: 97vw;
+    margin: 18px 1vw;
+    border-radius: 13px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.19);
+    padding: 0 0 13px 0;
+  }
+  .dashboard-buttons,
+  .game-buttons,
+  .logout-section {
+    gap: 9px;
+    margin-top: 16px;
+  }
+  .dashboard-buttons button,
+  .game-buttons button,
+  .logout-section button {
+    font-size: 1rem;
+    padding: 11px 0;
+    width: 46vw;
+    min-width: 110px;
+    max-width: 94vw;
+    margin: 0 2vw;
+  }
+  .dashboard-container h1 {
+    font-size: 1.05rem;
+    padding-top: 19px;
+  }
+  .dashboard-container p {
+    font-size: 15.5px;
+    margin: 9px 0 15px 0;
+  }
+  .dashboard-container > div:first-of-type button {
+    padding: 10px 13vw;
+    font-size: 1.01rem;
+  }
+  .dashboard-container > div:first-of-type > div {
+    font-size: 0.99rem;
+    padding: 7px 6vw;
+  }
+  .tip-section {
+    font-size: 14px;
+    padding: 11px;
+    margin-top: 18px;
+  }
 }
 
-.gift-item .gift-delete:hover {
-  color: #f25757;
-}
-
-.close-btn {
-  position: absolute;
-  top: 22px;
-  right: 24px;
-  background: rgba(255,255,255,0.12);
-  border: none;
-  color: #fff;
-  font-size: 1.3rem;
-  padding: 7px 12px;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.close-btn:hover {
-  background: rgba(255,255,255,0.21);
+@media (max-width: 420px) {
+  .dashboard-buttons button,
+  .game-buttons button,
+  .logout-section button {
+    width: 90vw;
+    min-width: 0;
+    padding: 11px 0;
+    font-size: 0.96rem;
+  }
+  .dashboard-container > div:first-of-type button {
+    width: 92vw;
+    padding: 9px 0;
+  }
 }
