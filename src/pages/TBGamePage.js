@@ -39,11 +39,8 @@ export default function TBGamePage() {
   const [winnerChoice, setWinnerChoice] = useState(null);
   const [displayedWinner, setDisplayedWinner] = useState(null);
   const [balance, setBalance] = useState(0);
-  // 🔄 Add this new state for userBets:
-const [userBets, setUserBets] = useState({});
+  const [userBets, setUserBets] = useState({});
 
-
-  // ---- Live-state every second ----
   useEffect(() => {
     const fetchLiveState = async () => {
       try {
@@ -51,7 +48,7 @@ const [userBets, setUserBets] = useState({});
         setCurrentRound(res.data.round);
         setTimer(res.data.timer);
         setBets(res.data.totals || {});
-        setUserBets(res.data.userBets || {}); // 👈 Added this line
+        setUserBets(res.data.userBets || {});
         setWinnerChoice(res.data.winnerChoice || null);
         if (typeof res.data.balance === "number") setBalance(res.data.balance);
       } catch (err) {
@@ -63,19 +60,15 @@ const [userBets, setUserBets] = useState({});
     return () => clearInterval(interval);
   }, []);
 
-  // --- Winner: socket events, payout trigger, display ---
   useEffect(() => {
-    // Listen for winner-announced socket (admin/auto winner set)
     const winnerListener = ({ round, choice }) => {
       setWinnerChoice(choice);
       setDisplayedWinner(choice);
-      // Last 10 wins update
       setLastWins(prev => {
         const updated = [choice, ...prev].slice(0, 10);
         localStorage.setItem('tbLastWins', JSON.stringify(updated));
         return updated;
       });
-      // Hide after 3 sec (for animation effect)
       setTimeout(() => setDisplayedWinner(null), 3000);
     };
     socket.on('winner-announced', winnerListener);
@@ -85,7 +78,6 @@ const [userBets, setUserBets] = useState({});
     };
   }, []);
 
-  // --- Payout trigger: har bar timer 0 pe call karo, backend decide karega manual/auto winner ---
   useEffect(() => {
     if (timer === 0) {
       api.post('/bets/distribute-payouts', { round: currentRound })
@@ -93,8 +85,6 @@ const [userBets, setUserBets] = useState({});
     }
     // eslint-disable-next-line
   }, [timer, currentRound]);
-
-  // ---- Bets, Balance ----
 
   const handleInputChange = (name, val) => {
     if (/^\d*$/.test(val)) {
@@ -127,11 +117,11 @@ const [userBets, setUserBets] = useState({});
 
   return (
     <div className="game-container">
-      {/* Header: Timer & Balance */}
-      <div className="game-header">
-        <h2>Round: {currentRound}</h2>
-        <h2>⏱️ {timer}s</h2>
-        <h3>💰 ₹{balance}</h3>
+      {/* Sticky Header: Round, Timer, Balance */}
+      <div className="tb-sticky-header">
+        <div className="tb-round">Round: {currentRound}</div>
+        <div className="tb-timer">⏱️ {timer}s</div>
+        <div className="tb-balance">💰 ₹{balance}</div>
       </div>
       {/* Image Grid */}
       <div className="image-grid">
@@ -142,72 +132,70 @@ const [userBets, setUserBets] = useState({});
           >
             <img src={item.src} alt={item.name} />
             <p className="name">{item.name}</p>
-         <p className="bet">₹{userBets[item.name] || 0}</p>
-           <div className="bet-input-row">
-  <input
-    type="text"
-    disabled={timer <= 15}
-    value={inputValues[item.name] || ''}
-    onChange={e => handleInputChange(item.name, e.target.value)}
-    placeholder="₹"
-  />
-  <button
-    disabled={timer <= 15}
-    onClick={() => placeBetHandler(item.name)}
-  >
-    Bet
-  </button>
-</div>
-
+            <p className="bet">₹{userBets[item.name] || 0}</p>
+            <div className="bet-input-row">
+              <input
+                type="text"
+                disabled={timer <= 15}
+                value={inputValues[item.name] || ''}
+                onChange={e => handleInputChange(item.name, e.target.value)}
+                placeholder="₹"
+              />
+              <button
+                disabled={timer <= 15}
+                onClick={() => placeBetHandler(item.name)}
+              >
+                Bet
+              </button>
+            </div>
           </div>
         ))}
       </div>
-
       {/* Winner Box */}
-  <div className="right-panel">
-      <div
-        className="winner-box"
-        style={{
-          margin: '1rem auto',
-          padding: '1rem',
-          background: '#ffe082',
-          borderRadius: '8px',
-          textAlign: 'center',
-          width: '220px',
-          minHeight: '140px'
-        }}
-      >
-        {displayedWinner ? (
-          <>
-            <img
-              src={`/images/${displayedWinner}.png`}
-              alt={displayedWinner}
-              style={{ width: '100px', height: '100px', objectFit: 'contain' }}
-            />
-            <p
-              style={{
-                margin: '0.5rem 0',
-                fontWeight: 'bold',
-                fontSize: '1.2rem'
-              }}
-            >
-              🎉 {displayedWinner.toUpperCase()} 🎉
-            </p>
-          </>
-        ) : (
-          <p style={{ margin: '0', color: '#555' }}>Waiting for winner...</p>
-        )}
-      </div>
-      {/* Last 10 Wins Section */}
-      <div className="last-wins">
-        <h4>📜 Last 10 Wins</h4>
-        <ul>
-          {lastWins.map((w, i) => (
-            <li key={i}>{w.toUpperCase()}</li>
-          ))}
-        </ul>
+      <div className="right-panel">
+        <div
+          className="winner-box"
+          style={{
+            margin: '1rem auto',
+            padding: '1rem',
+            background: '#ffe082',
+            borderRadius: '8px',
+            textAlign: 'center',
+            width: '220px',
+            minHeight: '140px'
+          }}
+        >
+          {displayedWinner ? (
+            <>
+              <img
+                src={`/images/${displayedWinner}.png`}
+                alt={displayedWinner}
+                style={{ width: '100px', height: '100px', objectFit: 'contain' }}
+              />
+              <p
+                style={{
+                  margin: '0.5rem 0',
+                  fontWeight: 'bold',
+                  fontSize: '1.2rem'
+                }}
+              >
+                🎉 {displayedWinner.toUpperCase()} 🎉
+              </p>
+            </>
+          ) : (
+            <p style={{ margin: '0', color: '#555' }}>Waiting for winner...</p>
+          )}
+        </div>
+        {/* Last 10 Wins Section */}
+        <div className="last-wins">
+          <h4>📜 Last 10 Wins</h4>
+          <ul>
+            {lastWins.map((w, i) => (
+              <li key={i}>{w.toUpperCase()}</li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
-   </div>
   );
 }
