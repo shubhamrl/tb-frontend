@@ -13,18 +13,18 @@ const socket = io('https://tb-backend-1.onrender.com', {
 });
 
 const IMAGE_LIST = [
-  { name: 'umbrella',    src: '/images/umbrella.png'     },
-  { name: 'football',    src: '/images/Football.png'     },
-  { name: 'sun',         src: '/images/sun.png'          },
-  { name: 'diya',        src: '/images/diya.png'         },
-  { name: 'cow',         src: '/images/cow.png'          },
-  { name: 'bucket',      src: '/images/Bucket.png'       },
-  { name: 'kite',        src: '/images/kite.png'         },
-  { name: 'spinningTop', src: '/images/spinning_Top.png' },
-  { name: 'rose',        src: '/images/rose.png'         },
-  { name: 'butterfly',   src: '/images/Butterfly.png'    },
-  { name: 'pigeon',      src: '/images/pigeon.png'       },
-  { name: 'rabbit',      src: '/images/rabbit.png'       }
+  { name: 'छतरी',    src: '/images/umbrella.png'     },
+  { name: 'फुटबॉल',    src: '/images/Football.png'     },
+  { name: 'सूरज',         src: '/images/sun.png'          },
+  { name: 'दीया',        src: '/images/diya.png'         },
+  { name: 'गाय',         src: '/images/cow.png'          },
+  { name: 'बाल्टी',      src: '/images/Bucket.png'       },
+  { name: 'पतंग',        src: '/images/kite.png'         },
+  { name: 'भंवरा', src: '/images/spinning_Top.png' },
+  { name: 'गुलाब',        src: '/images/rose.png'         },
+  { name: 'तितली',   src: '/images/Butterfly.png'    },
+  { name: 'कबूतर',      src: '/images/pigeon.png'       },
+  { name: 'खरगोश',      src: '/images/rabbit.png'       }
 ];
 
 const WhatsappSettings = () => {
