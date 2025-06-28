@@ -14,15 +14,15 @@ const socket = io('https://tb-backend-1.onrender.com', {
 
 const IMAGE_LIST = [
   { name: 'umbrella',    src: '/images/umbrella.png'     },
-  { name: 'football',    src: '/images/football.png'     },
+  { name: 'football',    src: '/images/Football.png'     },
   { name: 'sun',         src: '/images/sun.png'          },
   { name: 'diya',        src: '/images/diya.png'         },
   { name: 'cow',         src: '/images/cow.png'          },
-  { name: 'bucket',      src: '/images/bucket.png'       },
+  { name: 'bucket',      src: '/images/Bucket.png'       },
   { name: 'kite',        src: '/images/kite.png'         },
   { name: 'spinningTop', src: '/images/spinning_Top.png' },
   { name: 'rose',        src: '/images/rose.png'         },
-  { name: 'butterfly',   src: '/images/butterfly.png'    },
+  { name: 'butterfly',   src: '/images/Butterfly.png'    },
   { name: 'pigeon',      src: '/images/pigeon.png'       },
   { name: 'rabbit',      src: '/images/rabbit.png'       }
 ];
