@@ -6,26 +6,43 @@ import api from '../services/api';
 import '../styles/dashboard.css';
 import AdminSidebar from '../components/AdminSidebar'; // Sidebar import
 
+// English-to-Hindi mapping
+const EN_TO_HI = {
+  umbrella: 'छतरी',
+  football: 'फुटबॉल',
+  sun: 'सूरज',
+  diya: 'दीया',
+  cow: 'गाय',
+  bucket: 'बाल्टी',
+  kite: 'पतंग',
+  spinningTop: 'भंवरा',
+  rose: 'गुलाब',
+  butterfly: 'तितली',
+  pigeon: 'कबूतर',
+  rabbit: 'खरगोश'
+};
+
+// Image list (name: English, src: same as before)
+const IMAGE_LIST = [
+  { name: 'umbrella',    src: '/images/umbrella.png'     },
+  { name: 'football',    src: '/images/Football.png'     },
+  { name: 'sun',         src: '/images/sun.png'          },
+  { name: 'diya',        src: '/images/diya.png'         },
+  { name: 'cow',         src: '/images/cow.png'          },
+  { name: 'bucket',      src: '/images/Bucket.png'       },
+  { name: 'kite',        src: '/images/kite.png'         },
+  { name: 'spinningTop', src: '/images/spinning_Top.png' },
+  { name: 'rose',        src: '/images/rose.png'         },
+  { name: 'butterfly',   src: '/images/Butterfly.png'    },
+  { name: 'pigeon',      src: '/images/pigeon.png'       },
+  { name: 'rabbit',      src: '/images/rabbit.png'       }
+];
+
 const socket = io('https://tb-backend-1.onrender.com', {
   transports: ['websocket'],
   reconnectionAttempts: 5,
   timeout: 20000,
 });
-
-const IMAGE_LIST = [
-  { name: 'छतरी',    src: '/images/umbrella.png'     },
-  { name: 'फुटबॉल',    src: '/images/Football.png'     },
-  { name: 'सूरज',         src: '/images/sun.png'          },
-  { name: 'दीया',        src: '/images/diya.png'         },
-  { name: 'गाय',         src: '/images/cow.png'          },
-  { name: 'बाल्टी',      src: '/images/Bucket.png'       },
-  { name: 'पतंग',        src: '/images/kite.png'         },
-  { name: 'भंवरा', src: '/images/spinning_Top.png' },
-  { name: 'गुलाब',        src: '/images/rose.png'         },
-  { name: 'तितली',   src: '/images/Butterfly.png'    },
-  { name: 'कबूतर',      src: '/images/pigeon.png'       },
-  { name: 'खरगोश',      src: '/images/rabbit.png'       }
-];
 
 const WhatsappSettings = () => {
   const [deposit, setDeposit] = useState('');
@@ -151,7 +168,7 @@ const DashboardPage = () => {
   const handleSetWinner = async (choice) => {
     try {
       await api.post('/bets/set-winner', { choice, round: currentRound });
-      alert(`Winner set: ${choice} (Payout will run when user timer 0)`);
+      alert(`Winner set: ${EN_TO_HI[choice] || choice} (Payout will run when user timer 0)`);
     } catch (err) {
       console.error('Error setting winner:', err);
       alert('Error setting winner');
@@ -214,7 +231,8 @@ const DashboardPage = () => {
             </div>
           </div>
 
-        
+          {/* ===== WhatsApp Settings ===== */}
+          <WhatsappSettings />
 
           {/* ===== Current Round Section ===== */}
           <section className="current-round-section" style={{ marginTop: '2rem' }}>
@@ -228,10 +246,10 @@ const DashboardPage = () => {
                   <div key={item.name} className="admin-card">
                     <img
                       src={item.src}
-                      alt={item.name}
+                      alt={EN_TO_HI[item.name] || item.name}
                       className="admin-card-image"
                     />
-                    <p className="admin-card-name">{item.name}</p>
+                    <p className="admin-card-name">{EN_TO_HI[item.name] || item.name}</p>
                     <p className="admin-card-bet">₹{amount}</p>
                     <button
                       className="admin-card-button"
@@ -243,7 +261,7 @@ const DashboardPage = () => {
                 );
               })}
             </div>
-            {winnerChoice && <p style={{ color: "green", fontWeight: "bold" }}>Set Winner: {winnerChoice.toUpperCase()}</p>}
+            {winnerChoice && <p style={{ color: "green", fontWeight: "bold" }}>Set Winner: {(EN_TO_HI[winnerChoice] || winnerChoice).toUpperCase()}</p>}
           </section>
 
           {/* ===== Last 10 Wins Section ===== */}
@@ -251,13 +269,14 @@ const DashboardPage = () => {
             <h2>Last 10 Wins</h2>
             <ul className="last-wins-list">
               {lastWins.map((winChoice, idx) => (
-                <li key={idx}>{winChoice.toUpperCase()}</li>
+                <li key={idx}>{(EN_TO_HI[winChoice] || winChoice).toUpperCase()}</li>
               ))}
             </ul>
           </section>
 
+          {/* ==== User Search and Manage Balance section (if you have it) ==== */}
+          {/* Add here if needed */}
 
-         
         </div>
       </div>
     </div>
