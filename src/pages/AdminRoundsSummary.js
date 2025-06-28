@@ -1,6 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
 
+// English to Hindi Mapping
+const EN_TO_HI = {
+  umbrella: 'छतरी',
+  football: 'फुटबॉल',
+  sun: 'सूरज',
+  diya: 'दीया',
+  cow: 'गाय',
+  bucket: 'बाल्टी',
+  kite: 'पतंग',
+  spinningTop: 'भंवरा',
+  rose: 'गुलाब',
+  butterfly: 'तितली',
+  pigeon: 'कबूतर',
+  rabbit: 'खरगोश'
+};
+
 const AdminRoundsSummary = () => {
   const [rounds, setRounds] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -49,7 +65,7 @@ const AdminRoundsSummary = () => {
               <tr key={idx}>
                 <td>{r.round}</td>
                 <td>₹{r.totalBet}</td>
-                <td>{r.winner}</td>
+                <td>{EN_TO_HI[r.winner] || r.winner}</td>
                 <td>₹{r.totalPayout}</td>
               </tr>
             ))}
