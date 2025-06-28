@@ -3,6 +3,22 @@ import io from 'socket.io-client';
 import api from '../services/api';
 import '../styles/game.css';
 
+// English to Hindi Mapping
+const EN_TO_HI = {
+  umbrella: 'छतरी',
+  football: 'फुटबॉल',
+  sun: 'सूरज',
+  diya: 'दीया',
+  cow: 'गाय',
+  bucket: 'बाल्टी',
+  kite: 'पतंग',
+  spinningTop: 'भंवरा',
+  rose: 'गुलाब',
+  butterfly: 'तितली',
+  pigeon: 'कबूतर',
+  rabbit: 'खरगोश'
+};
+
 const socket = io('https://tb-backend-1.onrender.com', {
   transports: ['websocket'],
   reconnectionAttempts: 5,
@@ -10,18 +26,18 @@ const socket = io('https://tb-backend-1.onrender.com', {
 });
 
 const IMAGE_LIST = [
-  { name: 'छतरी',    src: '/images/umbrella.png'     },
-  { name: 'फुटबॉल',    src: '/images/Football.png'     },
-  { name: 'सूरज',         src: '/images/sun.png'          },
-  { name: 'दीया',        src: '/images/diya.png'         },
-  { name: 'गाय',         src: '/images/cow.png'          },
-  { name: 'बाल्टी',      src: '/images/Bucket.png'       },
-  { name: 'पतंग',        src: '/images/kite.png'         },
-  { name: 'भंवरा', src: '/images/spinning_Top.png' },
-  { name: 'गुलाब',        src: '/images/rose.png'         },
-  { name: 'तितली',   src: '/images/Butterfly.png'    },
-  { name: 'कबूतर',      src: '/images/pigeon.png'       },
-  { name: 'खरगोश',      src: '/images/rabbit.png'       }
+  { name: 'umbrella',    src: '/images/umbrella.png'     },
+  { name: 'football',    src: '/images/Football.png'     },
+  { name: 'sun',         src: '/images/sun.png'          },
+  { name: 'diya',        src: '/images/diya.png'         },
+  { name: 'cow',         src: '/images/cow.png'          },
+  { name: 'bucket',      src: '/images/Bucket.png'       },
+  { name: 'kite',        src: '/images/kite.png'         },
+  { name: 'spinningTop', src: '/images/spinning_Top.png' },
+  { name: 'rose',        src: '/images/rose.png'         },
+  { name: 'butterfly',   src: '/images/Butterfly.png'    },
+  { name: 'pigeon',      src: '/images/pigeon.png'       },
+  { name: 'rabbit',      src: '/images/rabbit.png'       }
 ];
 
 export default function TBGamePage() {
@@ -130,8 +146,8 @@ export default function TBGamePage() {
             key={item.name}
             className={`card ${highlighted.includes(item.name) ? 'selected' : ''}`}
           >
-            <img src={item.src} alt={item.name} />
-            <p className="name">{item.name}</p>
+            <img src={item.src} alt={EN_TO_HI[item.name] || item.name} />
+            <p className="name">{EN_TO_HI[item.name] || item.name}</p>
             <p className="bet">₹{userBets[item.name] || 0}</p>
             <div className="bet-input-row">
               <input
@@ -169,7 +185,7 @@ export default function TBGamePage() {
             <>
               <img
                 src={`/images/${displayedWinner}.png`}
-                alt={displayedWinner}
+                alt={EN_TO_HI[displayedWinner] || displayedWinner}
                 style={{ width: '100px', height: '100px', objectFit: 'contain' }}
               />
               <p
@@ -179,7 +195,7 @@ export default function TBGamePage() {
                   fontSize: '1.2rem'
                 }}
               >
-                🎉 {displayedWinner.toUpperCase()} 🎉
+                🎉 {(EN_TO_HI[displayedWinner] || displayedWinner).toUpperCase()} 🎉
               </p>
             </>
           ) : (
@@ -191,7 +207,7 @@ export default function TBGamePage() {
           <h4>📜 Last 10 Wins</h4>
           <ul>
             {lastWins.map((w, i) => (
-              <li key={i}>{w.toUpperCase()}</li>
+              <li key={i}>{(EN_TO_HI[w] || w).toUpperCase()}</li>
             ))}
           </ul>
         </div>
