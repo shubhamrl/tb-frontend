@@ -14,7 +14,8 @@ const ManageUserPage = () => {
       const res = await api.get('/admin/users', { params });
       const data = res.data;
       const list = Array.isArray(data) ? data : data.users || [];
-      setUsers(list);
+      // NEW: Sort so newest user is on top
+      setUsers(list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
       setTotalUsers(data.total || 0);
       setActiveUsers(data.active || 0);
     } catch (err) {
