@@ -56,6 +56,7 @@ export default function TBGamePage() {
   const [displayedWinner, setDisplayedWinner] = useState(null);
   const [balance, setBalance] = useState(0);
   const [userBets, setUserBets] = useState({});
+  const [lastRound, setLastRound] = useState(1); // NEW for reset
 
   useEffect(() => {
     const fetchLiveState = async () => {
@@ -75,6 +76,17 @@ export default function TBGamePage() {
     const interval = setInterval(fetchLiveState, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  // ======== Highlight Reset Logic (Best way, no flicker) ========
+  useEffect(() => {
+    // New round started, reset highlights
+    if (currentRound !== lastRound) {
+      setHighlighted([]);
+      setInputValues({});
+      setLastRound(currentRound);
+    }
+  }, [currentRound, lastRound]);
+  // =============================================================
 
   useEffect(() => {
     const winnerListener = ({ round, choice }) => {
@@ -119,13 +131,18 @@ export default function TBGamePage() {
       alert('Insufficient balance');
       return;
     }
+    // ========= IMMEDIATE HIGHLIGHT =========
+    setHighlighted(h => (h.includes(name) ? h : [...h, name]));
+    setUserBets(prev => ({
+      ...prev,
+      [name]: (prev[name] || 0) + amt
+    }));
+    setBalance(prev => prev - amt);
+    setInputValues(iv => ({ ...iv, [name]: '' }));
+    // ============ BACKEND API CALL =========
     try {
       await api.post('/bets/place-bet', { choice: name, amount: amt, round: currentRound });
-
-      setBalance(prev => prev - amt);
-      setBets(prev => ({ ...prev, [name]: (prev[name] || 0) + amt }));
-      setHighlighted(h => (h.includes(name) ? h : [...h, name]));
-      setInputValues(iv => ({ ...iv, [name]: '' }));
+      // Optionally, if want to update bets from server after, can call live state here
     } catch (e) {
       alert(e.response?.data?.message || 'Bet failed');
     }
