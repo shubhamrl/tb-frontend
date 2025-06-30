@@ -96,16 +96,34 @@ const DashboardPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [totalUsers, setTotalUsers] = useState(0);
   const [activeUsers, setActiveUsers] = useState(0);
-  const [lastWins, setLastWins] = useState(() => {
-    const stored = JSON.parse(localStorage.getItem('tbLastWins') || '[]');
-    return Array.isArray(stored) ? stored : [];
-  });
+  const [lastWins, setLastWins] = useState([]); // NO LOCALSTORAGE!
 
   // Real-time state (from /live-state)
   const [currentRound, setCurrentRound] = useState(1);
   const [timer, setTimer] = useState(90);
   const [totals, setTotals] = useState({});
   const [winnerChoice, setWinnerChoice] = useState(null);
+
+  // ========== Last 10 Wins fetch from backend ==========
+  useEffect(() => {
+    const fetchLastWins = async () => {
+      try {
+        const res = await api.get('/bets/last-wins');
+        setLastWins(res.data.wins || []);
+      } catch (err) {
+        setLastWins([]); // fallback
+      }
+    };
+    fetchLastWins();
+    socket.on('winner-announced', fetchLastWins);
+    socket.on('payouts-distributed', fetchLastWins);
+
+    return () => {
+      socket.off('winner-announced', fetchLastWins);
+      socket.off('payouts-distributed', fetchLastWins);
+    };
+  }, []);
+  // ====================================================
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -160,11 +178,6 @@ const DashboardPage = () => {
     }
   };
 
-  const fetchLastWins = () => {
-    const stored = JSON.parse(localStorage.getItem('tbLastWins') || '[]');
-    setLastWins(Array.isArray(stored) ? stored : []);
-  };
-
   const handleSetWinner = async (choice) => {
     try {
       await api.post('/bets/set-winner', { choice, round: currentRound });
@@ -174,20 +187,6 @@ const DashboardPage = () => {
       alert('Error setting winner');
     }
   };
-
-  useEffect(() => {
-    fetchLastWins();
-    socket.on('bet-placed', fetchLastWins);
-    socket.on('winner-announced', fetchLastWins);
-    socket.on('payouts-distributed', fetchLastWins);
-
-    return () => {
-      socket.off('bet-placed', fetchLastWins);
-      socket.off('winner-announced', fetchLastWins);
-      socket.off('payouts-distributed', fetchLastWins);
-      socket.disconnect();
-    };
-  }, []);
 
   return (
     <div style={{ display: 'flex' }}>
@@ -251,7 +250,7 @@ const DashboardPage = () => {
                     <p className="admin-card-bet">
                       Total Bet: <b>₹{amount}</b>
                     </p>
-                    {/* NEW: Show payout if any bet is placed */}
+                    {/* Show payout if any bet is placed */}
                     <p className="admin-card-payout" style={{ color: '#e67e22', fontWeight: 'bold' }}>
                       Payout: ₹{payout}
                     </p>
