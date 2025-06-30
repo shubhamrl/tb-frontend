@@ -55,8 +55,10 @@ export default function TBGamePage() {
   const [winnerChoice, setWinnerChoice] = useState(null);
   const [displayedWinner, setDisplayedWinner] = useState(null);
   const [balance, setBalance] = useState(0);
+
+  // LOCAL userBets (immediate update UI me) -- yahi use karo
   const [userBets, setUserBets] = useState({});
-  const [lastRound, setLastRound] = useState(1); // NEW for reset
+  const [lastRound, setLastRound] = useState(1); // For reset
 
   useEffect(() => {
     const fetchLiveState = async () => {
@@ -65,9 +67,13 @@ export default function TBGamePage() {
         setCurrentRound(res.data.round);
         setTimer(res.data.timer);
         setBets(res.data.totals || {});
-        setUserBets(res.data.userBets || {});
         setWinnerChoice(res.data.winnerChoice || null);
         if (typeof res.data.balance === "number") setBalance(res.data.balance);
+
+        // ONLY SET userBets from backend if round change hua ho!
+        if (res.data.userBets && res.data.round !== currentRound) {
+          setUserBets(res.data.userBets);
+        }
       } catch (err) {
         console.error("Error fetching live state:", err);
       }
@@ -75,18 +81,19 @@ export default function TBGamePage() {
     fetchLiveState();
     const interval = setInterval(fetchLiveState, 1000);
     return () => clearInterval(interval);
-  }, []);
+    // eslint-disable-next-line
+  }, [currentRound]);
 
-  // ======== Highlight Reset Logic (Best way, no flicker) ========
+  // ========== Reset Highlights & Bets on New Round ==========
   useEffect(() => {
-    // New round started, reset highlights
     if (currentRound !== lastRound) {
       setHighlighted([]);
       setInputValues({});
+      setUserBets({}); // Local user bets reset
       setLastRound(currentRound);
     }
   }, [currentRound, lastRound]);
-  // =============================================================
+  // ===========================================================
 
   useEffect(() => {
     const winnerListener = ({ round, choice }) => {
@@ -120,6 +127,7 @@ export default function TBGamePage() {
     }
   };
 
+  // ======= Place Bet Function - Fully Optimistic UI =======
   const placeBetHandler = async (name) => {
     const amt = parseInt(inputValues[name] || '0', 10);
     if (timer <= 15) {
@@ -131,7 +139,7 @@ export default function TBGamePage() {
       alert('Insufficient balance');
       return;
     }
-    // ========= IMMEDIATE HIGHLIGHT =========
+    // === UI ko turant update kar do! ===
     setHighlighted(h => (h.includes(name) ? h : [...h, name]));
     setUserBets(prev => ({
       ...prev,
@@ -139,12 +147,13 @@ export default function TBGamePage() {
     }));
     setBalance(prev => prev - amt);
     setInputValues(iv => ({ ...iv, [name]: '' }));
-    // ============ BACKEND API CALL =========
+    // === Backend API (async) ===
     try {
       await api.post('/bets/place-bet', { choice: name, amount: amt, round: currentRound });
-      // Optionally, if want to update bets from server after, can call live state here
+      // Koi aur state change ya error ke hisab se handling karni ho to yahan karo
     } catch (e) {
       alert(e.response?.data?.message || 'Bet failed');
+      // Optionally, agar bet fail ho to UI se amount hata bhi sakte ho
     }
   };
 
@@ -165,6 +174,7 @@ export default function TBGamePage() {
           >
             <img src={item.src} alt={EN_TO_HI[item.name] || item.name} />
             <p className="name">{EN_TO_HI[item.name] || item.name}</p>
+            {/* IMMEDIATE userBets update */}
             <p className="bet">₹{userBets[item.name] || 0}</p>
             <div className="bet-input-row">
               <input
