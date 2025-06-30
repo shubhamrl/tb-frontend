@@ -108,7 +108,7 @@ const DashboardPage = () => {
   useEffect(() => {
     const fetchLastWins = async () => {
       try {
-        const res = await api.get('/bets/last-wins');
+        const res = await api.get('/api/bets/last-wins');
         setLastWins(res.data.wins || []);
       } catch (err) {
         setLastWins([]); // fallback
