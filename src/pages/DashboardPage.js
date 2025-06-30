@@ -96,7 +96,7 @@ const DashboardPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [totalUsers, setTotalUsers] = useState(0);
   const [activeUsers, setActiveUsers] = useState(0);
-  const [lastWins, setLastWins] = useState([]); // NO LOCALSTORAGE!
+  const [lastWins, setLastWins] = useState([]);
 
   // Real-time state (from /live-state)
   const [currentRound, setCurrentRound] = useState(1);
@@ -108,7 +108,7 @@ const DashboardPage = () => {
   useEffect(() => {
     const fetchLastWins = async () => {
       try {
-        const res = await api.get('/bets/last-wins');   // <-- yahan /api hata diya!
+        const res = await api.get('/bets/last-wins');
         setLastWins(res.data.wins || []);
       } catch (err) {
         setLastWins([]); // fallback
@@ -178,15 +178,19 @@ const DashboardPage = () => {
     }
   };
 
+  // ======= UPDATED handleSetWinner for debugging error message ==========
   const handleSetWinner = async (choice) => {
     try {
+      // Debug log
+      console.log('Setting winner:', choice, 'Round:', currentRound);
       await api.post('/bets/set-winner', { choice, round: currentRound });
       alert(`Winner set: ${EN_TO_HI[choice] || choice} (Payout will run when user timer 0)`);
     } catch (err) {
-      console.error('Error setting winner:', err);
-      alert('Error setting winner');
+      console.error('Error setting winner:', err?.response?.data || err);
+      alert('Error setting winner: ' + (err?.response?.data?.message || 'Unknown error'));
     }
   };
+  // =====================================================================
 
   return (
     <div style={{ display: 'flex' }}>
@@ -247,18 +251,23 @@ const DashboardPage = () => {
                       className="admin-card-image"
                     />
                     <p className="admin-card-name">{EN_TO_HI[item.name] || item.name}</p>
+
+                    {/* ==== FIX: Show Total Bet & Payout only if amount > 0 ==== */}
                     <p className="admin-card-bet">
-                      Total Bet: <b>₹{amount}</b>
+                      {amount > 0
+                        ? <>Total Bet: <b>₹{amount}</b></>
+                        : <span style={{ color: "#ccc" }}>No Bet</span>}
                     </p>
-                    {/* Show payout if any bet is placed */}
-                    <p className="admin-card-payout" style={{ color: '#e67e22', fontWeight: 'bold' }}>
-                      Payout: ₹{payout}
-                    </p>
+                    {amount > 0 && (
+                      <p className="admin-card-payout" style={{ color: '#e67e22', fontWeight: 'bold' }}>
+                        Payout: ₹{payout}
+                      </p>
+                    )}
+                    {/* Optionally: Disable Set Winner if no bet placed */}
                     <button
                       className="admin-card-button"
                       onClick={() => handleSetWinner(item.name)}
-                      // Optionally disable except last 15 sec:
-                      // disabled={timer > 15}
+                      // disabled={amount === 0} // Uncomment to disable if no bet
                     >
                       Set Winner
                     </button>
@@ -281,7 +290,6 @@ const DashboardPage = () => {
 
           {/* ==== User Search and Manage Balance section (if you have it) ==== */}
           {/* Add here if needed */}
-
         </div>
       </div>
     </div>
