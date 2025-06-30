@@ -8,25 +8,33 @@ const ManageUserPage = () => {
   const [totalUsers, setTotalUsers] = useState(0);
   const [activeUsers, setActiveUsers] = useState(0);
 
+  // Fetch users (with optional search)
   const fetchUsers = async (search = '') => {
     try {
       const params = search.trim() ? { search } : {};
       const res = await api.get('/admin/users', { params });
       const data = res.data;
       const list = Array.isArray(data) ? data : data.users || [];
-      // NEW: Sort so newest user is on top
+      // Sort: newest first
       setUsers(list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
       setTotalUsers(data.total || 0);
       setActiveUsers(data.active || 0);
     } catch (err) {
       console.error('Error fetching users:', err);
+      setUsers([]);
+      setTotalUsers(0);
+      setActiveUsers(0);
     }
   };
 
   useEffect(() => { fetchUsers(); }, []);
 
   const handleSearch = () => { fetchUsers(searchTerm); };
-  const handleBalanceChange = (id, value) => { setEditAmounts(prev => ({ ...prev, [id]: value })); };
+
+  const handleBalanceChange = (id, value) => {
+    setEditAmounts(prev => ({ ...prev, [id]: value }));
+  };
+
   const updateBalance = async (id, isAdd) => {
     try {
       const val = Number(editAmounts[id] || 0);
@@ -43,13 +51,12 @@ const ManageUserPage = () => {
     }
   };
 
-  // === NEW: Reward referral handler ===
+  // Referral reward
   const handleReward = async (userId) => {
     if (!window.confirm("Are you sure to give referral reward?")) return;
     try {
       await api.post(`/admin/users/${userId}/reward-referral`);
       alert('Referral reward given!');
-      // Reload user list for status
       fetchUsers(searchTerm);
     } catch (err) {
       alert(err?.response?.data?.message || "Reward failed");
@@ -84,7 +91,7 @@ const ManageUserPage = () => {
               <th>Balance</th>
               <th>Amount</th>
               <th>Actions</th>
-              <th>Referral Reward</th> {/* NEW column */}
+              <th>Referral Reward</th>
             </tr>
           </thead>
           <tbody>
@@ -105,7 +112,6 @@ const ManageUserPage = () => {
                   <button onClick={() => updateBalance(user._id, true)}>Add</button>{' '}
                   <button onClick={() => updateBalance(user._id, false)}>Minus</button>
                 </td>
-                {/* NEW: Referral reward button */}
                 <td>
                   {(user.referrerId && !user.referralRewarded) ? (
                     <button
