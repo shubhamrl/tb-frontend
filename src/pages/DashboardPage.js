@@ -231,9 +231,6 @@ const DashboardPage = () => {
             </div>
           </div>
 
-          {/* ===== WhatsApp Settings ===== */}
-          <WhatsappSettings />
-
           {/* ===== Current Round Section ===== */}
           <section className="current-round-section" style={{ marginTop: '2rem' }}>
             <h2>
@@ -242,6 +239,7 @@ const DashboardPage = () => {
             <div className="admin-image-grid">
               {IMAGE_LIST.map(item => {
                 const amount = totals[item.name] || 0;
+                const payout = amount * 10;
                 return (
                   <div key={item.name} className="admin-card">
                     <img
@@ -250,10 +248,18 @@ const DashboardPage = () => {
                       className="admin-card-image"
                     />
                     <p className="admin-card-name">{EN_TO_HI[item.name] || item.name}</p>
-                    <p className="admin-card-bet">₹{amount}</p>
+                    <p className="admin-card-bet">
+                      Total Bet: <b>₹{amount}</b>
+                    </p>
+                    {/* NEW: Show payout if any bet is placed */}
+                    <p className="admin-card-payout" style={{ color: '#e67e22', fontWeight: 'bold' }}>
+                      Payout: ₹{payout}
+                    </p>
                     <button
                       className="admin-card-button"
                       onClick={() => handleSetWinner(item.name)}
+                      // Optionally disable except last 15 sec:
+                      // disabled={timer > 15}
                     >
                       Set Winner
                     </button>
