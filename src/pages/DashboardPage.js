@@ -1,10 +1,8 @@
-// src/pages/DashboardPage.js
-
 import React, { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import api from '../services/api';
 import '../styles/dashboard.css';
-import AdminSidebar from '../components/AdminSidebar'; // Sidebar import
+import AdminSidebar from '../components/AdminSidebar';
 
 // English-to-Hindi mapping
 const EN_TO_HI = {
@@ -22,7 +20,7 @@ const EN_TO_HI = {
   rabbit: 'खरगोश'
 };
 
-// Image list (name: English, src: same as before)
+// Image list
 const IMAGE_LIST = [
   { name: 'umbrella',    src: '/images/umbrella.png'     },
   { name: 'football',    src: '/images/Football.png'     },
@@ -38,57 +36,12 @@ const IMAGE_LIST = [
   { name: 'rabbit',      src: '/images/rabbit.png'       }
 ];
 
+// Socket connection
 const socket = io('https://tb-backend-1.onrender.com', {
   transports: ['websocket'],
   reconnectionAttempts: 5,
   timeout: 20000,
 });
-
-const WhatsappSettings = () => {
-  const [deposit, setDeposit] = useState('');
-  const [withdraw, setWithdraw] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState('');
-
-  useEffect(() => {
-    api.get('/settings')
-      .then(res => {
-        setDeposit(res.data?.depositWhatsapp || '');
-        setWithdraw(res.data?.withdrawWhatsapp || '');
-      });
-  }, []);
-
-  const handleSave = async () => {
-    setLoading(true);
-    try {
-      await api.put('/settings', {
-        depositWhatsapp: deposit,
-        withdrawWhatsapp: withdraw
-      });
-      setMsg('Updated!');
-    } catch {
-      setMsg('Failed');
-    }
-    setLoading(false);
-    setTimeout(() => setMsg(''), 2000);
-  };
-
-  return (
-    <section style={{ marginBottom: '2rem', padding: '1rem', border: '1px solid #ccc', borderRadius: 8, background: '#f9f9f9' }}>
-      <h2>WhatsApp Number Settings</h2>
-      <div style={{ marginBottom: '1rem' }}>
-        <label>Deposit WhatsApp: </label>
-        <input value={deposit} onChange={e => setDeposit(e.target.value)} placeholder="Deposit Number" style={{ marginRight: 8 }} />
-      </div>
-      <div style={{ marginBottom: '1rem' }}>
-        <label>Withdraw WhatsApp: </label>
-        <input value={withdraw} onChange={e => setWithdraw(e.target.value)} placeholder="Withdraw Number" style={{ marginRight: 8 }} />
-      </div>
-      <button onClick={handleSave} disabled={loading}>Save</button>
-      <span style={{ marginLeft: 10, color: msg === 'Updated!' ? 'green' : 'red' }}>{msg}</span>
-    </section>
-  );
-};
 
 const DashboardPage = () => {
   const [users, setUsers] = useState([]);
@@ -98,20 +51,20 @@ const DashboardPage = () => {
   const [activeUsers, setActiveUsers] = useState(0);
   const [lastWins, setLastWins] = useState([]);
 
-  // Real-time state (from /live-state)
+  // Real-time state
   const [currentRound, setCurrentRound] = useState(1);
   const [timer, setTimer] = useState(90);
   const [totals, setTotals] = useState({});
   const [winnerChoice, setWinnerChoice] = useState(null);
 
-  // ========== Last 10 Wins fetch from backend ==========
+  // Last 10 Wins fetch
   useEffect(() => {
     const fetchLastWins = async () => {
       try {
         const res = await api.get('/bets/last-wins');
         setLastWins(res.data.wins || []);
       } catch (err) {
-        setLastWins([]); // fallback
+        setLastWins([]);
       }
     };
     fetchLastWins();
@@ -123,7 +76,6 @@ const DashboardPage = () => {
       socket.off('payouts-distributed', fetchLastWins);
     };
   }, []);
-  // ====================================================
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -131,10 +83,16 @@ const DashboardPage = () => {
         const res = await api.get('/bets/live-state');
         setCurrentRound(res.data.round);
         setTimer(res.data.timer);
-        setTotals(res.data.totals || {});
+        // ** SAFETY FIX: Only set totals if truly valid object **
+        if (res.data.totals && typeof res.data.totals === 'object') {
+          setTotals(res.data.totals);
+        } else {
+          setTotals({});
+        }
         setWinnerChoice(res.data.winnerChoice || null);
       } catch (err) {
-        console.error("Error fetching live-state:", err);
+        setTotals({});
+        setWinnerChoice(null);
       }
     };
 
@@ -178,19 +136,15 @@ const DashboardPage = () => {
     }
   };
 
-  // ======= UPDATED handleSetWinner for debugging error message ==========
+  // Winner set
   const handleSetWinner = async (choice) => {
     try {
-      // Debug log
-      console.log('Setting winner:', choice, 'Round:', currentRound);
       await api.post('/bets/set-winner', { choice, round: currentRound });
-      alert(`Winner set: ${EN_TO_HI[choice] || choice} (Payout will run when user timer 0)`);
+      alert(`Winner set: ${EN_TO_HI[choice] || choice} (Payout will run when timer 0)`);
     } catch (err) {
-      console.error('Error setting winner:', err?.response?.data || err);
       alert('Error setting winner: ' + (err?.response?.data?.message || 'Unknown error'));
     }
   };
-  // =====================================================================
 
   return (
     <div style={{ display: 'flex' }}>
@@ -198,8 +152,7 @@ const DashboardPage = () => {
       <div style={{ marginLeft: 220, width: '100%' }}>
         <div className="admin-dashboard-container" style={{ padding: '2rem' }}>
           <h1>Admin Dashboard</h1>
-
-          {/* ====== Total/Active Users Row ====== */}
+          {/* Total/Active Users */}
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -233,15 +186,16 @@ const DashboardPage = () => {
               <span style={{ fontSize: 28, color: '#18c964' }}>{activeUsers}</span>
             </div>
           </div>
-
-          {/* ===== Current Round Section ===== */}
+          {/* Current Round Section */}
           <section className="current-round-section" style={{ marginTop: '2rem' }}>
             <h2>
               Current Round: {currentRound} | ⏱️ {timer}s left
             </h2>
             <div className="admin-image-grid">
               {IMAGE_LIST.map(item => {
-                const amount = totals[item.name] || 0;
+                // ======== MAIN SAFETY PATCH =========
+                const rawAmount = totals && typeof totals === "object" ? totals[item.name] : undefined;
+                const amount = (typeof rawAmount === "number" && rawAmount > 0) ? rawAmount : 0;
                 const payout = amount * 10;
                 return (
                   <div key={item.name} className="admin-card">
@@ -251,8 +205,6 @@ const DashboardPage = () => {
                       className="admin-card-image"
                     />
                     <p className="admin-card-name">{EN_TO_HI[item.name] || item.name}</p>
-
-                    {/* ==== FIX: Show Total Bet & Payout only if amount > 0 ==== */}
                     <p className="admin-card-bet">
                       {amount > 0
                         ? <>Total Bet: <b>₹{amount}</b></>
@@ -263,11 +215,9 @@ const DashboardPage = () => {
                         Payout: ₹{payout}
                       </p>
                     )}
-                    {/* Optionally: Disable Set Winner if no bet placed */}
                     <button
                       className="admin-card-button"
                       onClick={() => handleSetWinner(item.name)}
-                      // disabled={amount === 0} // Uncomment to disable if no bet
                     >
                       Set Winner
                     </button>
@@ -277,8 +227,7 @@ const DashboardPage = () => {
             </div>
             {winnerChoice && <p style={{ color: "green", fontWeight: "bold" }}>Set Winner: {(EN_TO_HI[winnerChoice] || winnerChoice).toUpperCase()}</p>}
           </section>
-
-          {/* ===== Last 10 Wins Section ===== */}
+          {/* Last 10 Wins Section */}
           <section className="last-wins-section" style={{ marginTop: '2rem' }}>
             <h2>Last 10 Wins</h2>
             <ul className="last-wins-list">
@@ -287,9 +236,7 @@ const DashboardPage = () => {
               ))}
             </ul>
           </section>
-
-          {/* ==== User Search and Manage Balance section (if you have it) ==== */}
-          {/* Add here if needed */}
+          {/* Search/Manage Balance section if needed */}
         </div>
       </div>
     </div>
