@@ -232,7 +232,10 @@ const DashboardPage = () => {
             <h2>Last 10 Wins</h2>
             <ul className="last-wins-list">
               {lastWins.map((winChoice, idx) => (
-                <li key={idx}>{(EN_TO_HI[winChoice] || winChoice).toUpperCase()}</li>
+               <li key={idx}>
+        <b>Round {winChoice.round}:</b> {(EN_TO_HI[winChoice.choice] || winChoice.choice).toUpperCase()}
+      </li>
+
               ))}
             </ul>
           </section>
