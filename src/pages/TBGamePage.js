@@ -42,7 +42,7 @@ const IMAGE_LIST = [
 export default function TBGamePage() {
   const [inputValues, setInputValues] = useState({});
   const [highlighted, setHighlighted] = useState([]);
-  const [lastWins, setLastWins] = useState([]); // Changed: no localStorage migration
+  const [lastWins, setLastWins] = useState([]);
 
   const [currentRound, setCurrentRound] = useState(1);
   const [timer, setTimer] = useState(90);
@@ -84,7 +84,7 @@ export default function TBGamePage() {
     const fetchLastWins = async () => {
       try {
         const res = await api.get('/bets/last-wins');
-        setLastWins(res.data.wins || []);
+        setLastWins(Array.isArray(res.data.wins) ? res.data.wins : []);
       } catch {
         setLastWins([]);
       }
@@ -221,11 +221,16 @@ export default function TBGamePage() {
         <div className="last-wins">
           <h4>📜 Last 10 Wins</h4>
           <ul>
-            {lastWins.map((w, i) => (
-              <li key={i}>
-                <b>Round {w.round}:</b> {(EN_TO_HI[w.choice] || w.choice).toUpperCase()}
-              </li>
-            ))}
+            {lastWins.map((w, i) => {
+              const round = w && typeof w.round !== 'undefined' ? w.round : "-";
+              const choice = w && w.choice ? w.choice : "-";
+              const name = (EN_TO_HI[choice] || choice).toUpperCase();
+              return (
+                <li key={i}>
+                  <b>Round {round}:</b> {name}
+                </li>
+              );
+            })}
           </ul>
         </div>
       </div>
