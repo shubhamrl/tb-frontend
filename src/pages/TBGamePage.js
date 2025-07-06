@@ -3,7 +3,6 @@ import io from 'socket.io-client';
 import api from '../services/api';
 import '../styles/game.css';
 
-// English to Hindi Mapping
 const EN_TO_HI = {
   umbrella: 'छतरी',
   football: 'फुटबॉल',
@@ -43,23 +42,18 @@ const IMAGE_LIST = [
 export default function TBGamePage() {
   const [inputValues, setInputValues] = useState({});
   const [highlighted, setHighlighted] = useState([]);
-  const [lastWins, setLastWins] = useState(() => {
-    const stored = JSON.parse(localStorage.getItem('tbLastWins') || '[]');
-    return Array.isArray(stored) ? stored : [];
-  });
+  const [lastWins, setLastWins] = useState([]); // Changed: no localStorage migration
 
-  // Live state from /live-state
   const [currentRound, setCurrentRound] = useState(1);
   const [timer, setTimer] = useState(90);
   const [bets, setBets] = useState({});
   const [winnerChoice, setWinnerChoice] = useState(null);
   const [displayedWinner, setDisplayedWinner] = useState(null);
   const [balance, setBalance] = useState(0);
-
-  // LOCAL userBets (immediate update UI me) -- yahi use karo
   const [userBets, setUserBets] = useState({});
-  const [lastRound, setLastRound] = useState(1); // For reset
+  const [lastRound, setLastRound] = useState(1);
 
+  // Fetch live-state and last-wins from backend
   useEffect(() => {
     const fetchLiveState = async () => {
       try {
@@ -70,15 +64,12 @@ export default function TBGamePage() {
         setWinnerChoice(res.data.winnerChoice || null);
         if (typeof res.data.balance === "number") setBalance(res.data.balance);
 
-        // === FIX: Always set userBets from backend every fetch ===
         if (res.data.userBets) {
           setUserBets(res.data.userBets);
         } else {
           setUserBets({});
         }
       } catch (err) {
-        console.error("Error fetching live state:", err);
-        // On error, show empty bets
         setUserBets({});
         setBets({});
       }
@@ -86,10 +77,28 @@ export default function TBGamePage() {
     fetchLiveState();
     const interval = setInterval(fetchLiveState, 1000);
     return () => clearInterval(interval);
-    // eslint-disable-next-line
   }, [currentRound]);
 
-  // ========== Reset Highlights & Bets on New Round ==========
+  // Fetch last wins from backend, always show latest
+  useEffect(() => {
+    const fetchLastWins = async () => {
+      try {
+        const res = await api.get('/bets/last-wins');
+        setLastWins(res.data.wins || []);
+      } catch {
+        setLastWins([]);
+      }
+    };
+    fetchLastWins();
+    socket.on('winner-announced', fetchLastWins);
+    socket.on('payouts-distributed', fetchLastWins);
+
+    return () => {
+      socket.off('winner-announced', fetchLastWins);
+      socket.off('payouts-distributed', fetchLastWins);
+    };
+  }, []);
+
   useEffect(() => {
     if (currentRound !== lastRound) {
       setHighlighted([]);
@@ -98,32 +107,11 @@ export default function TBGamePage() {
       setLastRound(currentRound);
     }
   }, [currentRound, lastRound]);
-  // ===========================================================
-
-  useEffect(() => {
-    const winnerListener = ({ round, choice }) => {
-      setWinnerChoice(choice);
-      setDisplayedWinner(choice);
-      setLastWins(prev => {
-        const updated = [choice, ...prev].slice(0, 10);
-        localStorage.setItem('tbLastWins', JSON.stringify(updated));
-        return updated;
-      });
-      setTimeout(() => setDisplayedWinner(null), 3000);
-    };
-    socket.on('winner-announced', winnerListener);
-
-    return () => {
-      socket.off('winner-announced', winnerListener);
-    };
-  }, []);
 
   useEffect(() => {
     if (timer === 0) {
-      api.post('/bets/distribute-payouts', { round: currentRound })
-        .catch(() => {});
+      api.post('/bets/distribute-payouts', { round: currentRound }).catch(() => {});
     }
-    // eslint-disable-next-line
   }, [timer, currentRound]);
 
   const handleInputChange = (name, val) => {
@@ -132,7 +120,6 @@ export default function TBGamePage() {
     }
   };
 
-  // ======= Place Bet Function - Fully Optimistic UI =======
   const placeBetHandler = async (name) => {
     const amt = parseInt(inputValues[name] || '0', 10);
     if (timer <= 15) {
@@ -144,7 +131,6 @@ export default function TBGamePage() {
       alert('Insufficient balance');
       return;
     }
-    // === UI ko turant update kar do! ===
     setHighlighted(h => (h.includes(name) ? h : [...h, name]));
     setUserBets(prev => ({
       ...prev,
@@ -152,14 +138,10 @@ export default function TBGamePage() {
     }));
     setBalance(prev => prev - amt);
     setInputValues(iv => ({ ...iv, [name]: '' }));
-    // === Backend API (async) ===
     try {
       await api.post('/bets/place-bet', { choice: name, amount: amt, round: currentRound });
-      // Optionally handle server-side error by refreshing state
     } catch (e) {
       alert(e.response?.data?.message || 'Bet failed');
-      // On error, ideally refresh state from backend:
-      // Try to fetch live state again to sync
       try {
         const res = await api.get('/bets/live-state');
         setUserBets(res.data.userBets || {});
@@ -170,13 +152,11 @@ export default function TBGamePage() {
 
   return (
     <div className="game-container">
-      {/* Sticky Header: Round, Timer, Balance */}
       <div className="tb-sticky-header">
         <div className="tb-round">Round: {currentRound}</div>
         <div className="tb-timer">⏱️ {timer}s</div>
         <div className="tb-balance">💰 ₹{balance}</div>
       </div>
-      {/* Image Grid */}
       <div className="image-grid">
         {IMAGE_LIST.map(item => (
           <div
@@ -185,7 +165,6 @@ export default function TBGamePage() {
           >
             <img src={item.src} alt={EN_TO_HI[item.name] || item.name} />
             <p className="name">{EN_TO_HI[item.name] || item.name}</p>
-            {/* BET: always show actual userBets (backend source of truth) */}
             <p className="bet">₹{userBets[item.name] || 0}</p>
             <div className="bet-input-row">
               <input
@@ -205,7 +184,6 @@ export default function TBGamePage() {
           </div>
         ))}
       </div>
-      {/* Winner Box */}
       <div className="right-panel">
         <div
           className="winner-box"
@@ -240,12 +218,13 @@ export default function TBGamePage() {
             <p style={{ margin: '0', color: '#555' }}>Waiting for winner...</p>
           )}
         </div>
-        {/* Last 10 Wins Section */}
         <div className="last-wins">
           <h4>📜 Last 10 Wins</h4>
           <ul>
             {lastWins.map((w, i) => (
-              <li key={i}>{(EN_TO_HI[w] || w).toUpperCase()}</li>
+              <li key={i}>
+                <b>Round {w.round}:</b> {(EN_TO_HI[w.choice] || w.choice).toUpperCase()}
+              </li>
             ))}
           </ul>
         </div>
