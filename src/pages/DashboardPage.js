@@ -62,7 +62,7 @@ const DashboardPage = () => {
     const fetchLastWins = async () => {
       try {
         const res = await api.get('/bets/last-wins');
-        setLastWins(res.data.wins || []);
+        setLastWins(Array.isArray(res.data.wins) ? res.data.wins : []);
       } catch (err) {
         setLastWins([]);
       }
@@ -83,7 +83,7 @@ const DashboardPage = () => {
         const res = await api.get('/bets/live-state');
         setCurrentRound(res.data.round);
         setTimer(res.data.timer);
-        // ** SAFETY FIX: Only set totals if truly valid object **
+        // Only set totals if truly valid object
         if (res.data.totals && typeof res.data.totals === 'object') {
           setTotals(res.data.totals);
         } else {
@@ -193,7 +193,6 @@ const DashboardPage = () => {
             </h2>
             <div className="admin-image-grid">
               {IMAGE_LIST.map(item => {
-                // ======== MAIN SAFETY PATCH =========
                 const rawAmount = totals && typeof totals === "object" ? totals[item.name] : undefined;
                 const amount = (typeof rawAmount === "number" && rawAmount > 0) ? rawAmount : 0;
                 const payout = amount * 10;
@@ -231,12 +230,16 @@ const DashboardPage = () => {
           <section className="last-wins-section" style={{ marginTop: '2rem' }}>
             <h2>Last 10 Wins</h2>
             <ul className="last-wins-list">
-              {lastWins.map((winChoice, idx) => (
-               <li key={idx}>
-        <b>Round {winChoice.round}:</b> {(EN_TO_HI[winChoice.choice] || winChoice.choice).toUpperCase()}
-      </li>
-
-              ))}
+              {lastWins.map((winChoice, idx) => {
+                const round = winChoice && typeof winChoice.round !== 'undefined' ? winChoice.round : "-";
+                const choice = winChoice && winChoice.choice ? winChoice.choice : "-";
+                const name = (EN_TO_HI[choice] || choice).toUpperCase();
+                return (
+                  <li key={idx}>
+                    <b>Round {round}:</b> {name}
+                  </li>
+                );
+              })}
             </ul>
           </section>
           {/* Search/Manage Balance section if needed */}
