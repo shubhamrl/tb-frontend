@@ -70,12 +70,17 @@ export default function TBGamePage() {
         setWinnerChoice(res.data.winnerChoice || null);
         if (typeof res.data.balance === "number") setBalance(res.data.balance);
 
-        // ONLY SET userBets from backend if round change hua ho!
-        if (res.data.userBets && res.data.round !== currentRound) {
+        // === FIX: Always set userBets from backend every fetch ===
+        if (res.data.userBets) {
           setUserBets(res.data.userBets);
+        } else {
+          setUserBets({});
         }
       } catch (err) {
         console.error("Error fetching live state:", err);
+        // On error, show empty bets
+        setUserBets({});
+        setBets({});
       }
     };
     fetchLiveState();
@@ -89,7 +94,7 @@ export default function TBGamePage() {
     if (currentRound !== lastRound) {
       setHighlighted([]);
       setInputValues({});
-      setUserBets({}); // Local user bets reset
+      setUserBets({});
       setLastRound(currentRound);
     }
   }, [currentRound, lastRound]);
@@ -150,10 +155,16 @@ export default function TBGamePage() {
     // === Backend API (async) ===
     try {
       await api.post('/bets/place-bet', { choice: name, amount: amt, round: currentRound });
-      // Koi aur state change ya error ke hisab se handling karni ho to yahan karo
+      // Optionally handle server-side error by refreshing state
     } catch (e) {
       alert(e.response?.data?.message || 'Bet failed');
-      // Optionally, agar bet fail ho to UI se amount hata bhi sakte ho
+      // On error, ideally refresh state from backend:
+      // Try to fetch live state again to sync
+      try {
+        const res = await api.get('/bets/live-state');
+        setUserBets(res.data.userBets || {});
+        setBalance(res.data.balance || 0);
+      } catch {}
     }
   };
 
@@ -174,7 +185,7 @@ export default function TBGamePage() {
           >
             <img src={item.src} alt={EN_TO_HI[item.name] || item.name} />
             <p className="name">{EN_TO_HI[item.name] || item.name}</p>
-            {/* IMMEDIATE userBets update */}
+            {/* BET: always show actual userBets (backend source of truth) */}
             <p className="bet">₹{userBets[item.name] || 0}</p>
             <div className="bet-input-row">
               <input
