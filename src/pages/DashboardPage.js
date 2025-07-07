@@ -50,11 +50,9 @@ const DashboardPage = () => {
   const [totalUsers, setTotalUsers] = useState(0);
   const [activeUsers, setActiveUsers] = useState(0);
   const [lastWins, setLastWins] = useState([]);
-
-  // Real-time state
   const [currentRound, setCurrentRound] = useState(1);
   const [timer, setTimer] = useState(90);
-  const [totals, setTotals] = useState({});
+  const [totals, setTotals] = useState({});    // <-- always reset
   const [winnerChoice, setWinnerChoice] = useState(null);
 
   // Last 10 Wins fetch
@@ -75,23 +73,24 @@ const DashboardPage = () => {
       socket.off('winner-announced', fetchLastWins);
       socket.off('payouts-distributed', fetchLastWins);
     };
-  }, []);
+  }, []); // ye sirf mount/unmount pe chalega
 
+  // Live state fetch - core logic
   useEffect(() => {
     const fetchAllData = async () => {
       try {
         const res = await api.get('/bets/live-state');
         setCurrentRound(res.data.round);
         setTimer(res.data.timer);
-        // Only set totals if truly valid object
-        if (res.data.totals && typeof res.data.totals === 'object') {
-          setTotals(res.data.totals);
-        } else {
-          setTotals({});
-        }
+
+        // SAFETY: always reset totals, never let purana value chipak jaye
+        setTotals(res.data.totals && typeof res.data.totals === 'object'
+          ? res.data.totals
+          : {}
+        );
         setWinnerChoice(res.data.winnerChoice || null);
       } catch (err) {
-        setTotals({});
+        setTotals({});  // force empty
         setWinnerChoice(null);
       }
     };
@@ -99,7 +98,7 @@ const DashboardPage = () => {
     fetchAllData();
     const interval = setInterval(fetchAllData, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, []); // dependency me kuch nahi, taaki har 1s me fresh data aaye
 
   // Users data fetch
   const fetchUsers = async (search = '') => {
@@ -146,6 +145,7 @@ const DashboardPage = () => {
     }
   };
 
+  // MAIN RENDER
   return (
     <div style={{ display: 'flex' }}>
       <AdminSidebar />
@@ -193,8 +193,8 @@ const DashboardPage = () => {
             </h2>
             <div className="admin-image-grid">
               {IMAGE_LIST.map(item => {
-                const rawAmount = totals && typeof totals === "object" ? totals[item.name] : undefined;
-                const amount = (typeof rawAmount === "number" && rawAmount > 0) ? rawAmount : 0;
+                // FINAL FIX: force zero (even if undefined or NaN)
+                const amount = Number(totals[item.name]) || 0;
                 const payout = amount * 10;
                 return (
                   <div key={item.name} className="admin-card">
