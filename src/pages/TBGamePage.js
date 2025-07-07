@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
 import api from '../services/api';
 import '../styles/game.css';
@@ -48,12 +48,13 @@ export default function TBGamePage() {
   const [timer, setTimer] = useState(90);
   const [bets, setBets] = useState({});
   const [winnerChoice, setWinnerChoice] = useState(null);
-  const [displayedWinner, setDisplayedWinner] = useState(null);
+  const [showWinner, setShowWinner] = useState(false); // winner box control
   const [balance, setBalance] = useState(0);
   const [userBets, setUserBets] = useState({});
   const [lastRound, setLastRound] = useState(1);
+  const timerRef = useRef(null);
 
-  // Fetch live-state and last-wins from backend
+  // Fetch live-state every second, for timer, bets, winner
   useEffect(() => {
     const fetchLiveState = async () => {
       try {
@@ -63,13 +64,9 @@ export default function TBGamePage() {
         setBets(res.data.totals || {});
         setWinnerChoice(res.data.winnerChoice || null);
         if (typeof res.data.balance === "number") setBalance(res.data.balance);
-
-        if (res.data.userBets) {
-          setUserBets(res.data.userBets);
-        } else {
-          setUserBets({});
-        }
-      } catch (err) {
+        if (res.data.userBets) setUserBets(res.data.userBets);
+        else setUserBets({});
+      } catch {
         setUserBets({});
         setBets({});
       }
@@ -79,7 +76,7 @@ export default function TBGamePage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch last wins from backend, always show latest
+  // Last 10 wins fetch, socket updates
   useEffect(() => {
     const fetchLastWins = async () => {
       try {
@@ -92,23 +89,35 @@ export default function TBGamePage() {
     fetchLastWins();
     socket.on('winner-announced', fetchLastWins);
     socket.on('payouts-distributed', fetchLastWins);
-
     return () => {
       socket.off('winner-announced', fetchLastWins);
       socket.off('payouts-distributed', fetchLastWins);
     };
   }, []);
 
-  // Winner display: Jab bhi winnerChoice update ho, displayedWinner set kar
+  // --------------- WINNER DISPLAY MAIN LOGIC ----------------
+  // Jab timer 0 ho, backend winnerChoice lock kar dega, fir hi dikhana hai
   useEffect(() => {
-    if (winnerChoice) {
-      setDisplayedWinner(winnerChoice);
-    } else {
-      setDisplayedWinner(null);
-    }
-  }, [winnerChoice]);
+    if (timer === 0) {
+      // Show winner for 5 seconds
+      setShowWinner(true);
+      // Auto hide winner after 5s
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => setShowWinner(false), 5000);
 
-  // Socket pe winner refresh: har round ke winner event par bhi winnerChoice update karo
+      // Trigger payout distribution
+      api.post('/bets/distribute-payouts', { round: currentRound }).catch(() => {});
+    } else if (timer > 0) {
+      // Winner box hide, har naye round pe
+      setShowWinner(false);
+    }
+    // cleanup
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [timer, currentRound]);
+
+  // Admin ya auto winner set hone pe winnerChoice update (always latest)
   useEffect(() => {
     const refreshWinner = async () => {
       try {
@@ -124,23 +133,16 @@ export default function TBGamePage() {
     };
   }, []);
 
-  // Next round pe sab reset kar do (highlight, input, userbets, winner, etc)
+  // Next round pe sab reset kar do (highlight, input, userbets)
   useEffect(() => {
     if (currentRound !== lastRound) {
       setHighlighted([]);
       setInputValues({});
       setUserBets({});
-      setDisplayedWinner(null);
+      setShowWinner(false);
       setLastRound(currentRound);
     }
   }, [currentRound, lastRound]);
-
-  // Timer 0 pe payout trigger
-  useEffect(() => {
-    if (timer === 0) {
-      api.post('/bets/distribute-payouts', { round: currentRound }).catch(() => {});
-    }
-  }, [timer, currentRound]);
 
   const handleInputChange = (name, val) => {
     if (/^\d*$/.test(val)) {
@@ -225,11 +227,11 @@ export default function TBGamePage() {
             minHeight: '140px'
           }}
         >
-          {displayedWinner ? (
+          {showWinner && winnerChoice ? (
             <>
               <img
-                src={`/images/${displayedWinner}.png`}
-                alt={EN_TO_HI[displayedWinner] || displayedWinner}
+                src={`/images/${winnerChoice}.png`}
+                alt={EN_TO_HI[winnerChoice] || winnerChoice}
                 style={{ width: '100px', height: '100px', objectFit: 'contain' }}
               />
               <p
@@ -239,7 +241,7 @@ export default function TBGamePage() {
                   fontSize: '1.2rem'
                 }}
               >
-                🎉 {(EN_TO_HI[displayedWinner] || displayedWinner).toUpperCase()} 🎉
+                🎉 {(EN_TO_HI[winnerChoice] || winnerChoice).toUpperCase()} 🎉
               </p>
             </>
           ) : (
