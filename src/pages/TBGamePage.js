@@ -77,7 +77,7 @@ export default function TBGamePage() {
     fetchLiveState();
     const interval = setInterval(fetchLiveState, 1000);
     return () => clearInterval(interval);
-  }, [currentRound]);
+  }, []);
 
   // Fetch last wins from backend, always show latest
   useEffect(() => {
@@ -99,15 +99,43 @@ export default function TBGamePage() {
     };
   }, []);
 
+  // Winner display: Jab bhi winnerChoice update ho, displayedWinner set kar
+  useEffect(() => {
+    if (winnerChoice) {
+      setDisplayedWinner(winnerChoice);
+    } else {
+      setDisplayedWinner(null);
+    }
+  }, [winnerChoice]);
+
+  // Socket pe winner refresh: har round ke winner event par bhi winnerChoice update karo
+  useEffect(() => {
+    const refreshWinner = async () => {
+      try {
+        const res = await api.get('/bets/live-state');
+        setWinnerChoice(res.data.winnerChoice || null);
+      } catch {}
+    };
+    socket.on('winner-announced', refreshWinner);
+    socket.on('payouts-distributed', refreshWinner);
+    return () => {
+      socket.off('winner-announced', refreshWinner);
+      socket.off('payouts-distributed', refreshWinner);
+    };
+  }, []);
+
+  // Next round pe sab reset kar do (highlight, input, userbets, winner, etc)
   useEffect(() => {
     if (currentRound !== lastRound) {
       setHighlighted([]);
       setInputValues({});
       setUserBets({});
+      setDisplayedWinner(null);
       setLastRound(currentRound);
     }
   }, [currentRound, lastRound]);
 
+  // Timer 0 pe payout trigger
   useEffect(() => {
     if (timer === 0) {
       api.post('/bets/distribute-payouts', { round: currentRound }).catch(() => {});
