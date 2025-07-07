@@ -48,13 +48,13 @@ export default function TBGamePage() {
   const [timer, setTimer] = useState(90);
   const [bets, setBets] = useState({});
   const [winnerChoice, setWinnerChoice] = useState(null);
-  const [showWinner, setShowWinner] = useState(false); // winner box control
+  const [showWinner, setShowWinner] = useState(false);
   const [balance, setBalance] = useState(0);
   const [userBets, setUserBets] = useState({});
   const [lastRound, setLastRound] = useState(1);
-  const timerRef = useRef(null);
+  const winnerTimeoutRef = useRef(null);
 
-  // Fetch live-state every second, for timer, bets, winner
+  // Fetch live-state every second
   useEffect(() => {
     const fetchLiveState = async () => {
       try {
@@ -95,45 +95,31 @@ export default function TBGamePage() {
     };
   }, []);
 
-  // --------------- WINNER DISPLAY MAIN LOGIC ----------------
-  // Jab timer 0 ho, backend winnerChoice lock kar dega, fir hi dikhana hai
+  // --------------- WINNER DISPLAY LOGIC (event-based only) ----------------
   useEffect(() => {
-    if (timer === 0) {
-      // Show winner for 5 seconds
-      setShowWinner(true);
-      // Auto hide winner after 5s
-      if (timerRef.current) clearTimeout(timerRef.current);
-      timerRef.current = setTimeout(() => setShowWinner(false), 5000);
-
-      // Trigger payout distribution
-      api.post('/bets/distribute-payouts', { round: currentRound }).catch(() => {});
-    } else if (timer > 0) {
-      // Winner box hide, har naye round pe
-      setShowWinner(false);
-    }
-    // cleanup
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, [timer, currentRound]);
-
-  // Admin ya auto winner set hone pe winnerChoice update (always latest)
-  useEffect(() => {
-    const refreshWinner = async () => {
+    // Winner will be shown for 10 seconds on payout event (manual/auto/random)
+    const showWinnerFor10s = async () => {
       try {
+        // Fetch latest winner
         const res = await api.get('/bets/live-state');
         setWinnerChoice(res.data.winnerChoice || null);
+        setShowWinner(true);
+        if (winnerTimeoutRef.current) clearTimeout(winnerTimeoutRef.current);
+        winnerTimeoutRef.current = setTimeout(() => setShowWinner(false), 10000);
       } catch {}
     };
-    socket.on('winner-announced', refreshWinner);
-    socket.on('payouts-distributed', refreshWinner);
+
+    socket.on('winner-announced', showWinnerFor10s);
+    socket.on('payouts-distributed', showWinnerFor10s);
+
     return () => {
-      socket.off('winner-announced', refreshWinner);
-      socket.off('payouts-distributed', refreshWinner);
+      socket.off('winner-announced', showWinnerFor10s);
+      socket.off('payouts-distributed', showWinnerFor10s);
+      if (winnerTimeoutRef.current) clearTimeout(winnerTimeoutRef.current);
     };
   }, []);
 
-  // Next round pe sab reset kar do (highlight, input, userbets)
+  // Next round pe sab reset
   useEffect(() => {
     if (currentRound !== lastRound) {
       setHighlighted([]);
