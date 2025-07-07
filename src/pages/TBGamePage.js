@@ -95,31 +95,34 @@ export default function TBGamePage() {
     };
   }, []);
 
-  // --------------- WINNER DISPLAY LOGIC (event-based only) ----------------
+  // Winner box event-based logic (100% robust!)
   useEffect(() => {
-    // Winner will be shown for 10 seconds on payout event (manual/auto/random)
-    const showWinnerFor10s = async () => {
+    // Helper to fetch and show winner
+    const showWinnerHandler = async () => {
       try {
-        // Fetch latest winner
+        // Always fetch the latest winnerChoice from API (never trust socket payload)
         const res = await api.get('/bets/live-state');
         setWinnerChoice(res.data.winnerChoice || null);
+
         setShowWinner(true);
         if (winnerTimeoutRef.current) clearTimeout(winnerTimeoutRef.current);
         winnerTimeoutRef.current = setTimeout(() => setShowWinner(false), 10000);
-      } catch {}
+      } catch {
+        setShowWinner(false);
+      }
     };
-
-    socket.on('winner-announced', showWinnerFor10s);
-    socket.on('payouts-distributed', showWinnerFor10s);
+    // Listen for payout/winner events
+    socket.on('winner-announced', showWinnerHandler);
+    socket.on('payouts-distributed', showWinnerHandler);
 
     return () => {
-      socket.off('winner-announced', showWinnerFor10s);
-      socket.off('payouts-distributed', showWinnerFor10s);
+      socket.off('winner-announced', showWinnerHandler);
+      socket.off('payouts-distributed', showWinnerHandler);
       if (winnerTimeoutRef.current) clearTimeout(winnerTimeoutRef.current);
     };
   }, []);
 
-  // Next round pe sab reset
+  // Reset on new round
   useEffect(() => {
     if (currentRound !== lastRound) {
       setHighlighted([]);
