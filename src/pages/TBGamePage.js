@@ -87,20 +87,17 @@ export default function TBGamePage() {
       }
     };
     fetchLastWins();
-    socket.on('winner-announced', fetchLastWins);
     socket.on('payouts-distributed', fetchLastWins);
     return () => {
-      socket.off('winner-announced', fetchLastWins);
       socket.off('payouts-distributed', fetchLastWins);
     };
   }, []);
 
   // Winner box event-based logic (100% robust!)
   useEffect(() => {
-    // Helper to fetch and show winner
+    // Helper to fetch and show winner (10 sec)
     const showWinnerHandler = async () => {
       try {
-        // Always fetch the latest winnerChoice from API (never trust socket payload)
         const res = await api.get('/bets/live-state');
         setWinnerChoice(res.data.winnerChoice || null);
 
@@ -111,16 +108,21 @@ export default function TBGamePage() {
         setShowWinner(false);
       }
     };
-    // Listen for payout/winner events
-    socket.on('winner-announced', showWinnerHandler);
+    // Listen ONLY payouts-distributed event
     socket.on('payouts-distributed', showWinnerHandler);
 
     return () => {
-      socket.off('winner-announced', showWinnerHandler);
       socket.off('payouts-distributed', showWinnerHandler);
       if (winnerTimeoutRef.current) clearTimeout(winnerTimeoutRef.current);
     };
   }, []);
+
+  // Timer 0 pe hamesha payout call (guaranteed)
+  useEffect(() => {
+    if (timer === 0 && currentRound) {
+      api.post('/bets/distribute-payouts', { round: currentRound }).catch(() => {});
+    }
+  }, [timer, currentRound]);
 
   // Reset on new round
   useEffect(() => {
