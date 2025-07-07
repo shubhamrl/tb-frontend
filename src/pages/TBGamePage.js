@@ -43,7 +43,6 @@ export default function TBGamePage() {
   const [inputValues, setInputValues] = useState({});
   const [highlighted, setHighlighted] = useState([]);
   const [lastWins, setLastWins] = useState([]);
-
   const [currentRound, setCurrentRound] = useState(1);
   const [timer, setTimer] = useState(90);
   const [bets, setBets] = useState({});
@@ -54,7 +53,7 @@ export default function TBGamePage() {
   const [lastRound, setLastRound] = useState(1);
   const winnerTimeoutRef = useRef(null);
 
-  // Fetch live-state every second
+  // 1️⃣ LIVE STATE FETCH (every second)
   useEffect(() => {
     const fetchLiveState = async () => {
       try {
@@ -76,7 +75,7 @@ export default function TBGamePage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Last 10 wins fetch, socket updates
+  // 2️⃣ LAST 10 WINS FETCH
   useEffect(() => {
     const fetchLastWins = async () => {
       try {
@@ -93,38 +92,36 @@ export default function TBGamePage() {
     };
   }, []);
 
-  // Winner box event-based logic (100% robust!)
+  // 3️⃣ TIMER 5 pe WINNER ANNOUNCE KARO (no payout, only announcement)
   useEffect(() => {
-    // Helper to fetch and show winner (10 sec)
-    const showWinnerHandler = async () => {
-      try {
-        const res = await api.get('/bets/live-state');
-        setWinnerChoice(res.data.winnerChoice || null);
+    if (timer === 5 && currentRound) {
+      api.post('/bets/announce-winner', { round: currentRound }).catch(() => {});
+    }
+  }, [timer, currentRound]);
 
-        setShowWinner(true);
-        if (winnerTimeoutRef.current) clearTimeout(winnerTimeoutRef.current);
-        winnerTimeoutRef.current = setTimeout(() => setShowWinner(false), 10000);
-      } catch {
-        setShowWinner(false);
-      }
+  // 4️⃣ SOCKET SE WINNER-ANNOUNCED PAR WINNER BOX SHOW KARO
+  useEffect(() => {
+    const winnerAnnounceHandler = ({ round, choice }) => {
+      setWinnerChoice(choice || null);
+      setShowWinner(true);
+      if (winnerTimeoutRef.current) clearTimeout(winnerTimeoutRef.current);
+      winnerTimeoutRef.current = setTimeout(() => setShowWinner(false), 10000);
     };
-    // Listen ONLY payouts-distributed event
-    socket.on('payouts-distributed', showWinnerHandler);
-
+    socket.on('winner-announced', winnerAnnounceHandler);
     return () => {
-      socket.off('payouts-distributed', showWinnerHandler);
+      socket.off('winner-announced', winnerAnnounceHandler);
       if (winnerTimeoutRef.current) clearTimeout(winnerTimeoutRef.current);
     };
   }, []);
 
-  // Timer 0 pe hamesha payout call (guaranteed)
+  // 5️⃣ TIMER 0 pe PAYOUT KARO
   useEffect(() => {
     if (timer === 0 && currentRound) {
       api.post('/bets/distribute-payouts', { round: currentRound }).catch(() => {});
     }
   }, [timer, currentRound]);
 
-  // Reset on new round
+  // 6️⃣ NEW ROUND RESET LOGIC
   useEffect(() => {
     if (currentRound !== lastRound) {
       setHighlighted([]);
@@ -135,6 +132,7 @@ export default function TBGamePage() {
     }
   }, [currentRound, lastRound]);
 
+  // BET INPUT HANDLER
   const handleInputChange = (name, val) => {
     if (/^\d*$/.test(val)) {
       setInputValues(prev => ({ ...prev, [name]: val }));
