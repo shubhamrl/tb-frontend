@@ -52,7 +52,7 @@ const DashboardPage = () => {
   const [lastWins, setLastWins] = useState([]);
   const [currentRound, setCurrentRound] = useState(1);
   const [timer, setTimer] = useState(90);
-  const [totals, setTotals] = useState({});    // <-- always reset
+  const [totals, setTotals] = useState({});
   const [winnerChoice, setWinnerChoice] = useState(null);
 
   // Last 10 Wins fetch
@@ -73,7 +73,7 @@ const DashboardPage = () => {
       socket.off('winner-announced', fetchLastWins);
       socket.off('payouts-distributed', fetchLastWins);
     };
-  }, []); // ye sirf mount/unmount pe chalega
+  }, []);
 
   // Live state fetch - core logic
   useEffect(() => {
@@ -82,15 +82,13 @@ const DashboardPage = () => {
         const res = await api.get('/bets/live-state');
         setCurrentRound(res.data.round);
         setTimer(res.data.timer);
-
-        // SAFETY: always reset totals, never let purana value chipak jaye
         setTotals(res.data.totals && typeof res.data.totals === 'object'
           ? res.data.totals
           : {}
         );
         setWinnerChoice(res.data.winnerChoice || null);
       } catch (err) {
-        setTotals({});  // force empty
+        setTotals({});
         setWinnerChoice(null);
       }
     };
@@ -98,7 +96,7 @@ const DashboardPage = () => {
     fetchAllData();
     const interval = setInterval(fetchAllData, 1000);
     return () => clearInterval(interval);
-  }, []); // dependency me kuch nahi, taaki har 1s me fresh data aaye
+  }, []);
 
   // Users data fetch
   const fetchUsers = async (search = '') => {
@@ -193,7 +191,7 @@ const DashboardPage = () => {
             </h2>
             <div className="admin-image-grid">
               {IMAGE_LIST.map(item => {
-                // FINAL FIX: force zero (even if undefined or NaN)
+                // Always zero if nothing, never stale value
                 const amount = Number(totals[item.name]) || 0;
                 const payout = amount * 10;
                 return (
@@ -242,7 +240,6 @@ const DashboardPage = () => {
               })}
             </ul>
           </section>
-          {/* Search/Manage Balance section if needed */}
         </div>
       </div>
     </div>
