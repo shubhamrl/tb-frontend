@@ -2,30 +2,33 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
+import Loader from '../components/Loader'; // Loader import
 import '../styles/userdashboard.css';
 
 const UserDashboard = () => {
   const [user, setUser] = useState({ id: '', email: '', balance: 0, referralEarnings: 0 });
   const [numbers, setNumbers] = useState({ depositWhatsapp: '', withdrawWhatsapp: '' });
+  const [loading, setLoading] = useState(true); // loader state
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchAll = async () => {
+      setLoading(true); // Start loader
       try {
         const token = localStorage.getItem('token');
-        const res = await api.get('/users/me', {
+        const resUser = await api.get('/users/me', {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setUser(res.data);
-      } catch (err) {
-        console.error('Failed to fetch user:', err);
-      }
-    };
-    fetchUser();
+        setUser(resUser.data);
 
-    api.get('/settings')
-      .then(res => setNumbers(res.data || {}))
-      .catch(() => {});
+        const resSettings = await api.get('/settings');
+        setNumbers(resSettings.data || {});
+      } catch (err) {
+        console.error('Failed to fetch user or settings:', err);
+      }
+      setLoading(false); // Stop loader
+    };
+    fetchAll();
   }, []);
 
   const createWhatsAppLink = (action) => {
@@ -45,6 +48,11 @@ const UserDashboard = () => {
     localStorage.removeItem('token');
     navigate('/login');
   };
+
+  // If loading, show loader else show dashboard
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <div className="dashboard-container">
