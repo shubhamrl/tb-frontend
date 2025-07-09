@@ -8,7 +8,7 @@ export default function BetHistoryPage() {
 
   useEffect(() => {
     setLoading(true);
-    api.get("/bets/my-bet-history")
+    api.get("/bets/my-bet-history")  // Make sure this API only returns today's/session's data for logged-in user
       .then(res => {
         setHistory(res.data.history || []);
         setLoading(false);
@@ -21,10 +21,10 @@ export default function BetHistoryPage() {
       maxWidth: 760, margin: "40px auto", background: "#fff",
       borderRadius: 16, boxShadow: "0 4px 28px #0001", padding: 28
     }}>
-      <h2 style={{ textAlign: "center", marginBottom: 22 }}>📜 My Bet History</h2>
+      <h2 style={{ textAlign: "center", marginBottom: 22 }}>📜 My Bet History (Today)</h2>
       {loading ? <Loader /> : (
         history.length === 0 ?
-          <div style={{ color: "#888", textAlign: "center" }}>No bets placed yet.</div>
+          <div style={{ color: "#888", textAlign: "center" }}>No bets placed in this session.</div>
           :
           <table style={{
             width: "100%", borderCollapse: "collapse", fontSize: 17, background: "#f7f7ff"
@@ -41,7 +41,7 @@ export default function BetHistoryPage() {
                 <tr key={i} style={{
                   background: row.win ? "#eaffea" : "#fff"
                 }}>
-                  <td style={tdStyle}>{row.round}</td>
+                  <td style={tdStyle}>{row._id || row.round}</td>
                   <td style={tdStyle}>
                     {row.bets.map((b, j) =>
                       <span key={j}>
@@ -52,10 +52,10 @@ export default function BetHistoryPage() {
                   </td>
                   <td style={{
                     ...tdStyle,
-                    color: row.win ? "#0a8e16" : "#c10c0c",
+                    color: row.winAmount > 0 ? "#0a8e16" : "#c10c0c",
                     fontWeight: 600
                   }}>
-                    {row.win && row.winAmount > 0 ? `₹${row.winAmount}` : "-"}
+                    {row.winAmount > 0 ? `₹${row.winAmount}` : "-"}
                   </td>
                 </tr>
               ))}
