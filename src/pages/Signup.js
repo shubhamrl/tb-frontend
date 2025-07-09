@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
+import Loader from '../components/Loader'; // 👈 Loader import
 import '../styles/auth.css';
 
 const Signup = () => {
@@ -23,7 +24,7 @@ const Signup = () => {
       const signupData = { email, password };
       if (referrerId) signupData.referrerId = referrerId;
 
-        console.log("SIGNUP DATA SENDING:", signupData);
+      console.log("SIGNUP DATA SENDING:", signupData);
 
       await axios.post(
         'https://tb-backend-1.onrender.com/api/auth/signup',
@@ -42,25 +43,30 @@ const Signup = () => {
   return (
     <div className="auth-container">
       <h2>Sign Up</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit" disabled={loading}>
-          {loading ? 'Signing Up...' : 'Sign Up'}
-        </button>
-      </form>
+      {/* Show Loader if loading, else show form */}
+      {loading ? (
+        <Loader />
+      ) : (
+        <form onSubmit={handleSubmit}>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button type="submit" disabled={loading}>
+            {loading ? 'Signing Up...' : 'Sign Up'}
+          </button>
+        </form>
+      )}
 
       <p style={{ marginTop: '10px' }}>
         Already have an account? <Link to="/login">Login here</Link>
