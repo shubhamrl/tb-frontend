@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import Loader from '../components/Loader';    // <- Loader import karo
 import '../styles/auth.css';
 
 const Login = () => {
@@ -38,6 +39,7 @@ const Login = () => {
     } catch (err) {
       setLoading(false);
       alert(`Login failed: ${err.response?.data?.message || err.message}`);
+      return; // error pe yahi pe return kar do taki double setLoading(false) na ho
     }
     setLoading(false);
   };
@@ -45,39 +47,43 @@ const Login = () => {
   return (
     <div className="auth-container">
       <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          required
-        />
-        <div className="auth-password-wrapper">
+      {loading ? (
+        <Loader />
+      ) : (
+        <form onSubmit={handleSubmit}>
           <input
-            type={showPassword ? 'text' : 'password'}
-            placeholder="Password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
             required
           />
-          <button
-            type="button"
-            onClick={() => setShowPassword((prev) => !prev)}
-            tabIndex={-1}
-          >
-            {showPassword ? 'Hide' : 'Show'}
+          <div className="auth-password-wrapper">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              tabIndex={-1}
+            >
+              {showPassword ? 'Hide' : 'Show'}
+            </button>
+          </div>
+          <div style={{ textAlign: 'right', margin: '5px 0 10px 0' }}>
+            <Link to="/forgot-password" style={{ fontSize: '13px' }}>
+              Forgot Password?
+            </Link>
+          </div>
+          <button type="submit" disabled={loading}>
+            {loading ? 'Logging in...' : 'Login'}
           </button>
-        </div>
-        <div style={{ textAlign: 'right', margin: '5px 0 10px 0' }}>
-          <Link to="/forgot-password" style={{ fontSize: '13px' }}>
-            Forgot Password?
-          </Link>
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? 'Logging in...' : 'Login'}
-        </button>
-      </form>
+        </form>
+      )}
       <p style={{ marginTop: '10px' }}>
         Don't have an account? <Link to="/signup">Sign up here</Link>
       </p>
