@@ -11,10 +11,12 @@ import WhatsappSettingsPage from './pages/WhatsappSettingsPage';
 import ManageUserPage from './pages/ManageUserPage';
 import AdminRoundsSummary from './pages/AdminRoundsSummary';
 import SpinWinnerAdmin from './pages/SpinWinnerAdmin';
-import ReferralPage from './pages/ReferralPage'; // 👈 Referral page import
+import ReferralPage from './pages/ReferralPage';
 import AdminRoute from './components/AdminRoute';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+// ⭐️ BET HISTORY PAGE KA IMPORT ADD KARO
+import BetHistoryPage from './pages/BetHistoryPage';
 
 function App() {
   const token = localStorage.getItem('token');
@@ -37,14 +39,21 @@ function App() {
               : <Navigate to="/signup" replace />
           }
         />
-<Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password/:token" element={<ResetPassword />} />
+
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
 
         <Route
           path="/dashboard"
           element={token ? <UserDashboard /> : <Navigate to="/login" replace />}
+        />
+
+        {/* ⭐️ BET HISTORY ROUTE ADD KARO */}
+        <Route
+          path="/bet-history"
+          element={token ? <BetHistoryPage /> : <Navigate to="/login" replace />}
         />
 
         {/* NEW: Referral page route */}
@@ -86,7 +95,6 @@ function App() {
             </AdminRoute>
           }
         />
-        {/* ----- Spin Winner (Manual) Admin Route Added ------ */}
         <Route
           path="/admin/spin-winner"
           element={
