@@ -189,28 +189,7 @@ export default function TBGamePage() {
 
   return (
     <div className="game-container">
-      {/* ⭐️ My Bet History Button */}
-      <button
-        style={{
-          position: 'absolute',
-          top: 18,
-          right: 36,
-          zIndex: 20,
-          background: '#36d7b7',
-          color: '#fff',
-          padding: '8px 20px',
-          border: 'none',
-          borderRadius: '22px',
-          fontWeight: 600,
-          fontSize: 17,
-          letterSpacing: 1,
-          boxShadow: '0 4px 18px #0002',
-          cursor: 'pointer'
-        }}
-        onClick={() => navigate('/bet-history')}
-      >
-        My Bet History
-      </button>
+     
 
       <div className="tb-sticky-header">
         <div className="tb-round">Round: {currentRound}</div>
@@ -278,6 +257,28 @@ export default function TBGamePage() {
             <p style={{ margin: '0', color: '#555' }}>Waiting for winner...</p>
           )}
         </div>
+             {/* ⭐️ My Bet History Button */}
+      <button
+        style={{
+          position: 'absolute',
+          top: 18,
+          right: 36,
+          zIndex: 20,
+          background: '#36d7b7',
+          color: '#fff',
+          padding: '8px 20px',
+          border: 'none',
+          borderRadius: '22px',
+          fontWeight: 600,
+          fontSize: 17,
+          letterSpacing: 1,
+          boxShadow: '0 4px 18px #0002',
+          cursor: 'pointer'
+        }}
+        onClick={() => navigate('/bet-history')}
+      >
+        My Bet History
+      </button>
         <div className="last-wins">
           <h4>📜 Last 10 Wins</h4>
           <ul>
