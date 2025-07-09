@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
 import api from '../services/api';
+import Loader from '../components/Loader'; // <- ADD THIS LINE
 import '../styles/game.css';
 
 const EN_TO_HI = {
@@ -53,6 +54,10 @@ export default function TBGamePage() {
   const [lastRound, setLastRound] = useState(1);
   const winnerTimeoutRef = useRef(null);
 
+  // LOADER STATES
+  const [loadingGame, setLoadingGame] = useState(true);
+  const [loadingWins, setLoadingWins] = useState(true);
+
   // 1️⃣ LIVE STATE FETCH (every second)
   useEffect(() => {
     const fetchLiveState = async () => {
@@ -65,9 +70,11 @@ export default function TBGamePage() {
         if (typeof res.data.balance === "number") setBalance(res.data.balance);
         if (res.data.userBets) setUserBets(res.data.userBets);
         else setUserBets({});
+        setLoadingGame(false); // Hide loader after first success
       } catch {
         setUserBets({});
         setBets({});
+        setLoadingGame(false);
       }
     };
     fetchLiveState();
@@ -81,8 +88,10 @@ export default function TBGamePage() {
       try {
         const res = await api.get('/bets/last-wins');
         setLastWins(Array.isArray(res.data.wins) ? res.data.wins : []);
+        setLoadingWins(false); // Hide loader after first success
       } catch {
         setLastWins([]);
+        setLoadingWins(false);
       }
     };
     fetchLastWins();
@@ -168,6 +177,11 @@ export default function TBGamePage() {
       } catch {}
     }
   };
+
+  // SHOW LOADER WHILE INITIAL DATA LOADING
+  if (loadingGame || loadingWins) {
+    return <Loader />;
+  }
 
   return (
     <div className="game-container">
