@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom'; // <-- ADD THIS
+import { useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 import api from '../services/api';
 import Loader from '../components/Loader';
@@ -59,10 +59,10 @@ export default function TBGamePage() {
   const [loadingGame, setLoadingGame] = useState(true);
   const [loadingWins, setLoadingWins] = useState(true);
 
-  // ⭐️ React Router navigation
   const navigate = useNavigate();
 
-  // 1️⃣ LIVE STATE FETCH (every second)
+  // ... [effects and handlers remain unchanged] ...
+
   useEffect(() => {
     const fetchLiveState = async () => {
       try {
@@ -74,7 +74,7 @@ export default function TBGamePage() {
         if (typeof res.data.balance === "number") setBalance(res.data.balance);
         if (res.data.userBets) setUserBets(res.data.userBets);
         else setUserBets({});
-        setLoadingGame(false); // Hide loader after first success
+        setLoadingGame(false);
       } catch {
         setUserBets({});
         setBets({});
@@ -86,13 +86,12 @@ export default function TBGamePage() {
     return () => clearInterval(interval);
   }, []);
 
-  // 2️⃣ LAST 10 WINS FETCH
   useEffect(() => {
     const fetchLastWins = async () => {
       try {
         const res = await api.get('/bets/last-wins');
         setLastWins(Array.isArray(res.data.wins) ? res.data.wins : []);
-        setLoadingWins(false); // Hide loader after first success
+        setLoadingWins(false);
       } catch {
         setLastWins([]);
         setLoadingWins(false);
@@ -105,14 +104,12 @@ export default function TBGamePage() {
     };
   }, []);
 
-  // 3️⃣ TIMER 5 pe WINNER ANNOUNCE KARO (no payout, only announcement)
   useEffect(() => {
     if (timer === 5 && currentRound) {
       api.post('/bets/announce-winner', { round: currentRound }).catch(() => {});
     }
   }, [timer, currentRound]);
 
-  // 4️⃣ SOCKET SE WINNER-ANNOUNCED PAR WINNER BOX SHOW KARO
   useEffect(() => {
     const winnerAnnounceHandler = ({ round, choice }) => {
       setWinnerChoice(choice || null);
@@ -127,14 +124,12 @@ export default function TBGamePage() {
     };
   }, []);
 
-  // 5️⃣ TIMER 0 pe PAYOUT KARO
   useEffect(() => {
     if (timer === 0 && currentRound) {
       api.post('/bets/distribute-payouts', { round: currentRound }).catch(() => {});
     }
   }, [timer, currentRound]);
 
-  // 6️⃣ NEW ROUND RESET LOGIC
   useEffect(() => {
     if (currentRound !== lastRound) {
       setHighlighted([]);
@@ -145,7 +140,6 @@ export default function TBGamePage() {
     }
   }, [currentRound, lastRound]);
 
-  // BET INPUT HANDLER
   const handleInputChange = (name, val) => {
     if (/^\d*$/.test(val)) {
       setInputValues(prev => ({ ...prev, [name]: val }));
@@ -182,15 +176,12 @@ export default function TBGamePage() {
     }
   };
 
-  // SHOW LOADER WHILE INITIAL DATA LOADING
   if (loadingGame || loadingWins) {
     return <Loader />;
   }
 
   return (
     <div className="game-container">
-     
-
       <div className="tb-sticky-header">
         <div className="tb-round">Round: {currentRound}</div>
         <div className="tb-timer">⏱️ {timer}s</div>
@@ -257,28 +248,28 @@ export default function TBGamePage() {
             <p style={{ margin: '0', color: '#555' }}>Waiting for winner...</p>
           )}
         </div>
-             {/* ⭐️ My Bet History Button */}
-      <button
-        style={{
-          position: 'absolute',
-          top: 18,
-          right: 36,
-          zIndex: 20,
-          background: '#36d7b7',
-          color: '#fff',
-          padding: '8px 20px',
-          border: 'none',
-          borderRadius: '22px',
-          fontWeight: 600,
-          fontSize: 17,
-          letterSpacing: 1,
-          boxShadow: '0 4px 18px #0002',
-          cursor: 'pointer'
-        }}
-        onClick={() => navigate('/bet-history')}
-      >
-        My Bet History
-      </button>
+        
+        {/* ⭐️ My Bet History Button (centered and with margin) */}
+        <div style={{ width: "100%", display: "flex", justifyContent: "center", margin: "18px 0" }}>
+          <button
+            style={{
+              background: '#36d7b7',
+              color: '#fff',
+              padding: '9px 32px',
+              border: 'none',
+              borderRadius: '22px',
+              fontWeight: 600,
+              fontSize: 17,
+              letterSpacing: 1,
+              boxShadow: '0 4px 18px #0002',
+              cursor: 'pointer'
+            }}
+            onClick={() => navigate('/bet-history')}
+          >
+            My Bet History
+          </button>
+        </div>
+
         <div className="last-wins">
           <h4>📜 Last 10 Wins</h4>
           <ul>
