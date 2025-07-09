@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom'; // <-- ADD THIS
 import io from 'socket.io-client';
 import api from '../services/api';
-import Loader from '../components/Loader'; // <- ADD THIS LINE
+import Loader from '../components/Loader';
 import '../styles/game.css';
 
 const EN_TO_HI = {
@@ -57,6 +58,9 @@ export default function TBGamePage() {
   // LOADER STATES
   const [loadingGame, setLoadingGame] = useState(true);
   const [loadingWins, setLoadingWins] = useState(true);
+
+  // ⭐️ React Router navigation
+  const navigate = useNavigate();
 
   // 1️⃣ LIVE STATE FETCH (every second)
   useEffect(() => {
@@ -185,6 +189,29 @@ export default function TBGamePage() {
 
   return (
     <div className="game-container">
+      {/* ⭐️ My Bet History Button */}
+      <button
+        style={{
+          position: 'absolute',
+          top: 18,
+          right: 36,
+          zIndex: 20,
+          background: '#36d7b7',
+          color: '#fff',
+          padding: '8px 20px',
+          border: 'none',
+          borderRadius: '22px',
+          fontWeight: 600,
+          fontSize: 17,
+          letterSpacing: 1,
+          boxShadow: '0 4px 18px #0002',
+          cursor: 'pointer'
+        }}
+        onClick={() => navigate('/bet-history')}
+      >
+        My Bet History
+      </button>
+
       <div className="tb-sticky-header">
         <div className="tb-round">Round: {currentRound}</div>
         <div className="tb-timer">⏱️ {timer}s</div>
