@@ -55,14 +55,8 @@ export default function BetHistoryPage() {
             </thead>
             <tbody>
               {history.map((row, i) => {
-                // Find winning image for this round
-                let winImage = "";
-                if (row.winAmount > 0 && row.bets.length > 0) {
-                  // User jeeta hai, to us image pe win hua (payout 10x hai)
-                  // Agar multiple pe bet lagayi, first win pe show kare
-                  const winBet = row.bets.find(b => row.winAmount === b.amount * 10);
-                  winImage = winBet ? winBet.choice : "";
-                }
+                // Winner image directly from backend
+                const winImage = row.winner || "";
 
                 // Highlight color
                 const highlightColor = "#26a641"; // Green
