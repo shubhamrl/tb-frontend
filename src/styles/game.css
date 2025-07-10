@@ -110,7 +110,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  height: 220px; /* ✅ Fixed height */
+  height: 220px;
 }
 
 .card:hover {
@@ -233,7 +233,7 @@
   font-weight: bold;
 }
 
-/* ====== Responsive Grid ====== */
+/* ====== Responsive Grid & Card Tweaks ====== */
 @media (max-width: 1024px) {
   .image-grid {
     grid-template-columns: repeat(4, 1fr);
@@ -250,8 +250,23 @@
   .image-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
   .game-header {
     flex-direction: column;
     gap: 0.75rem;
+  }
+
+  .card {
+    height: 190px; /* ✅ Mobile-specific shorter height */
+    padding: 0.5rem;
+  }
+
+  .card input {
+    padding: 0.3rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .card button {
+    padding: 0.3rem 0.6rem;
   }
 }
