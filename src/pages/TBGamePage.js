@@ -61,8 +61,7 @@ export default function TBGamePage() {
 
   const navigate = useNavigate();
 
-  // ... [effects and handlers remain unchanged] ...
-
+  // 1️⃣ LIVE STATE FETCH (every second)
   useEffect(() => {
     const fetchLiveState = async () => {
       try {
@@ -86,6 +85,7 @@ export default function TBGamePage() {
     return () => clearInterval(interval);
   }, []);
 
+  // 2️⃣ LAST 10 WINS FETCH
   useEffect(() => {
     const fetchLastWins = async () => {
       try {
@@ -104,32 +104,42 @@ export default function TBGamePage() {
     };
   }, []);
 
+  // 3️⃣ TIMER 5 pe WINNER ANNOUNCE KARO (no payout, only announcement)
   useEffect(() => {
     if (timer === 5 && currentRound) {
       api.post('/bets/announce-winner', { round: currentRound }).catch(() => {});
     }
   }, [timer, currentRound]);
 
+  // 4️⃣ SOCKET SE WINNER-ANNOUNCED PAR SIRF CHOICE UPDATE KARO
   useEffect(() => {
     const winnerAnnounceHandler = ({ round, choice }) => {
       setWinnerChoice(choice || null);
-      setShowWinner(true);
-      if (winnerTimeoutRef.current) clearTimeout(winnerTimeoutRef.current);
-      winnerTimeoutRef.current = setTimeout(() => setShowWinner(false), 10000);
+      // setShowWinner(false); // Don't show winner here!
     };
     socket.on('winner-announced', winnerAnnounceHandler);
     return () => {
       socket.off('winner-announced', winnerAnnounceHandler);
-      if (winnerTimeoutRef.current) clearTimeout(winnerTimeoutRef.current);
     };
   }, []);
 
+  // 5️⃣ TIMER 5 pe HI SHOW WINNER KARO
+  useEffect(() => {
+    if (timer === 5 && winnerChoice) {
+      setShowWinner(true);
+      if (winnerTimeoutRef.current) clearTimeout(winnerTimeoutRef.current);
+      winnerTimeoutRef.current = setTimeout(() => setShowWinner(false), 10000);
+    }
+  }, [timer, winnerChoice]);
+
+  // 6️⃣ TIMER 0 pe PAYOUT KARO
   useEffect(() => {
     if (timer === 0 && currentRound) {
       api.post('/bets/distribute-payouts', { round: currentRound }).catch(() => {});
     }
   }, [timer, currentRound]);
 
+  // 7️⃣ NEW ROUND RESET LOGIC
   useEffect(() => {
     if (currentRound !== lastRound) {
       setHighlighted([]);
@@ -140,6 +150,7 @@ export default function TBGamePage() {
     }
   }, [currentRound, lastRound]);
 
+  // BET INPUT HANDLER
   const handleInputChange = (name, val) => {
     if (/^\d*$/.test(val)) {
       setInputValues(prev => ({ ...prev, [name]: val }));
@@ -248,7 +259,7 @@ export default function TBGamePage() {
             <p style={{ margin: '0', color: '#555' }}>Waiting for winner...</p>
           )}
         </div>
-        
+
         {/* ⭐️ My Bet History Button (centered and with margin) */}
         <div style={{ width: "100%", display: "flex", justifyContent: "center", margin: "18px 0" }}>
           <button
