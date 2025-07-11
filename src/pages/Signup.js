@@ -1,13 +1,10 @@
-// src/pages/Signup.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import Loader from '../components/Loader';
 import '../styles/auth.css';
 
-// Cartoon girl image import (keep in /public or /assets)
-const girlImg = "/images/gaming-girl.png";
- // 👈 Use your own generated image path here
+const girlImg = "/images/gaming-girl.png"; // Transparent PNG required
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -45,12 +42,13 @@ const Signup = () => {
     <div className="auth-bg">
       <div className="auth-main">
         {/* Cartoon Girl */}
-        <img
-          src={girlImg}
-          alt="Gaming Girl"
-          className="auth-girl-img"
-        />
-
+        <div className="auth-img-wrapper">
+          <img
+            src={girlImg}
+            alt="Gaming Girl"
+            className="auth-girl-img"
+          />
+        </div>
         <div className="auth-container">
           <h2>Sign Up</h2>
           {loading ? (
