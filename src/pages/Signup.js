@@ -31,11 +31,11 @@ const Signup = () => {
         { headers: { 'Content-Type': 'application/json' } }
       );
       setLoading(false);
-      navigate(`/verify-otp?email=${encodeURIComponent(email)}`);
+      navigate(/verify-otp?email=${encodeURIComponent(email)});
     } catch (err) {
       setLoading(false);
       const msg = err.response?.data?.message || 'Signup failed';
-      alert(`Signup failed: ${msg}`);
+      alert(Signup failed: ${msg});
     }
   };
 
@@ -47,10 +47,8 @@ const Signup = () => {
           position: 'fixed',
           inset: 0,
           pointerEvents: 'none',
-          background: `url(${particlesImg})`,
-          backgroundRepeat: 'no-repeat',         // <-- Yahi magic line!
-          backgroundPosition: 'center',
-          backgroundSize: 'contain',
+          background: url(${particlesImg}) ,
+          backgroundSize: '120px 120px',
           opacity: 0.7,
           zIndex: 1
         }}
