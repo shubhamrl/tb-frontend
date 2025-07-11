@@ -44,14 +44,15 @@ const Signup = () => {
       {/* Particle overlay */}
       <div
         style={{
-          position: 'fixed',
-          inset: 0,
-          pointerEvents: 'none',
-          background: `url(${particlesImg}) repeat`,
-          backgroundSize: '120px 120px',
-          opacity: 0.7,
-          zIndex: 1
-        }}
+    position: 'fixed',
+    inset: 0,
+    pointerEvents: 'none',
+    backgroundImage: `url(${particlesImg})`,  // ✅
+    backgroundRepeat: 'repeat',               // ✅
+    backgroundSize: '120px 120px',
+    opacity: 0.7,
+    zIndex: 1
+  }}
       />
       <div className="auth-main" style={{ position: "relative", zIndex: 2 }}>
         {/* Cartoon Girl */}
