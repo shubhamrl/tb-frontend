@@ -30,7 +30,6 @@ body, .auth-bg {
   z-index: 3;
   height: 100%;
   position: relative;
-  /* Ensure overflow hidden so pair crop ho jaye */
   overflow: hidden;
 }
 
@@ -54,7 +53,7 @@ body, .auth-bg {
 .auth-container {
   max-width: 400px;
   min-width: 295px;
-  margin: -105px auto 0 auto;   /* Negative margin for overlap */
+  margin: -110px auto 0 auto;   /* Negative margin for overlap, adjust as needed */
   padding: 32px 24px 28px 24px;
   background: rgba(24, 22, 35, 0.78);
   backdrop-filter: blur(10px);
@@ -66,7 +65,6 @@ body, .auth-bg {
   transition: box-shadow 0.2s;
 }
 
-/* Header & Form */
 .auth-container h2 {
   margin-bottom: 24px;
   color: #fff7c0;
@@ -99,8 +97,6 @@ body, .auth-bg {
   box-shadow: 0 0 0 2.5px #ffd54f88;
   background: #191919;
 }
-
-/* Button */
 .auth-container button[type="submit"] {
   background: linear-gradient(90deg, #FFA726, #FFD54F);
   color: #232323;
@@ -120,7 +116,6 @@ body, .auth-bg {
   background: linear-gradient(90deg, #FFD54F, #FFA726);
   box-shadow: 0 4px 36px #FFD54FAA, 0 2px 16px #fb923cAA;
 }
-
 .auth-container a, .auth-container a:visited {
   color: #FFD54F;
   text-decoration: underline;
@@ -157,27 +152,27 @@ body, .auth-bg {
   .auth-img-wrapper {
     min-width: 120px;
     max-width: 170px;
-    width: 45vw;
+    width: 58vw;           /* Thoda bada kiya width, pet tak dikhe */
     justify-content: center;
     margin: 0 auto;
     overflow: hidden;
-    height: 150px; /* Crop image height to hide pair */
+    height: 205px;         /* Height bhi bada kiya, pet tak image aa jaaye */
   }
   .auth-girl-img {
-    max-height: 180px;
+    max-height: 205px;     /* Same as wrapper, pura pet tak dikhne dega */
     width: 100%;
     margin: 0 auto 0 auto;
     display: block;
-    opacity: 0.96;
-    object-fit: cover;    /* Crop bottom in mobile */
+    opacity: 0.97;
+    object-fit: contain;   /* contain tak hi image dikhegi */
     object-position: top center;
   }
   .auth-container {
-    margin: -55px auto 0 auto;    /* Overlap form, value can be tuned */
+    margin: -75px auto 0 auto;    /* Overlap form, value yaha tune ki, pet ke just niche form */
     padding: 8vw 4vw 6vw 4vw;
     min-width: 0;
     max-width: 97vw;
   }
 }
 
-/* Extra: If form and image ever overlap too much or too little, just adjust negative margin! */
+/* Extra: Agar form aur image overlapping perfect na lage toh sirf .auth-container margin aur .auth-img-wrapper height value adjust kar le! */
