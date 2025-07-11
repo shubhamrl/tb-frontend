@@ -6,7 +6,8 @@ import Loader from '../components/Loader';
 import '../styles/auth.css';
 
 // Cartoon girl image import (keep in /public or /assets)
-const girlImg = "/assets/gaming-girl.png"; // 👈 Use your own generated image path here
+const girlImg = "/images/gaming-girl.png";
+ // 👈 Use your own generated image path here
 
 const Signup = () => {
   const [email, setEmail] = useState('');
