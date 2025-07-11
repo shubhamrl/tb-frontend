@@ -137,6 +137,25 @@ body, .auth-bg {
   font-size: 1rem;
 }
 
+
+.auth-password-wrapper {
+  position: relative;
+}
+.show-hide-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #FFD54F;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0 2px;
+}
+
+
 /* ------------ MOBILE VIEW FIX ------------ */
 @media (max-width: 900px) {
   .auth-main {
