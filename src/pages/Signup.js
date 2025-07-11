@@ -47,8 +47,10 @@ const Signup = () => {
           position: 'fixed',
           inset: 0,
           pointerEvents: 'none',
-          background: `url(${particlesImg}) `,
-          backgroundSize: '120px 120px',
+          background: `url(${particlesImg})`,
+          backgroundRepeat: 'no-repeat',         // <-- Yahi magic line!
+          backgroundPosition: 'center',
+          backgroundSize: 'contain',
           opacity: 0.7,
           zIndex: 1
         }}
