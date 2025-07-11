@@ -10,18 +10,18 @@ body, .auth-bg {
   position: relative;
 }
 
-/* Particles Overlay */
+/* (Particles Overlay -- REMOVE THIS PART!)
 body::after {
   content: '';
   position: fixed;
   inset: 0;
   pointer-events: none;
   background: url('../../images/particles.png') repeat;
-
-  background-size: 120px 120px;    /* Adjust for your particle size */
-  opacity: 0.7;                    /* Bright for testing, lower it if needed */
+  background-size: 120px 120px;
+  opacity: 0.7;
   z-index: 1;
 }
+*/
 
 /* Layout Flex */
 .auth-main {
