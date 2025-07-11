@@ -9,22 +9,16 @@ body, .auth-bg {
   overflow-x: hidden;
   position: relative;
 }
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(circle at 15% 20%, #FFD54F44 0%, #0000 30%),
-              radial-gradient(circle at 80% 60%, #FFA72633 0%, #0000 45%);
-  z-index: 0;
-}
+
+/* Particles Overlay */
 body::after {
   content: '';
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background:  url('/images/particles.png') repeat;
-  opacity: 0.3;
+  background: url('/images/particles.png') repeat;
+  background-size: 120px 120px;    /* Adjust for your particle size */
+  opacity: 0.7;                    /* Bright for testing, lower it if needed */
   z-index: 1;
 }
 
@@ -36,6 +30,7 @@ body::after {
   min-height: 100vh;
   gap: 36px;
   position: relative;
+  z-index: 2;
 }
 
 /* Girl Image Wrapper - both desktop and mobile */
@@ -146,7 +141,6 @@ body::after {
   color: #FFA726;
 }
 
-/* Info text */
 .auth-container p {
   font-size: 16px;
   color: #fff7c0;
