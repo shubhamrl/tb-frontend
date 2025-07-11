@@ -16,7 +16,8 @@ body::after {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background: url('/images/particles.png') repeat;
+  background: url('../../images/particles.png') repeat;
+
   background-size: 120px 120px;    /* Adjust for your particle size */
   opacity: 0.7;                    /* Bright for testing, lower it if needed */
   z-index: 1;
