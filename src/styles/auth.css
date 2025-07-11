@@ -166,6 +166,7 @@ body, .auth-bg {
     max-height: 170px;
     width: 100%;
     margin: 0 auto;
+     margin: 20px auto 0 auto;   /* <-- yaha bhi 20px niche */
     display: block;
     opacity: 0.95;
   }
