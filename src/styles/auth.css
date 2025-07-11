@@ -7,7 +7,6 @@ body, .auth-bg {
   margin: 0;
   font-family: 'Poppins', 'Segoe UI', sans-serif;
   overflow-x: hidden;
-  /* Add fake glowing particles for now */
   position: relative;
 }
 body::before {
@@ -19,31 +18,48 @@ body::before {
               radial-gradient(circle at 80% 60%, #FFA72633 0%, #0000 45%);
   z-index: 0;
 }
-
-/* Glowing particles (simple for demo) */
 body::after {
   content: '';
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background: url('https://i.ibb.co/qWBpFJr/particles.png'); /* Use your own transparent gold particle PNG if needed */
+  background: url('https://i.ibb.co/qWBpFJr/particles.png');
   opacity: 0.3;
   z-index: 1;
 }
 
+/* Layout Flex */
 .auth-main {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
   gap: 36px;
+  position: relative;
 }
 
-.auth-girl-img {
+/* Girl Image Wrapper - both desktop and mobile */
+.auth-img-wrapper {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-width: 170px;
   max-width: 290px;
   width: 33vw;
-  min-width: 190px;
   z-index: 3;
+  height: 100%;
+}
+
+/* Girl Image */
+.auth-girl-img {
+  width: 100%;
+  height: auto;
+  max-height: 420px;
+  object-fit: contain;
+  opacity: 0.98;
+  filter: drop-shadow(0 4px 24px #FFD54F77);
+  pointer-events: none;
+  user-select: none;
 }
 
 /* Auth Container (glass card) */
@@ -152,13 +168,25 @@ body::after {
 @media (max-width: 700px) {
   .auth-main {
     flex-direction: column;
-    gap: 0;
+    gap: 18px;
+    padding-top: 4vw;
+  }
+  .auth-img-wrapper {
+    min-width: 120px;
+    max-width: 160px;
+    width: 38vw;
+    justify-content: center;
+    margin: 0 auto;
   }
   .auth-girl-img {
-    display: none;
+    max-height: 170px;
+    width: 100%;
+    margin: 0 auto;
+    display: block;
+    opacity: 0.95;
   }
   .auth-container {
-    margin: 7vw auto 0 auto;
+    margin: 4vw auto 0 auto;
     padding: 8vw 4vw 6vw 4vw;
     min-width: 0;
     max-width: 96vw;
