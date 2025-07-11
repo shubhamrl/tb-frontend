@@ -5,6 +5,7 @@ import Loader from '../components/Loader';
 import '../styles/auth.css';
 
 const girlImg = "/images/gaming-girl.png"; // Transparent PNG required
+const particlesImg = "/images/particles.png"; // Overlay PNG from public
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -39,8 +40,20 @@ const Signup = () => {
   };
 
   return (
-    <div className="auth-bg">
-      <div className="auth-main">
+    <div className="auth-bg" style={{ position: "relative", overflow: "hidden" }}>
+      {/* Particle overlay */}
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          pointerEvents: 'none',
+          background: `url(${particlesImg}) repeat`,
+          backgroundSize: '120px 120px',
+          opacity: 0.7,
+          zIndex: 1
+        }}
+      />
+      <div className="auth-main" style={{ position: "relative", zIndex: 2 }}>
         {/* Cartoon Girl */}
         <div className="auth-img-wrapper">
           <img
