@@ -31,11 +31,11 @@ const Signup = () => {
         { headers: { 'Content-Type': 'application/json' } }
       );
       setLoading(false);
-      navigate(/verify-otp?email=${encodeURIComponent(email)});
+      navigate(`/verify-otp?email=${encodeURIComponent(email)}`);
     } catch (err) {
       setLoading(false);
       const msg = err.response?.data?.message || 'Signup failed';
-      alert(Signup failed: ${msg});
+      alert(`Signup failed: ${msg}`);
     }
   };
 
@@ -44,15 +44,14 @@ const Signup = () => {
       {/* Particle overlay */}
       <div
         style={{
-    position: 'fixed',
-    inset: 0,
-    pointerEvents: 'none',
-    backgroundImage: `url(${particlesImg})`,  // ✅
-    backgroundRepeat: 'repeat',               // ✅
-    backgroundSize: '120px 120px',
-    opacity: 0.7,
-    zIndex: 1
-  }}
+          position: 'fixed',
+          inset: 0,
+          pointerEvents: 'none',
+          background: `url(${particlesImg}) repeat`,
+          backgroundSize: '120px 120px',
+          opacity: 0.7,
+          zIndex: 1
+        }}
       />
       <div className="auth-main" style={{ position: "relative", zIndex: 2 }}>
         {/* Cartoon Girl */}
