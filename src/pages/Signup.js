@@ -2,8 +2,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import Loader from '../components/Loader'; // 👈 Loader import
+import Loader from '../components/Loader';
 import '../styles/auth.css';
+
+// Cartoon girl image import (keep in /public or /assets)
+const girlImg = "/assets/gaming-girl.png"; // 👈 Use your own generated image path here
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -20,11 +23,8 @@ const Signup = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      // Pass referrerId only if present
       const signupData = { email, password };
       if (referrerId) signupData.referrerId = referrerId;
-
-      console.log("SIGNUP DATA SENDING:", signupData);
 
       await axios.post(
         'https://tb-backend-1.onrender.com/api/auth/signup',
@@ -41,36 +41,45 @@ const Signup = () => {
   };
 
   return (
-    <div className="auth-container">
-      <h2>Sign Up</h2>
-      {/* Show Loader if loading, else show form */}
-      {loading ? (
-        <Loader />
-      ) : (
-        <form onSubmit={handleSubmit}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <button type="submit" disabled={loading}>
-            {loading ? 'Signing Up...' : 'Sign Up'}
-          </button>
-        </form>
-      )}
+    <div className="auth-bg">
+      <div className="auth-main">
+        {/* Cartoon Girl */}
+        <img
+          src={girlImg}
+          alt="Gaming Girl"
+          className="auth-girl-img"
+        />
 
-      <p style={{ marginTop: '10px' }}>
-        Already have an account? <Link to="/login">Login here</Link>
-      </p>
+        <div className="auth-container">
+          <h2>Sign Up</h2>
+          {loading ? (
+            <Loader />
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button type="submit" disabled={loading}>
+                {loading ? 'Signing Up...' : 'Sign Up'}
+              </button>
+            </form>
+          )}
+          <p>
+            Already have an account? <Link to="/login">Login here</Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
