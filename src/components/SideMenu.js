@@ -1,5 +1,5 @@
 import React from 'react';
-import './sidemenu.css';
+import '../styles/sidemenu.css';
 
 const SideMenu = ({ open, onClose, user, numbers }) => {
   if (!open) return null;
