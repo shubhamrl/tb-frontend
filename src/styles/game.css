@@ -90,10 +90,13 @@
   transition: box-shadow 0.18s, transform 0.15s;
   cursor: pointer;
 }
+/* ==== Highlight on bet lagane par hata di === */
 .tb-card.selected {
-  box-shadow: 0 0 0 5px #32f26e, 0 4px 18px #07c55b40;
-  transform: scale(1.09);
+  /* No highlight, border, shadow, or scale! */
+  /* box-shadow: none; */
+  /* transform: none; */
 }
+/* ======= Winner (only winner highlight remains) ======= */
 .tb-card.winner {
   box-shadow: 0 0 0 5px #ffe082, 0 4px 22px #ffe082a0;
   animation: winnerGlow 0.8s infinite alternate;
@@ -139,7 +142,7 @@
 
 /* ======= Winner Popup Block (Reserved Space) ======= */
 .tb-winner-popup-block {
-  min-height: 106px; /* always reserving space even when popup not visible */
+  min-height: 106px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -222,10 +225,11 @@
   transition: background 0.15s, transform 0.11s;
   outline: none;
 }
+/* ==== Coin selected highlight — just subtle background ==== */
 .tb-coin-btn.selected, .tb-coin-btn:active {
   background: #2e323f;
-  box-shadow: 0 0 0 5px #3cff6a80;
-  transform: scale(1.12);
+  box-shadow: 0 2px 8px #3cff6a22;
+  transform: scale(1.07);
 }
 .tb-coin-btn[disabled] {
   opacity: 0.6;
@@ -236,3 +240,59 @@
   height: 30px;
   margin-bottom: 4px;
 }
+
+/* ======= Coin Cancel Button ======= */
+.tb-coin-cancel-btn {
+  width: 98%;
+  margin: 0 auto 10px auto;
+  padding: 10px 0 8px 0;
+  background: #181818;
+  color: #ffe082;
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 11px;
+  box-shadow: 0 2px 8px #0004;
+  cursor: pointer;
+  transition: background 0.18s;
+  letter-spacing: 1px;
+  display: block;
+}
+.tb-coin-cancel-btn:active {
+  background: #232323;
+  color: #fff;
+}
+
+/* ======= Responsive (Optional) ======= */
+@media (max-width: 600px) {
+  .tb-header-row {
+    padding: 7px 8px 4px 8px;
+  }
+  .tb-profile-pic { width: 32px; height: 32px; }
+  .tb-balance-row { font-size: 1rem; }
+  .tb-coin-icon { width: 16px; height: 16px; }
+  .tb-last-win-btn img { width: 18px; height: 18px; }
+  .tb-round-timer-row { margin: 0 6px 3px 6px; font-size: 0.95rem; }
+  .tb-round, .tb-timer { font-size: 0.95rem; }
+  .tb-image-flex {
+    gap: 6px 2px;
+    margin: 0 2px;
+  }
+  .tb-card { height: 62px; padding: 2px 0 7px 0; border-radius: 9px; }
+  .tb-card img { width: 30px; height: 30px; margin-bottom: 2px; border-radius: 7px; }
+  .tb-card-label { font-size: 0.82rem; margin-top: 2px; }
+  .tb-card-coin { font-size: 0.71rem; padding: 1px 3px 1px 1px; top: 2px; right: 2px; border-radius: 4px;}
+  .tb-card-coin img { width: 12px; height: 12px; margin-right: 1px; }
+  .tb-winner-popup-block { min-height: 52px; margin-top: 2px; margin-bottom: 1px; }
+  .tb-winner-popup { padding: 7px 8px 4px 8px; border-radius: 11px;}
+  .tb-winner-popup img { width: 27px; height: 27px; margin-bottom: 2px; border-radius: 6px;}
+  .tb-winner-label { font-size: 0.69rem; margin-top: 2px; letter-spacing: 0.4px; }
+  .tb-total-bet-row { border-radius: 7px; padding: 7px 0 6px 0; font-size: 0.93rem; margin: 5px 4px 0 4px;}
+  .tb-coin-row { gap: 4px; margin: 0 3px; margin-bottom: 6px; margin-top: 4px;}
+  .tb-coin-btn { padding: 4px 0 2px 0; border-radius: 7px; font-size: 0.79rem;}
+  .tb-coin-btn img { width: 13px; height: 13px; margin-bottom: 1px;}
+  .tb-coin-cancel-btn { width: 100%; margin: 0 auto 7px auto; padding: 7px 0 4px 0; font-size: 0.83rem; border-radius: 7px; letter-spacing: 0.7px;}
+}
+
+/* ======= Last Win Modal (no change) ======= */
+.tb-lastwin-modal { /* ...no change... */ }
