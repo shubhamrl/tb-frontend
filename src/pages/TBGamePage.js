@@ -123,15 +123,16 @@ export default function TBGamePage() {
     };
   }, []);
 
-  // *** WINNER POPUP: show only when timer===5 and winnerChoice is present ***
+  // *** FINAL WINNER POPUP LOGIC: ***
   useEffect(() => {
+    // Only open popup at timer===5, and for exactly 5 sec (even if timer changes)
     if (timer === 5 && winnerChoice) {
       setShowWinner(true);
       if (winnerTimeoutRef.current) clearTimeout(winnerTimeoutRef.current);
-      winnerTimeoutRef.current = setTimeout(() => setShowWinner(false), 10000);
-    } else {
-      setShowWinner(false);
+      winnerTimeoutRef.current = setTimeout(() => setShowWinner(false), 5000); // 5 sec
     }
+    // DO NOT auto-close on timer change! Only close on timeout or new round.
+    // eslint-disable-next-line
   }, [timer, winnerChoice]);
   // -------------------------------------------------------
 
@@ -149,7 +150,7 @@ export default function TBGamePage() {
       setSelectedCoin(null);
       setUserBets({});
       setShowWinner(false);
-      setWinnerChoice(null); // <-- Yeh line important!
+      setWinnerChoice(null); // winnerChoice reset
       setLastRound(currentRound);
     }
   }, [currentRound, lastRound]);
