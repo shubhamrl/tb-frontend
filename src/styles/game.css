@@ -1,272 +1,291 @@
-.game-container {
-  padding: 1rem;
-  max-width: 1200px;
-  margin: auto;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+/* === GAME PAGE DARK CASINO BACKGROUND === */
+.tb-game-bg {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #191919 60%, #232323 100%);
+  padding: 0;
   position: relative;
+  overflow-x: hidden;
+  font-family: 'Poppins', 'Segoe UI', sans-serif;
 }
 
-/* ===== Sticky Header: Round | Timer | Balance (ROW, always on top) ===== */
-.tb-sticky-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: rgba(22, 75, 83, 0.99);
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 24px 10px 24px;
-  box-shadow: 0 3px 18px rgba(16,90,120,0.09);
-  border-top-left-radius: 22px;
-  border-top-right-radius: 22px;
-  min-height: 68px;
-  margin-bottom: 18px;
-  gap: 8px;
-}
-
-.tb-sticky-header .tb-round {
-  font-size: 1.18rem;
-  color: #fff;
-  font-weight: 700;
-  flex: 1;
-  text-align: left;
-}
-.tb-sticky-header .tb-timer {
-  font-size: 1.13rem;
-  color: #ffc107;
-  font-weight: 700;
-  flex: 1;
-  text-align: center;
-}
-.tb-sticky-header .tb-balance {
-  font-size: 1.13rem;
-  color: #ffd600;
-  font-weight: 700;
-  flex: 1;
-  text-align: right;
-}
-
-@media (max-width: 600px) {
-  .tb-sticky-header {
-    padding: 9px 8px 6px 8px;
-    min-height: 54px;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-    font-size: 1rem;
-    gap: 0;
-  }
-  .tb-sticky-header .tb-round,
-  .tb-sticky-header .tb-timer,
-  .tb-sticky-header .tb-balance {
-    font-size: 0.98rem;
-    flex: 1;
-  }
-}
-
-/* ====== Game Header ====== */
-.game-header {
+/* ==== TOP: PROFILE | BALANCE | LAST WIN ==== */
+.tb-mobile-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  padding: 13px 16px 4px 16px;
 }
 
-/* ====== Winner Banner ====== */
-.live-winner {
-  background: #ffeb3b;
-  padding: 0.75rem 1.5rem;
-  border-radius: 12px;
-  font-size: 1rem;
+.tb-profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #222;
+  border: 2px solid #444;
+  object-fit: cover;
+}
+
+.tb-balance-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1.15rem;
+  color: #ffe57f;
   font-weight: bold;
-  animation: pulse 1s infinite;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+.tb-coin-icon {
+  width: 27px;
+  height: 27px;
 }
 
-/* ====== Image Grid ====== */
-.image-grid {
+.tb-last-win-btn {
+  background: #262831;
+  border: none;
+  border-radius: 50%;
+  padding: 6px;
+  box-shadow: 0 2px 8px #0004;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.tb-last-win-btn img {
+  width: 28px;
+  height: 28px;
+}
+
+.tb-last-win-btn:active { background: #fff2; }
+
+/* ==== ROUND + TIMER ==== */
+.tb-round-timer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 16px 8px 16px;
+  font-size: 1.13rem;
+  color: #b5b5b5;
+}
+.tb-round { font-weight: 600; }
+.tb-timer { color: #ffc107; font-weight: bold; }
+
+/* ==== IMAGE GRID: 2 ROWS, 6 COLS ==== */
+.tb-image-grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 1rem;
-  margin: 1rem 0;
+  grid-template-rows: repeat(2, 85px);
+  gap: 8px;
+  margin: 12px 8px 0 8px;
 }
 
-/* ====== Game Card ====== */
-.card {
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  padding: 0.75rem;
-  transition: transform 0.2s, box-shadow 0.2s;
-  position: relative;
+.tb-card {
+  background: #181818;
+  border-radius: 14px;
+  box-shadow: 0 3px 10px #0004;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  height: 220px;
-}
-
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.card.selected {
-  border-width: 4px;
-  border-color: #02fc0a;
-  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
-}
-
-.card img {
-  width: 60px;
-  height: 60px;
-  object-fit: contain;
-  margin-bottom: 0.4rem;
-}
-
-.card .name {
-  text-transform: capitalize;
-  margin: 0.5rem 0;
-  font-weight: 500;
-}
-
-.card .bet {
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 0.4rem;
-}
-
-.card input {
-  width: 60%;
-  padding: 0.35rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  text-align: center;
-  margin-bottom: 0.4rem;
-}
-
-.card button {
-  padding: 0.35rem 0.6rem;
-  background: #2196f3;
-  color: white;
-  border: none;
-  border-radius: 8px;
+  justify-content: flex-end;
+  padding: 2px 0 5px 0;
+  position: relative;
+  height: 78px;
+  transition: box-shadow 0.18s, transform 0.15s;
   cursor: pointer;
-  font-weight: bold;
-  transition: background 0.2s;
+}
+.tb-card.selected {
+  box-shadow: 0 0 0 3px #32f26e, 0 4px 16px #07c55b40;
+  transform: scale(1.06);
+}
+.tb-card.winner {
+  box-shadow: 0 0 0 3px #ffe082, 0 4px 18px #ffe08270;
+  animation: winnerGlow 0.8s infinite alternate;
+}
+@keyframes winnerGlow {
+  to { box-shadow: 0 0 0 6px #fff6, 0 4px 26px #ffe082a0; }
+}
+.tb-card img {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  margin-bottom: 2px;
+  background: #2d2d2d;
+  border-radius: 8px;
+}
+.tb-card-label {
+  color: #fff;
+  font-size: 0.92rem;
+  margin-top: 2px;
+  margin-bottom: 0px;
+  letter-spacing: 0.4px;
+}
+.tb-card-coin {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  background: #232323cc;
+  border-radius: 8px;
+  padding: 2px 6px 2px 2px;
+  box-shadow: 0 2px 8px #0004;
+  font-size: 0.92rem;
+  color: #ffe082;
+  gap: 2px;
+  font-weight: 700;
+}
+.tb-card-coin img {
+  width: 17px;
+  height: 17px;
+  margin: 0 4px 0 0;
 }
 
-.card button:hover {
-  background: #1976d2;
+/* ==== BET SUMMARY ROW ==== */
+.tb-total-bet-row {
+  margin: 14px 16px 7px 16px;
+  background: #292929;
+  color: #ffe082;
+  border-radius: 10px;
+  padding: 9px 0 7px 0;
+  text-align: center;
+  font-size: 1.14rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px #0003;
+  letter-spacing: 0.2px;
 }
 
-.card input:disabled,
-.card button:disabled {
-  opacity: 0.5;
+/* ==== COINS ROW ==== */
+.tb-coin-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 9px;
+  margin: 0 13px;
+  margin-bottom: 17px;
+}
+.tb-coin-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: none;
+  background: #202124;
+  border-radius: 16px;
+  padding: 8px 0 5px 0;
+  box-shadow: 0 2px 8px #0002;
+  cursor: pointer;
+  font-size: 1.09rem;
+  color: #ffd700;
+  font-weight: 600;
+  transition: background 0.15s, transform 0.11s;
+  outline: none;
+}
+.tb-coin-btn.selected, .tb-coin-btn:active {
+  background: #2e323f;
+  box-shadow: 0 0 0 3px #3cff6a80;
+  transform: scale(1.08);
+}
+.tb-coin-btn[disabled] {
+  opacity: 0.4;
   cursor: not-allowed;
 }
-
-/* ====== Last Wins ====== */
-.last-wins {
-  margin-top: 1.5rem;
-  background: #f9f9f9;
-  padding: 1rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+.tb-coin-btn img {
+  width: 29px;
+  height: 29px;
+  margin-bottom: 3px;
 }
 
-.last-wins h4 {
-  margin-bottom: 0.75rem;
-  font-size: 1.1rem;
-  color: #333;
-}
-
-.last-wins ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.last-wins li {
-  font-size: 0.95rem;
-  padding: 0.25rem 0;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.last-wins li:last-child {
-  border-bottom: none;
-}
-
-/* ====== Winner Popup ====== */
-.winner-popup {
-  position: absolute;
+/* ==== WINNER POPUP ==== */
+.tb-winner-popup {
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(0, 0, 0, 0.85);
+  background: #181818fa;
   color: #fff;
-  padding: 2rem;
-  border-radius: 12px;
+  border-radius: 16px;
+  padding: 28px 25px 20px 25px;
   text-align: center;
-  z-index: 1000;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  z-index: 2222;
+  box-shadow: 0 8px 36px #000a;
+  animation: winnerShow 0.6s;
 }
-
-.popup-image {
-  width: 120px;
-  height: 120px;
+@keyframes winnerShow {
+  from { opacity: 0; transform: translate(-50%, -30%); }
+  to   { opacity: 1; transform: translate(-50%, -50%); }
+}
+.tb-winner-popup img {
+  width: 75px;
+  height: 75px;
   object-fit: contain;
-  margin-bottom: 1rem;
+  margin-bottom: 14px;
   border-radius: 8px;
-  border: 2px solid #fff;
+  border: 2px solid #ffe082;
 }
-
-.popup-image + p {
-  font-size: 1.25rem;
+.tb-winner-label {
+  font-size: 1.12rem;
+  margin-top: 0.5rem;
+  color: #ffe082;
   font-weight: bold;
+  letter-spacing: 0.8px;
 }
 
-/* ====== Responsive Grid & Card Tweaks ====== */
-@media (max-width: 1024px) {
-  .image-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
+/* ==== LAST WIN MODAL ==== */
+.tb-lastwin-modal {
+  background: #212121ee;
+  border-radius: 14px;
+  border: none;
+  color: #fff;
+  min-width: 250px;
+  max-width: 320px;
+  padding: 22px 12px 14px 12px;
+  box-shadow: 0 8px 32px #000a;
+}
+.tb-lastwin-modal h3 {
+  color: #ffe082;
+  margin-bottom: 12px;
+  text-align: center;
+}
+.tb-lastwin-modal ul {
+  padding: 0 4px;
+  margin-bottom: 11px;
+}
+.tb-lastwin-modal li {
+  font-size: 0.97rem;
+  padding: 2px 0;
+  color: #fff;
+  border-bottom: 1px solid #393939;
+}
+.tb-lastwin-modal li:last-child { border-bottom: none; }
+.tb-lastwin-modal button {
+  margin: 0 auto;
+  display: block;
+  padding: 7px 28px;
+  border-radius: 7px;
+  border: none;
+  background: #ffe082;
+  color: #222;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
 }
 
-@media (max-width: 768px) {
-  .image-grid {
-    grid-template-columns: repeat(3, 1fr);
+/* ==== MEDIA QUERIES FOR MOBILE ==== */
+@media (max-width: 600px) {
+  .tb-image-grid {
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(2, 58px);
+    gap: 4px;
+    margin: 8px 4px 0 4px;
   }
-}
-
-@media (max-width: 480px) {
-  .image-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .tb-card {
+    height: 54px;
+    min-width: 0;
+    padding: 1px 0 4px 0;
   }
-
-  .game-header {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .card {
-    height: 190px; /* ✅ Mobile-specific shorter height */
-    padding: 0.5rem;
-  }
-
-  .card input {
-    padding: 0.3rem;
-    margin-bottom: 0.4rem;
-  }
-
-  .card button {
-    padding: 0.3rem 0.6rem;
-  }
+  .tb-card img { width: 26px; height: 26px; }
+  .tb-card-label { font-size: 0.82rem; }
+  .tb-card-coin { font-size: 0.81rem; padding: 1px 5px 1px 1px; top: 2px; right: 4px; }
+  .tb-profile-pic { width: 33px; height: 33px; }
+  .tb-coin-icon { width: 19px; height: 19px; }
+  .tb-coin-btn img { width: 18px; height: 18px; }
+  .tb-total-bet-row { font-size: 0.99rem; padding: 7px 0 4px 0; }
+  .tb-last-win-btn img { width: 19px; height: 19px; }
 }
