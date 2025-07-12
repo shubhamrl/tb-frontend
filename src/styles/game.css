@@ -259,5 +259,130 @@
   color: #fff;
 }
 
+@media (max-width: 600px) {
+
+  .tb-game-root {
+    padding: 0;
+  }
+
+  .tb-header-row {
+    padding: 7px 8px 4px 8px;
+  }
+  .tb-profile-pic {
+    width: 32px;
+    height: 32px;
+  }
+  .tb-balance-row {
+    font-size: 1rem;
+  }
+  .tb-coin-icon {
+    width: 16px;
+    height: 16px;
+  }
+  .tb-last-win-btn img {
+    width: 18px;
+    height: 18px;
+  }
+
+  .tb-round-timer-row {
+    margin: 0 6px 3px 6px;
+    font-size: 0.95rem;
+  }
+  .tb-round, .tb-timer {
+    font-size: 0.95rem;
+  }
+
+  .tb-image-flex {
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(2, minmax(34px, 1fr)); /* Zyada tight! */
+    gap: 2.5px 1.5px;    /* Images ke beech minimum gap */
+    margin: 0 2px;
+    flex-grow: 0;
+  }
+  .tb-card {
+    height: 44px;
+    min-height: 38px;
+    padding: 0 0 2px 0;
+    border-radius: 9px;
+  }
+  .tb-card img {
+    width: 22px;
+    height: 22px;
+    margin-bottom: 1px;
+    border-radius: 7px;
+  }
+  .tb-card-label {
+    font-size: 0.62rem;
+    margin-top: 2px;
+  }
+  .tb-card-coin {
+    font-size: 0.61rem;
+    padding: 1px 4px 1px 1px;
+    top: 1px;
+    right: 2px;
+    border-radius: 4px;
+  }
+  .tb-card-coin img {
+    width: 10px;
+    height: 10px;
+    margin-right: 1px;
+  }
+
+  .tb-winner-popup-block {
+    min-height: 52px;
+    margin-top: 2px;
+    margin-bottom: 1px;
+  }
+  .tb-winner-popup {
+    padding: 7px 8px 4px 8px;
+    border-radius: 11px;
+  }
+  .tb-winner-popup img {
+    width: 27px;
+    height: 27px;
+    margin-bottom: 2px;
+    border-radius: 6px;
+  }
+  .tb-winner-label {
+    font-size: 0.69rem;
+    margin-top: 2px;
+    letter-spacing: 0.4px;
+  }
+
+  .tb-total-bet-row {
+    border-radius: 7px;
+    padding: 7px 0 6px 0;
+    font-size: 0.93rem;
+    margin: 5px 4px 0 4px;
+  }
+
+  .tb-coin-row {
+    gap: 4px;
+    margin: 0 3px;
+    margin-bottom: 6px;
+    margin-top: 4px;
+  }
+  .tb-coin-btn {
+    padding: 4px 0 2px 0;
+    border-radius: 7px;
+    font-size: 0.79rem;
+  }
+  .tb-coin-btn img {
+    width: 13px;
+    height: 13px;
+    margin-bottom: 1px;
+  }
+
+  .tb-coin-cancel-btn {
+    width: 100%;
+    margin: 0 auto 7px auto;
+    padding: 7px 0 4px 0;
+    font-size: 0.83rem;
+    border-radius: 7px;
+    letter-spacing: 0.7px;
+  }
+}
+
+
 /* ======= Last Win Modal (same as before) ======= */
 .tb-lastwin-modal { /* ...no change... */ }
