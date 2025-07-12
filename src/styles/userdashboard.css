@@ -1,179 +1,109 @@
-/* userdashboard.css */
-
-/* BG for whole app */
-body {
-  background: radial-gradient(circle at 30% 30%, #0fa3a3 60%, #256a72 100%);
-  min-height: 100vh;
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
+.dashboard-mobile-bg {
+  min-height: 100dvh;
+  background: linear-gradient(135deg, #131d27 60%, #233544 100%);
+  padding: 0;
 }
-
-/* Main dashboard card */
-.dashboard-container {
-  max-width: 410px;
-  margin: 46px auto;
-  background: rgba(22, 75, 83, 0.96);
-  border-radius: 22px;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.22);
-  text-align: center;
+.dashboard-mobile-main {
+  max-width: 430px;
+  margin: 0 auto;
+  background: rgba(26, 34, 48, 0.99);
+  border-radius: 18px;
+  box-shadow: 0 8px 40px #00000025;
   padding: 0 0 26px 0;
   position: relative;
   overflow: hidden;
-  transition: box-shadow 0.2s;
+  min-height: 100vh;
 }
-
-.dashboard-container h1 {
-  color: #fff;
-  font-weight: 500;
-  font-size: 1.32rem;
-  letter-spacing: 0.5px;
-  margin: 0;
-  padding-top: 36px;
-}
-
-.dashboard-container p {
-  font-size: 18px;
-  color: #fbfbfb;
-  margin: 14px 0 24px 0;
-  font-weight: 400;
-}
-
-/* Referral/Earnings box */
-.dashboard-container > div:first-of-type {
-  flex-wrap: wrap;
-  margin: 18px 0 13px 0 !important;
-}
-
-/* Buttons Section */
-.dashboard-buttons,
-.game-buttons,
-.logout-section {
+.dashboard-header-row {
   display: flex;
-  justify-content: center;
+  align-items: center;
+  padding: 19px 17px 0 17px;
   gap: 14px;
-  margin-top: 20px;
-  flex-wrap: wrap;
+  justify-content: flex-start;
 }
-
-.dashboard-buttons button,
-.game-buttons button,
-.logout-section button {
-  padding: 13px 29px;
-  font-size: 1.06rem;
+.menu-icon-btn {
+  background: #15232c;
   border: none;
-  border-radius: 12px;
-  background-color: #06a497;
-  color: white;
-  font-weight: 600;
+  padding: 9px 11px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
   cursor: pointer;
-  box-shadow: 0 2px 13px #0fa3a360;
-  transition: background 0.21s, box-shadow 0.23s;
-  outline: none;
+  margin-right: 13px;
 }
-.dashboard-buttons button:hover,
-.game-buttons button:hover,
-.logout-section button:hover {
-  background-color: #007c76;
-  box-shadow: 0 2px 22px #0fa3a380;
+.menu-icon-bar {
+  width: 23px;
+  height: 3px;
+  background: #ffe082;
+  border-radius: 4px;
+  display: block;
 }
-
-/* Refer Button & Earnings */
-.dashboard-container > div:first-of-type button {
-  background: #fb923c;
-  box-shadow: 0 2px 13px #ffebc2;
-  font-size: 1.13rem;
-  font-weight: 700;
-  border-radius: 10px;
-  padding: 13px 33px;
-}
-.dashboard-container > div:first-of-type button:hover {
-  background: #fb7c05;
-}
-.dashboard-container > div:first-of-type > div {
-  background: #f9fbe7;
-  color: #16a34a;
-  font-weight: 700;
+.dashboard-logo {
   font-size: 1.1rem;
-  border-radius: 7px;
-  padding: 10px 18px;
-  border: 1px solid #dbeafe;
-  margin: 0;
+  color: #ffeb3b;
+  font-weight: 700;
 }
-
-/* Tip box */
-.tip-section {
-  margin-top: 30px;
-  background: #FFFDE7;
-  border: 1px solid #FFD54F;
-  border-radius: 12px;
-  padding: 14px;
-  color: #6D4C00;
-  font-size: 15.5px;
-  font-weight: 500;
-  line-height: 1.6;
+.dashboard-welcome {
   text-align: left;
-  box-shadow: 0 1px 6px #ffe08260;
+  margin: 24px 0 0 18px;
 }
-
-/* --------- Responsive Styles ---------- */
+.welcome-title {
+  color: #90caf9;
+  font-size: 1rem;
+  font-weight: 500;
+}
+.user-email {
+  color: #fff;
+  font-size: 1.22rem;
+  font-weight: 600;
+  margin-top: 4px;
+}
+.dashboard-balance {
+  margin: 20px 0 18px 18px;
+  color: #ffe082;
+  font-size: 1.15rem;
+  font-weight: 600;
+  text-align: left;
+}
+.balance-amount {
+  font-size: 1.28rem;
+  font-weight: 700;
+  color: #ffd600;
+  margin-left: 2px;
+}
+.dashboard-play-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 13px 15px 0 15px;
+}
+.dashboard-play-buttons button {
+  padding: 15px 0;
+  font-size: 1.09rem;
+  border: none;
+  border-radius: 13px;
+  background: linear-gradient(92deg, #2193b0 60%, #6dd5ed 100%);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 2px 16px #2193b052;
+  cursor: pointer;
+  margin-bottom: 3px;
+  transition: background 0.18s, box-shadow 0.23s;
+}
+.dashboard-play-buttons button:hover {
+  background: linear-gradient(92deg, #176e75 60%, #00838f 100%);
+  box-shadow: 0 2px 22px #00acc152;
+}
 @media (max-width: 600px) {
-  .dashboard-container {
-    max-width: 97vw;
-    margin: 18px 1vw;
-    border-radius: 13px;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.19);
+  .dashboard-mobile-main {
+    max-width: 99vw;
+    border-radius: 11px;
     padding: 0 0 13px 0;
   }
-  .dashboard-buttons,
-  .game-buttons,
-  .logout-section {
-    gap: 9px;
-    margin-top: 16px;
+  .dashboard-welcome, .dashboard-balance {
+    margin-left: 12px;
   }
-  .dashboard-buttons button,
-  .game-buttons button,
-  .logout-section button {
-    font-size: 1rem;
-    padding: 11px 0;
-    width: 46vw;
-    min-width: 110px;
-    max-width: 94vw;
-    margin: 0 2vw;
-  }
-  .dashboard-container h1 {
-    font-size: 1.05rem;
-    padding-top: 19px;
-  }
-  .dashboard-container p {
-    font-size: 15.5px;
-    margin: 9px 0 15px 0;
-  }
-  .dashboard-container > div:first-of-type button {
-    padding: 10px 13vw;
-    font-size: 1.01rem;
-  }
-  .dashboard-container > div:first-of-type > div {
-    font-size: 0.99rem;
-    padding: 7px 6vw;
-  }
-  .tip-section {
-    font-size: 14px;
-    padding: 11px;
-    margin-top: 18px;
-  }
-}
-
-@media (max-width: 420px) {
-  .dashboard-buttons button,
-  .game-buttons button,
-  .logout-section button {
-    width: 90vw;
-    min-width: 0;
-    padding: 11px 0;
-    font-size: 0.96rem;
-  }
-  .dashboard-container > div:first-of-type button {
-    width: 92vw;
-    padding: 9px 0;
-  }
+  .dashboard-header-row { padding-left: 9px; }
+  .dashboard-play-buttons { padding: 13px 3vw 0 3vw; }
 }
