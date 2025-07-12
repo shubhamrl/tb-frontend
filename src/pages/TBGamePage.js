@@ -123,14 +123,17 @@ export default function TBGamePage() {
     };
   }, []);
 
-  // SHOW WINNER POPUP
+  // ** WINNER SHOW FIX **
   useEffect(() => {
-    if (timer === 5 && winnerChoice) {
+    if (winnerChoice) {
       setShowWinner(true);
       if (winnerTimeoutRef.current) clearTimeout(winnerTimeoutRef.current);
       winnerTimeoutRef.current = setTimeout(() => setShowWinner(false), 10000);
+    } else {
+      setShowWinner(false);
     }
-  }, [timer, winnerChoice]);
+  }, [winnerChoice]);
+  // -----
 
   // TIMER 0 pe PAYOUT
   useEffect(() => {
@@ -139,13 +142,14 @@ export default function TBGamePage() {
     }
   }, [timer, currentRound]);
 
-  // NEW ROUND RESET
+  // NEW ROUND RESET (add winnerChoice reset)
   useEffect(() => {
     if (currentRound !== lastRound) {
       setHighlighted([]);
       setSelectedCoin(null);
       setUserBets({});
       setShowWinner(false);
+      setWinnerChoice(null); // <-- YEH LINE IMPORTANT!
       setLastRound(currentRound);
     }
   }, [currentRound, lastRound]);
@@ -226,8 +230,12 @@ export default function TBGamePage() {
         ))}
       </div>
 
-      {/* Winner Popup (reserved center space) */}
+      {/* Winner Popup */}
       <div className="tb-winner-popup-block">
+        {/* Pending logic: */}
+        {!winnerChoice && timer <= 5 &&
+          <div className="tb-winner-pending">Status: Pending...</div>
+        }
         {showWinner && winnerChoice &&
           <div className="tb-winner-popup">
             <img src={`/images/${winnerChoice}.png`} alt={winnerChoice} />
