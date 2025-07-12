@@ -41,12 +41,14 @@ const IMAGE_LIST = [
   { name: 'rabbit',      src: '/images/rabbit.png'       }
 ];
 
+const COINS = [10, 20, 30, 40, 50, 100];
+
 export default function TBGamePage() {
-  const [inputValues, setInputValues] = useState({});
+  const [selectedCoin, setSelectedCoin] = useState(null);
   const [highlighted, setHighlighted] = useState([]);
   const [lastWins, setLastWins] = useState([]);
   const [currentRound, setCurrentRound] = useState(1);
-  const [timer, setTimer] = useState(90);
+  const [timer, setTimer] = useState(40);
   const [bets, setBets] = useState({});
   const [winnerChoice, setWinnerChoice] = useState(null);
   const [showWinner, setShowWinner] = useState(false);
@@ -115,7 +117,6 @@ export default function TBGamePage() {
   useEffect(() => {
     const winnerAnnounceHandler = ({ round, choice }) => {
       setWinnerChoice(choice || null);
-      // setShowWinner(false); // Don't show winner here!
     };
     socket.on('winner-announced', winnerAnnounceHandler);
     return () => {
@@ -143,42 +144,49 @@ export default function TBGamePage() {
   useEffect(() => {
     if (currentRound !== lastRound) {
       setHighlighted([]);
-      setInputValues({});
+      setSelectedCoin(null);
       setUserBets({});
       setShowWinner(false);
       setLastRound(currentRound);
     }
   }, [currentRound, lastRound]);
 
-  // BET INPUT HANDLER
-  const handleInputChange = (name, val) => {
-    if (/^\d*$/.test(val)) {
-      setInputValues(prev => ({ ...prev, [name]: val }));
-    }
+  // ==== NEW COIN + IMAGE BET LOGIC ====
+  const handleCoinSelect = (value) => {
+    setSelectedCoin(value);
   };
 
-  const placeBetHandler = async (name) => {
-    const amt = parseInt(inputValues[name] || '0', 10);
+  const handleImageBet = async (name) => {
+    if (!selectedCoin) {
+      alert("Please select a coin first!");
+      return;
+    }
     if (timer <= 15) {
       alert('Betting closed for the last 15 seconds');
       return;
     }
-    if (amt <= 0) return;
-    if (balance < amt) {
+    if (balance < selectedCoin) {
       alert('Insufficient balance');
       return;
     }
+    // Animation: highlight image
     setHighlighted(h => (h.includes(name) ? h : [...h, name]));
     setUserBets(prev => ({
       ...prev,
-      [name]: (prev[name] || 0) + amt
+      [name]: (prev[name] || 0) + selectedCoin
     }));
-    setBalance(prev => prev - amt);
-    setInputValues(iv => ({ ...iv, [name]: '' }));
+    setBalance(prev => prev - selectedCoin);
+
     try {
-      await api.post('/bets/place-bet', { choice: name, amount: amt, round: currentRound });
+      await api.post('/bets/place-bet', { choice: name, amount: selectedCoin, round: currentRound });
     } catch (e) {
       alert(e.response?.data?.message || 'Bet failed');
+      // Rollback UI
+      setUserBets(prev => ({
+        ...prev,
+        [name]: (prev[name] || 0) - selectedCoin
+      }));
+      setBalance(prev => prev + selectedCoin);
       try {
         const res = await api.get('/bets/live-state');
         setUserBets(res.data.userBets || {});
@@ -187,116 +195,105 @@ export default function TBGamePage() {
     }
   };
 
+  // GET USER TOTAL BET THIS ROUND
+  const userTotalBet = Object.values(userBets).reduce((sum, val) => sum + val, 0);
+
   if (loadingGame || loadingWins) {
     return <Loader />;
   }
 
   return (
-    <div className="game-container">
-      <div className="tb-sticky-header">
-        <div className="tb-round">Round: {currentRound}</div>
-        <div className="tb-timer">⏱️ {timer}s</div>
-        <div className="tb-balance">💰 ₹{balance}</div>
+    <div className="tb-game-bg">
+      {/* Top Header: Profile, Balance (coin), Last Win icon */}
+      <div className="tb-mobile-header">
+        <div className="tb-profile">
+          <img src="/images/profile.png" alt="profile" className="tb-profile-pic" />
+        </div>
+        <div className="tb-balance-row">
+          <img src="/images/coin.png" alt="coin" className="tb-coin-icon" />
+          <span>₹{balance}</span>
+        </div>
+        <button className="tb-last-win-btn" onClick={() => document.getElementById('tb-lastwin-modal').showModal()}>
+          <img src="/images/trophy.png" alt="last win" />
+        </button>
       </div>
-      <div className="image-grid">
-        {IMAGE_LIST.map(item => (
+
+      {/* Round & Timer Row */}
+      <div className="tb-round-timer">
+        <div className="tb-round">Round: #{currentRound}</div>
+        <div className="tb-timer">⏱ {timer}s</div>
+      </div>
+
+      {/* 2x6 Image Grid */}
+      <div className="tb-image-grid">
+        {IMAGE_LIST.map((item, idx) => (
           <div
             key={item.name}
-            className={`card ${highlighted.includes(item.name) ? 'selected' : ''}`}
+            className={`tb-card ${highlighted.includes(item.name) ? 'selected' : ''} ${winnerChoice === item.name && showWinner ? 'winner' : ''}`}
+            onClick={() => handleImageBet(item.name)}
+            style={{ cursor: timer <= 15 ? "not-allowed" : "pointer" }}
           >
             <img src={item.src} alt={EN_TO_HI[item.name] || item.name} />
-            <p className="name">{EN_TO_HI[item.name] || item.name}</p>
-            <p className="bet">₹{userBets[item.name] || 0}</p>
-            <div className="bet-input-row">
-              <input
-                type="text"
-                disabled={timer <= 15}
-                value={inputValues[item.name] || ''}
-                onChange={e => handleInputChange(item.name, e.target.value)}
-                placeholder="₹"
-              />
-              <button
-                disabled={timer <= 15}
-                onClick={() => placeBetHandler(item.name)}
-              >
-                Bet
-              </button>
-            </div>
+            {/* Coin overlay if bet placed */}
+            {userBets[item.name] > 0 &&
+              <div className="tb-card-coin">
+                <img src="/images/coin.png" alt="coin" />
+                <span>{userBets[item.name]}</span>
+              </div>
+            }
+            <div className="tb-card-label">{EN_TO_HI[item.name]}</div>
           </div>
         ))}
       </div>
-      <div className="right-panel">
-        <div
-          className="winner-box"
-          style={{
-            margin: '1rem auto',
-            padding: '1rem',
-            background: '#ffe082',
-            borderRadius: '8px',
-            textAlign: 'center',
-            width: '220px',
-            minHeight: '140px'
-          }}
-        >
-          {showWinner && winnerChoice ? (
-            <>
-              <img
-                src={`/images/${winnerChoice}.png`}
-                alt={EN_TO_HI[winnerChoice] || winnerChoice}
-                style={{ width: '100px', height: '100px', objectFit: 'contain' }}
-              />
-              <p
-                style={{
-                  margin: '0.5rem 0',
-                  fontWeight: 'bold',
-                  fontSize: '1.2rem'
-                }}
-              >
-                🎉 {(EN_TO_HI[winnerChoice] || winnerChoice).toUpperCase()} 🎉
-              </p>
-            </>
-          ) : (
-            <p style={{ margin: '0', color: '#555' }}>Waiting for winner...</p>
-          )}
-        </div>
 
-        {/* ⭐️ My Bet History Button (centered and with margin) */}
-        <div style={{ width: "100%", display: "flex", justifyContent: "center", margin: "18px 0" }}>
+      {/* Your Bet This Round */}
+      <div className="tb-total-bet-row">
+        <span>Your Bet This Round: </span>
+        <b>₹{userTotalBet}</b>
+      </div>
+
+      {/* Bet Coins Row */}
+      <div className="tb-coin-row">
+        {COINS.map(val => (
           <button
-            style={{
-              background: '#36d7b7',
-              color: '#fff',
-              padding: '9px 32px',
-              border: 'none',
-              borderRadius: '22px',
-              fontWeight: 600,
-              fontSize: 17,
-              letterSpacing: 1,
-              boxShadow: '0 4px 18px #0002',
-              cursor: 'pointer'
-            }}
-            onClick={() => navigate('/bet-history')}
+            key={val}
+            className={`tb-coin-btn ${selectedCoin === val ? 'selected' : ''}`}
+            onClick={() => handleCoinSelect(val)}
+            disabled={timer <= 15}
           >
-            My Bet History
+            <img src="/images/coin.png" alt="coin" />
+            <span>{val}</span>
           </button>
-        </div>
+        ))}
+      </div>
 
-        <div className="last-wins">
-          <h4>📜 Last 10 Wins</h4>
+      {/* Winner Popup (Center Modal) */}
+      {showWinner && winnerChoice &&
+        <div className="tb-winner-popup">
+          <img src={`/images/${winnerChoice}.png`} alt={winnerChoice} />
+          <div className="tb-winner-label">
+            🎉 {(EN_TO_HI[winnerChoice] || winnerChoice).toUpperCase()} 🎉
+          </div>
+        </div>
+      }
+
+      {/* Last Win Modal */}
+      <dialog id="tb-lastwin-modal" className="tb-lastwin-modal">
+        <div>
+          <h3>Last 10 Wins</h3>
           <ul>
             {lastWins.map((w, i) => {
               const round = w && typeof w.round !== 'undefined' ? w.round : "-";
               const choice = w && w.choice ? w.choice : "-";
               const name = (EN_TO_HI[choice] || choice).toUpperCase();
               return (
-                <li key={i}>
-                  <b>Round {round}:</b> {name}
-                </li>
+                <li key={i}><b>Round {round}:</b> {name}</li>
               );
             })}
           </ul>
+          <button onClick={() => document.getElementById('tb-lastwin-modal').close()}>Close</button>
         </div>
-      </div>
+      </dialog>
     </div>
   );
 }
