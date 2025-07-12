@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../components/Loader';
-import SideMenu from '../components/SideMenu';
+import SideMenu from '../styles/sidemenu.css';
 import '../styles/userdashboard.css';
 
 const UserDashboard = () => {
