@@ -57,13 +57,12 @@ export default function TBGamePage() {
   const [lastRound, setLastRound] = useState(1);
   const winnerTimeoutRef = useRef(null);
 
-  // LOADER STATES
   const [loadingGame, setLoadingGame] = useState(true);
   const [loadingWins, setLoadingWins] = useState(true);
 
   const navigate = useNavigate();
 
-  // 1️⃣ LIVE STATE FETCH (every second)
+  // LIVE STATE FETCH
   useEffect(() => {
     const fetchLiveState = async () => {
       try {
@@ -87,7 +86,7 @@ export default function TBGamePage() {
     return () => clearInterval(interval);
   }, []);
 
-  // 2️⃣ LAST 10 WINS FETCH
+  // LAST 10 WINS FETCH
   useEffect(() => {
     const fetchLastWins = async () => {
       try {
@@ -106,14 +105,14 @@ export default function TBGamePage() {
     };
   }, []);
 
-  // 3️⃣ TIMER 5 pe WINNER ANNOUNCE KARO (no payout, only announcement)
+  // TIMER 5 pe WINNER ANNOUNCE
   useEffect(() => {
     if (timer === 5 && currentRound) {
       api.post('/bets/announce-winner', { round: currentRound }).catch(() => {});
     }
   }, [timer, currentRound]);
 
-  // 4️⃣ SOCKET SE WINNER-ANNOUNCED PAR SIRF CHOICE UPDATE KARO
+  // SOCKET WINNER-ANNOUNCED
   useEffect(() => {
     const winnerAnnounceHandler = ({ round, choice }) => {
       setWinnerChoice(choice || null);
@@ -124,7 +123,7 @@ export default function TBGamePage() {
     };
   }, []);
 
-  // 5️⃣ TIMER 5 pe HI SHOW WINNER KARO
+  // SHOW WINNER POPUP
   useEffect(() => {
     if (timer === 5 && winnerChoice) {
       setShowWinner(true);
@@ -133,14 +132,14 @@ export default function TBGamePage() {
     }
   }, [timer, winnerChoice]);
 
-  // 6️⃣ TIMER 0 pe PAYOUT KARO
+  // TIMER 0 pe PAYOUT
   useEffect(() => {
     if (timer === 0 && currentRound) {
       api.post('/bets/distribute-payouts', { round: currentRound }).catch(() => {});
     }
   }, [timer, currentRound]);
 
-  // 7️⃣ NEW ROUND RESET LOGIC
+  // NEW ROUND RESET
   useEffect(() => {
     if (currentRound !== lastRound) {
       setHighlighted([]);
@@ -151,37 +150,22 @@ export default function TBGamePage() {
     }
   }, [currentRound, lastRound]);
 
-  // ==== NEW COIN + IMAGE BET LOGIC ====
-  const handleCoinSelect = (value) => {
-    setSelectedCoin(value);
-  };
-
+  // COIN SELECT & BET LOGIC
+  const handleCoinSelect = (value) => setSelectedCoin(value);
   const handleImageBet = async (name) => {
-    if (!selectedCoin) {
-      alert("Please select a coin first!");
-      return;
-    }
-    if (timer <= 15) {
-      alert('Betting closed for the last 15 seconds');
-      return;
-    }
-    if (balance < selectedCoin) {
-      alert('Insufficient balance');
-      return;
-    }
-    // Animation: highlight image
+    if (!selectedCoin) return alert("Select a coin first!");
+    if (timer <= 15) return alert('Betting closed for the last 15 seconds');
+    if (balance < selectedCoin) return alert('Insufficient balance');
     setHighlighted(h => (h.includes(name) ? h : [...h, name]));
     setUserBets(prev => ({
       ...prev,
       [name]: (prev[name] || 0) + selectedCoin
     }));
     setBalance(prev => prev - selectedCoin);
-
     try {
       await api.post('/bets/place-bet', { choice: name, amount: selectedCoin, round: currentRound });
     } catch (e) {
       alert(e.response?.data?.message || 'Bet failed');
-      // Rollback UI
       setUserBets(prev => ({
         ...prev,
         [name]: (prev[name] || 0) - selectedCoin
@@ -195,7 +179,6 @@ export default function TBGamePage() {
     }
   };
 
-  // GET USER TOTAL BET THIS ROUND
   const userTotalBet = Object.values(userBets).reduce((sum, val) => sum + val, 0);
 
   if (loadingGame || loadingWins) {
@@ -203,8 +186,8 @@ export default function TBGamePage() {
   }
 
   return (
-    <div className="tb-game-bg">
-      {/* Top Header: Profile, Balance (coin), Last Win icon */}
+    <div className="tb-game-bg game-fullscreen">
+      {/* Top: Profile | Balance | Last Win */}
       <div className="tb-mobile-header">
         <div className="tb-profile">
           <img src="/images/profile.png" alt="profile" className="tb-profile-pic" />
@@ -218,13 +201,13 @@ export default function TBGamePage() {
         </button>
       </div>
 
-      {/* Round & Timer Row */}
+      {/* Round & Timer */}
       <div className="tb-round-timer">
         <div className="tb-round">Round: #{currentRound}</div>
         <div className="tb-timer">⏱ {timer}s</div>
       </div>
 
-      {/* 2x6 Image Grid */}
+      {/* Images 2x6 */}
       <div className="tb-image-grid">
         {IMAGE_LIST.map((item, idx) => (
           <div
@@ -234,7 +217,6 @@ export default function TBGamePage() {
             style={{ cursor: timer <= 15 ? "not-allowed" : "pointer" }}
           >
             <img src={item.src} alt={EN_TO_HI[item.name] || item.name} />
-            {/* Coin overlay if bet placed */}
             {userBets[item.name] > 0 &&
               <div className="tb-card-coin">
                 <img src="/images/coin.png" alt="coin" />
@@ -246,13 +228,13 @@ export default function TBGamePage() {
         ))}
       </div>
 
-      {/* Your Bet This Round */}
+      {/* Bet Bar */}
       <div className="tb-total-bet-row">
         <span>Your Bet This Round: </span>
         <b>₹{userTotalBet}</b>
       </div>
 
-      {/* Bet Coins Row */}
+      {/* Coins Row */}
       <div className="tb-coin-row">
         {COINS.map(val => (
           <button
@@ -267,7 +249,7 @@ export default function TBGamePage() {
         ))}
       </div>
 
-      {/* Winner Popup (Center Modal) */}
+      {/* Winner Popup */}
       {showWinner && winnerChoice &&
         <div className="tb-winner-popup">
           <img src={`/images/${winnerChoice}.png`} alt={winnerChoice} />
