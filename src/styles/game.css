@@ -1,291 +1,154 @@
-/* === GAME PAGE DARK CASINO BACKGROUND === */
-.tb-game-bg {
+/* FULL HEIGHT FOR GAME */
+.game-fullscreen {
   min-height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   background: linear-gradient(135deg, #191919 60%, #232323 100%);
-  padding: 0;
-  position: relative;
   overflow-x: hidden;
   font-family: 'Poppins', 'Segoe UI', sans-serif;
 }
 
-/* ==== TOP: PROFILE | BALANCE | LAST WIN ==== */
+/* TOP: Profile | Balance | Last Win */
 .tb-mobile-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 13px 16px 4px 16px;
+  padding: 18px 22px 7px 22px;
+  margin-bottom: 7px;
 }
-
 .tb-profile-pic {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #222;
-  border: 2px solid #444;
-  object-fit: cover;
+  width: 46px; height: 46px;
+  border-radius: 50%; background: #222; border: 2px solid #444; object-fit: cover;
 }
-
 .tb-balance-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 1.15rem;
-  color: #ffe57f;
-  font-weight: bold;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 1.41rem; color: #ffe57f; font-weight: bold;
 }
-
-.tb-coin-icon {
-  width: 27px;
-  height: 27px;
-}
-
+.tb-coin-icon { width: 34px; height: 34px; }
 .tb-last-win-btn {
-  background: #262831;
-  border: none;
-  border-radius: 50%;
-  padding: 6px;
-  box-shadow: 0 2px 8px #0004;
-  cursor: pointer;
-  transition: background 0.15s;
+  background: #262831; border: none; border-radius: 50%; padding: 10px;
+  box-shadow: 0 2px 8px #0004; cursor: pointer; transition: background 0.15s;
 }
-.tb-last-win-btn img {
-  width: 28px;
-  height: 28px;
-}
-
+.tb-last-win-btn img { width: 36px; height: 36px; }
 .tb-last-win-btn:active { background: #fff2; }
 
-/* ==== ROUND + TIMER ==== */
+/* ROUND + TIMER */
 .tb-round-timer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0 16px 8px 16px;
-  font-size: 1.13rem;
-  color: #b5b5b5;
+  display: flex; justify-content: space-between; align-items: center;
+  margin: 0 22px 8px 22px; font-size: 1.38rem; color: #b5b5b5;
 }
-.tb-round { font-weight: 600; }
+.tb-round { font-weight: 700; }
 .tb-timer { color: #ffc107; font-weight: bold; }
 
-/* ==== IMAGE GRID: 2 ROWS, 6 COLS ==== */
+/* IMAGE GRID: 2x6 */
 .tb-image-grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(2, 85px);
-  gap: 8px;
-  margin: 12px 8px 0 8px;
+  grid-template-rows: repeat(2, 110px);
+  gap: 20px 11px;
+  margin: 24px 7px 0 7px;
 }
-
 .tb-card {
   background: #181818;
-  border-radius: 14px;
-  box-shadow: 0 3px 10px #0004;
+  border-radius: 17px;
+  box-shadow: 0 3px 15px #0007;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  padding: 2px 0 5px 0;
+  padding: 6px 0 13px 0;
   position: relative;
-  height: 78px;
+  height: 105px;
   transition: box-shadow 0.18s, transform 0.15s;
   cursor: pointer;
 }
 .tb-card.selected {
-  box-shadow: 0 0 0 3px #32f26e, 0 4px 16px #07c55b40;
-  transform: scale(1.06);
+  box-shadow: 0 0 0 5px #32f26e, 0 4px 18px #07c55b40;
+  transform: scale(1.09);
 }
 .tb-card.winner {
-  box-shadow: 0 0 0 3px #ffe082, 0 4px 18px #ffe08270;
+  box-shadow: 0 0 0 5px #ffe082, 0 4px 22px #ffe082a0;
   animation: winnerGlow 0.8s infinite alternate;
 }
-@keyframes winnerGlow {
-  to { box-shadow: 0 0 0 6px #fff6, 0 4px 26px #ffe082a0; }
-}
+@keyframes winnerGlow { to { box-shadow: 0 0 0 9px #fff7, 0 4px 26px #ffe082c0; } }
 .tb-card img {
-  width: 38px;
-  height: 38px;
-  object-fit: contain;
-  margin-bottom: 2px;
-  background: #2d2d2d;
-  border-radius: 8px;
+  width: 56px; height: 56px; object-fit: contain;
+  margin-bottom: 6px; background: #2d2d2d; border-radius: 12px;
 }
 .tb-card-label {
-  color: #fff;
-  font-size: 0.92rem;
-  margin-top: 2px;
-  margin-bottom: 0px;
-  letter-spacing: 0.4px;
+  color: #fff; font-size: 1.21rem; margin-top: 8px; letter-spacing: 0.6px; font-weight: 500;
 }
 .tb-card-coin {
-  display: flex;
-  align-items: center;
-  position: absolute;
-  top: 6px;
-  right: 8px;
-  background: #232323cc;
-  border-radius: 8px;
-  padding: 2px 6px 2px 2px;
-  box-shadow: 0 2px 8px #0004;
-  font-size: 0.92rem;
-  color: #ffe082;
-  gap: 2px;
-  font-weight: 700;
+  display: flex; align-items: center; position: absolute;
+  top: 11px; right: 14px; background: #232323dd; border-radius: 9px;
+  padding: 4px 10px 4px 4px; box-shadow: 0 2px 8px #0005; font-size: 1.13rem;
+  color: #ffe082; gap: 5px; font-weight: 700;
 }
-.tb-card-coin img {
-  width: 17px;
-  height: 17px;
-  margin: 0 4px 0 0;
-}
+.tb-card-coin img { width: 21px; height: 21px; margin: 0 5px 0 0; }
 
-/* ==== BET SUMMARY ROW ==== */
+/* BET BAR */
 .tb-total-bet-row {
-  margin: 14px 16px 7px 16px;
-  background: #292929;
-  color: #ffe082;
-  border-radius: 10px;
-  padding: 9px 0 7px 0;
-  text-align: center;
-  font-size: 1.14rem;
-  font-weight: 600;
-  box-shadow: 0 2px 8px #0003;
-  letter-spacing: 0.2px;
+  margin: 30px 18px 22px 18px; background: #292929;
+  color: #ffe082; border-radius: 15px; padding: 21px 0 19px 0;
+  text-align: center; font-size: 1.29rem; font-weight: 700; box-shadow: 0 2px 10px #0003;
+  letter-spacing: 0.4px;
 }
 
-/* ==== COINS ROW ==== */
+/* COINS ROW */
 .tb-coin-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 9px;
-  margin: 0 13px;
-  margin-bottom: 17px;
+  display: flex; justify-content: space-between; align-items: center; gap: 23px;
+  margin: 0 28px; margin-bottom: 36px; margin-top: 0;
 }
 .tb-coin-btn {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border: none;
-  background: #202124;
-  border-radius: 16px;
-  padding: 8px 0 5px 0;
-  box-shadow: 0 2px 8px #0002;
-  cursor: pointer;
-  font-size: 1.09rem;
-  color: #ffd700;
-  font-weight: 600;
-  transition: background 0.15s, transform 0.11s;
-  outline: none;
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  border: none; background: #202124; border-radius: 22px;
+  padding: 19px 0 12px 0; box-shadow: 0 2px 9px #0002;
+  cursor: pointer; font-size: 1.23rem; color: #ffd700; font-weight: 700;
+  transition: background 0.15s, transform 0.11s; outline: none;
 }
 .tb-coin-btn.selected, .tb-coin-btn:active {
-  background: #2e323f;
-  box-shadow: 0 0 0 3px #3cff6a80;
-  transform: scale(1.08);
+  background: #2e323f; box-shadow: 0 0 0 6px #3cff6a80; transform: scale(1.13);
 }
-.tb-coin-btn[disabled] {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-.tb-coin-btn img {
-  width: 29px;
-  height: 29px;
-  margin-bottom: 3px;
-}
+.tb-coin-btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+.tb-coin-btn img { width: 37px; height: 37px; margin-bottom: 6px; }
 
-/* ==== WINNER POPUP ==== */
+/* WINNER POPUP */
 .tb-winner-popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: #181818fa;
-  color: #fff;
-  border-radius: 16px;
-  padding: 28px 25px 20px 25px;
-  text-align: center;
-  z-index: 2222;
-  box-shadow: 0 8px 36px #000a;
-  animation: winnerShow 0.6s;
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  background: #181818fa; color: #fff; border-radius: 20px;
+  padding: 34px 33px 26px 33px; text-align: center; z-index: 2222;
+  box-shadow: 0 8px 36px #000a; animation: winnerShow 0.6s;
 }
-@keyframes winnerShow {
-  from { opacity: 0; transform: translate(-50%, -30%); }
-  to   { opacity: 1; transform: translate(-50%, -50%); }
-}
-.tb-winner-popup img {
-  width: 75px;
-  height: 75px;
-  object-fit: contain;
-  margin-bottom: 14px;
-  border-radius: 8px;
-  border: 2px solid #ffe082;
-}
-.tb-winner-label {
-  font-size: 1.12rem;
-  margin-top: 0.5rem;
-  color: #ffe082;
-  font-weight: bold;
-  letter-spacing: 0.8px;
-}
+@keyframes winnerShow { from { opacity: 0; transform: translate(-50%, -30%); } to { opacity: 1; transform: translate(-50%, -50%); } }
+.tb-winner-popup img { width: 89px; height: 89px; object-fit: contain; margin-bottom: 18px; border-radius: 10px; border: 2.5px solid #ffe082; }
+.tb-winner-label { font-size: 1.29rem; margin-top: 0.7rem; color: #ffe082; font-weight: 700; letter-spacing: 1.2px; }
 
-/* ==== LAST WIN MODAL ==== */
-.tb-lastwin-modal {
-  background: #212121ee;
-  border-radius: 14px;
-  border: none;
-  color: #fff;
-  min-width: 250px;
-  max-width: 320px;
-  padding: 22px 12px 14px 12px;
-  box-shadow: 0 8px 32px #000a;
-}
-.tb-lastwin-modal h3 {
-  color: #ffe082;
-  margin-bottom: 12px;
-  text-align: center;
-}
-.tb-lastwin-modal ul {
-  padding: 0 4px;
-  margin-bottom: 11px;
-}
-.tb-lastwin-modal li {
-  font-size: 0.97rem;
-  padding: 2px 0;
-  color: #fff;
-  border-bottom: 1px solid #393939;
-}
+/* LAST WIN MODAL */
+.tb-lastwin-modal { background: #212121ee; border-radius: 17px; border: none; color: #fff; min-width: 280px; max-width: 340px; padding: 26px 16px 19px 16px; box-shadow: 0 8px 32px #000a; }
+.tb-lastwin-modal h3 { color: #ffe082; margin-bottom: 13px; text-align: center; }
+.tb-lastwin-modal ul { padding: 0 7px; margin-bottom: 15px; }
+.tb-lastwin-modal li { font-size: 1.13rem; padding: 3px 0; color: #fff; border-bottom: 1px solid #393939; }
 .tb-lastwin-modal li:last-child { border-bottom: none; }
-.tb-lastwin-modal button {
-  margin: 0 auto;
-  display: block;
-  padding: 7px 28px;
-  border-radius: 7px;
-  border: none;
-  background: #ffe082;
-  color: #222;
-  font-size: 1rem;
-  font-weight: bold;
-  cursor: pointer;
-}
+.tb-lastwin-modal button { margin: 0 auto; display: block; padding: 10px 32px; border-radius: 9px; border: none; background: #ffe082; color: #222; font-size: 1.17rem; font-weight: bold; cursor: pointer; }
 
-/* ==== MEDIA QUERIES FOR MOBILE ==== */
+/* FOR TINY DEVICES (RESPONSIVE) */
 @media (max-width: 600px) {
-  .tb-image-grid {
-    grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: repeat(2, 58px);
-    gap: 4px;
-    margin: 8px 4px 0 4px;
-  }
-  .tb-card {
-    height: 54px;
-    min-width: 0;
-    padding: 1px 0 4px 0;
-  }
-  .tb-card img { width: 26px; height: 26px; }
-  .tb-card-label { font-size: 0.82rem; }
-  .tb-card-coin { font-size: 0.81rem; padding: 1px 5px 1px 1px; top: 2px; right: 4px; }
-  .tb-profile-pic { width: 33px; height: 33px; }
-  .tb-coin-icon { width: 19px; height: 19px; }
-  .tb-coin-btn img { width: 18px; height: 18px; }
-  .tb-total-bet-row { font-size: 0.99rem; padding: 7px 0 4px 0; }
-  .tb-last-win-btn img { width: 19px; height: 19px; }
+  .game-fullscreen { padding: 0; }
+  .tb-mobile-header { padding: 11px 8px 5px 8px; }
+  .tb-profile-pic { width: 32px; height: 32px; }
+  .tb-balance-row { font-size: 1.05rem; }
+  .tb-coin-icon { width: 17px; height: 17px; }
+  .tb-last-win-btn img { width: 18px; height: 18px; }
+  .tb-round-timer { margin: 0 9px 6px 9px; font-size: 0.96rem; }
+  .tb-image-grid { grid-template-rows: repeat(2, 52px); gap: 7px 5px; margin: 12px 2px 0 2px; }
+  .tb-card { height: 50px; padding: 2px 0 7px 0; }
+  .tb-card img { width: 23px; height: 23px; }
+  .tb-card-label { font-size: 0.72rem; }
+  .tb-card-coin { font-size: 0.67rem; padding: 1px 5px 1px 1px; top: 2px; right: 2px; }
+  .tb-total-bet-row { font-size: 0.85rem; padding: 7px 0 4px 0; margin: 10px 3px 8px 3px; }
+  .tb-coin-row { gap: 7px; margin: 0 3px 18px 3px; }
+  .tb-coin-btn { padding: 7px 0 4px 0; border-radius: 11px; font-size: 0.82rem; }
+  .tb-coin-btn img { width: 14px; height: 14px; }
 }
