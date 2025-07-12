@@ -186,12 +186,10 @@ export default function TBGamePage() {
   }
 
   return (
-    <div className="tb-game-bg game-fullscreen">
-      {/* Top: Profile | Balance | Last Win */}
-      <div className="tb-mobile-header">
-        <div className="tb-profile">
-          <img src="/images/profile.png" alt="profile" className="tb-profile-pic" />
-        </div>
+     <div className="tb-game-root">
+      {/* Top Row: Profile | Balance | Last Win */}
+      <div className="tb-header-row">
+        <img src="/images/profile.png" alt="profile" className="tb-profile-pic" />
         <div className="tb-balance-row">
           <img src="/images/coin.png" alt="coin" className="tb-coin-icon" />
           <span>₹{balance}</span>
@@ -201,15 +199,15 @@ export default function TBGamePage() {
         </button>
       </div>
 
-      {/* Round & Timer */}
-      <div className="tb-round-timer">
+      {/* Round and Timer */}
+      <div className="tb-round-timer-row">
         <div className="tb-round">Round: #{currentRound}</div>
         <div className="tb-timer">⏱ {timer}s</div>
       </div>
 
-      {/* Images 2x6 */}
-      <div className="tb-image-grid">
-        {IMAGE_LIST.map((item, idx) => (
+      {/* Images */}
+      <div className="tb-image-flex">
+        {IMAGE_LIST.map((item) => (
           <div
             key={item.name}
             className={`tb-card ${highlighted.includes(item.name) ? 'selected' : ''} ${winnerChoice === item.name && showWinner ? 'winner' : ''}`}
@@ -226,6 +224,18 @@ export default function TBGamePage() {
             <div className="tb-card-label">{EN_TO_HI[item.name]}</div>
           </div>
         ))}
+      </div>
+
+      {/* Winner Popup (reserved center space) */}
+      <div className="tb-winner-popup-block">
+        {showWinner && winnerChoice &&
+          <div className="tb-winner-popup">
+            <img src={`/images/${winnerChoice}.png`} alt={winnerChoice} />
+            <div className="tb-winner-label">
+              🎉 {(EN_TO_HI[winnerChoice] || winnerChoice).toUpperCase()} 🎉
+            </div>
+          </div>
+        }
       </div>
 
       {/* Bet Bar */}
@@ -248,16 +258,6 @@ export default function TBGamePage() {
           </button>
         ))}
       </div>
-
-      {/* Winner Popup */}
-      {showWinner && winnerChoice &&
-        <div className="tb-winner-popup">
-          <img src={`/images/${winnerChoice}.png`} alt={winnerChoice} />
-          <div className="tb-winner-label">
-            🎉 {(EN_TO_HI[winnerChoice] || winnerChoice).toUpperCase()} 🎉
-          </div>
-        </div>
-      }
 
       {/* Last Win Modal */}
       <dialog id="tb-lastwin-modal" className="tb-lastwin-modal">
