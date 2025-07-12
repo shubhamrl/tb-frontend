@@ -186,7 +186,7 @@ export default function TBGamePage() {
   }
 
   return (
-     <div className="tb-game-root">
+    <div className="tb-game-root">
       {/* Top Row: Profile | Balance | Last Win */}
       <div className="tb-header-row">
         <img src="/images/profile.png" alt="profile" className="tb-profile-pic" />
@@ -258,6 +258,15 @@ export default function TBGamePage() {
           </button>
         ))}
       </div>
+      {/* Coin Cancel Button */}
+      {selectedCoin &&
+        <button
+          className="tb-coin-cancel-btn"
+          onClick={() => setSelectedCoin(null)}
+        >
+          Cancel Coin
+        </button>
+      }
 
       {/* Last Win Modal */}
       <dialog id="tb-lastwin-modal" className="tb-lastwin-modal">
