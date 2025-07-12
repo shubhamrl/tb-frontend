@@ -105,7 +105,7 @@ export default function TBGamePage() {
     };
   }, []);
 
-  // TIMER 5 pe WINNER ANNOUNCE
+  // TIMER 5 pe WINNER ANNOUNCE (API call)
   useEffect(() => {
     if (timer === 5 && currentRound) {
       api.post('/bets/announce-winner', { round: currentRound }).catch(() => {});
@@ -123,17 +123,17 @@ export default function TBGamePage() {
     };
   }, []);
 
-  // ** WINNER SHOW FIX **
+  // *** WINNER POPUP: show only when timer===5 and winnerChoice is present ***
   useEffect(() => {
-    if (winnerChoice) {
+    if (timer === 5 && winnerChoice) {
       setShowWinner(true);
       if (winnerTimeoutRef.current) clearTimeout(winnerTimeoutRef.current);
       winnerTimeoutRef.current = setTimeout(() => setShowWinner(false), 10000);
     } else {
       setShowWinner(false);
     }
-  }, [winnerChoice]);
-  // -----
+  }, [timer, winnerChoice]);
+  // -------------------------------------------------------
 
   // TIMER 0 pe PAYOUT
   useEffect(() => {
@@ -149,7 +149,7 @@ export default function TBGamePage() {
       setSelectedCoin(null);
       setUserBets({});
       setShowWinner(false);
-      setWinnerChoice(null); // <-- YEH LINE IMPORTANT!
+      setWinnerChoice(null); // <-- Yeh line important!
       setLastRound(currentRound);
     }
   }, [currentRound, lastRound]);
