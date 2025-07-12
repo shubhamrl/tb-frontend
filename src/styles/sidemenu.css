@@ -1,0 +1,55 @@
+.sidemenu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(30,36,46,0.42);
+  z-index: 1000;
+  transition: background 0.2s;
+}
+.sidemenu-drawer {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: 82vw;
+  max-width: 325px;
+  background: #17222d;
+  box-shadow: 2px 0 28px #0006;
+  border-top-right-radius: 21px;
+  border-bottom-right-radius: 21px;
+  padding: 24px 18px 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  z-index: 1100;
+  animation: slideInLeft 0.23s;
+}
+@keyframes slideInLeft {
+  0% { transform: translateX(-100%);}
+  100% { transform: translateX(0);}
+}
+.sidemenu-btn {
+  padding: 12px 0;
+  font-size: 1.08rem;
+  background: #183c46;
+  color: #ffe082;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-bottom: 1px;
+  cursor: pointer;
+  transition: background 0.17s;
+}
+.sidemenu-btn:hover { background: #176e75;}
+.sidemenu-btn.refer { background: #fb923c; color: #fff;}
+.sidemenu-btn.logout { background: #314052; color: #ffadad;}
+
+.sidemenu-tip {
+  margin-top: 11px;
+  background: #FFFDE7;
+  border: 1px solid #FFD54F;
+  border-radius: 10px;
+  padding: 11px 13px;
+  color: #6D4C00;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
