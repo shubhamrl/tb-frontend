@@ -105,6 +105,13 @@ export default function TBGamePage() {
     };
   }, []);
 
+  // TIMER 10 pe LOCK WINNER (admin/auto)
+  useEffect(() => {
+    if (timer === 10 && currentRound) {
+      api.post('/bets/lock-winner', { round: currentRound }).catch(() => {});
+    }
+  }, [timer, currentRound]);
+
   // TIMER 5 pe WINNER ANNOUNCE (API call)
   useEffect(() => {
     if (timer === 5 && currentRound) {
@@ -123,18 +130,14 @@ export default function TBGamePage() {
     };
   }, []);
 
-  // *** FINAL WINNER POPUP LOGIC: ***
+  // WINNER POPUP: Only timer===5 pe popup dikhana, 5 sec tak
   useEffect(() => {
-    // Only open popup at timer===5, and for exactly 5 sec (even if timer changes)
     if (timer === 5 && winnerChoice) {
       setShowWinner(true);
       if (winnerTimeoutRef.current) clearTimeout(winnerTimeoutRef.current);
-      winnerTimeoutRef.current = setTimeout(() => setShowWinner(false), 5000); // 5 sec
+      winnerTimeoutRef.current = setTimeout(() => setShowWinner(false), 5000); // exactly 5 sec
     }
-    // DO NOT auto-close on timer change! Only close on timeout or new round.
-    // eslint-disable-next-line
   }, [timer, winnerChoice]);
-  // -------------------------------------------------------
 
   // TIMER 0 pe PAYOUT
   useEffect(() => {
