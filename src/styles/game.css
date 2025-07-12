@@ -4,8 +4,8 @@
   height: 100dvh;
   display: flex;
   flex-direction: column;
-background: #d8e6d8;
-background: linear-gradient(184deg, rgba(216, 230, 216, 1) 0%, rgba(118, 127, 116, 1) 12%, rgba(79, 86, 76, 1) 28%, rgba(53, 59, 50, 1) 50%);
+ background: linear-gradient(181deg, rgba(247,247,247,1) 0%, rgba(0,0,0,1) 100%);
+  
   font-family: 'Poppins', 'Segoe UI', sans-serif;
   overflow: hidden;
 } 
