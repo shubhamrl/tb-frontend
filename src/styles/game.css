@@ -4,8 +4,7 @@
   height: 100dvh;
   display: flex;
   flex-direction: column;
-background: #403738;
-background: radial-gradient(circle, rgba(64, 55, 56, 1) 0%, rgba(46, 49, 54, 1) 100%);
+  background: linear-gradient(135deg, #131d27 60%, #233544 100%);
   
   font-family: 'Poppins', 'Segoe UI', sans-serif;
   overflow: hidden;
