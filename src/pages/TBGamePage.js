@@ -194,7 +194,13 @@ export default function TBGamePage() {
     <div className="tb-game-root">
       {/* Top Row: Profile | Balance | Last Win */}
       <div className="tb-header-row">
-        <img src="/images/profile.png" alt="profile" className="tb-profile-pic" />
+       <img
+  src="/images/profile.png"
+  alt="profile"
+  className="tb-profile-pic"
+  style={{ cursor: "pointer" }}
+  onClick={() => navigate('/dashboard')}
+/>
         <div className="tb-balance-row">
           <img src="/images/coin.png" alt="coin" className="tb-coin-icon" />
           <span>₹{balance}</span>
