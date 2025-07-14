@@ -44,6 +44,7 @@ const IMAGE_LIST = [
 const COINS = [10, 20, 30, 40, 50, 100];
 
 export default function TBGamePage() {
+  const navigate = useNavigate();
   const [selectedCoin, setSelectedCoin] = useState(null);
   const [highlighted, setHighlighted] = useState([]);
   const [lastWins, setLastWins] = useState([]);
