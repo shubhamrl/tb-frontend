@@ -4,7 +4,6 @@ import api from '../services/api';
 import '../styles/dashboard.css';
 import AdminSidebar from '../components/AdminSidebar';
 
-// English-to-Hindi mapping
 const EN_TO_HI = {
   umbrella: 'छतरी',
   football: 'फुटबॉल',
@@ -20,7 +19,6 @@ const EN_TO_HI = {
   rabbit: 'खरगोश'
 };
 
-// Image list
 const IMAGE_LIST = [
   { name: 'umbrella',    src: '/images/umbrella.png'     },
   { name: 'football',    src: '/images/Football.png'     },
@@ -36,7 +34,6 @@ const IMAGE_LIST = [
   { name: 'rabbit',      src: '/images/rabbit.png'       }
 ];
 
-// Socket connection
 const socket = io('https://tb-backend-1.onrender.com', {
   transports: ['websocket'],
   reconnectionAttempts: 5,
@@ -68,7 +65,6 @@ const DashboardPage = () => {
     fetchLastWins();
     socket.on('winner-announced', fetchLastWins);
     socket.on('payouts-distributed', fetchLastWins);
-
     return () => {
       socket.off('winner-announced', fetchLastWins);
       socket.off('payouts-distributed', fetchLastWins);
@@ -77,22 +73,26 @@ const DashboardPage = () => {
 
   // Live state fetch - core logic
   useEffect(() => {
+    let prevRound = -1;
     const fetchAllData = async () => {
       try {
         const res = await api.get('/bets/live-state');
         setCurrentRound(res.data.round);
         setTimer(res.data.timer);
-        setTotals(res.data.totals && typeof res.data.totals === 'object'
-          ? res.data.totals
-          : {}
-        );
+        setTotals(res.data.totals && typeof res.data.totals === 'object' ? res.data.totals : {});
         setWinnerChoice(res.data.winnerChoice || null);
+
+        // On round change, hard reset totals
+        if (prevRound !== -1 && prevRound !== res.data.round) {
+          setTotals({});
+          setWinnerChoice(null);
+        }
+        prevRound = res.data.round;
       } catch (err) {
         setTotals({});
         setWinnerChoice(null);
       }
     };
-
     fetchAllData();
     const interval = setInterval(fetchAllData, 1000);
     return () => clearInterval(interval);
@@ -109,6 +109,9 @@ const DashboardPage = () => {
       setTotalUsers(data.total || 0);
       setActiveUsers(data.active || 0);
     } catch (err) {
+      setUsers([]);
+      setTotalUsers(0);
+      setActiveUsers(0);
       console.error('Error fetching users:', err);
     }
   };
@@ -128,7 +131,6 @@ const DashboardPage = () => {
       alert(`Balance updated: ₹${res.data.balance}`);
       setEditAmounts(prev => ({ ...prev, [id]: '' }));
     } catch (err) {
-      console.error('Error updating balance:', err);
       alert('Error updating balance');
     }
   };
@@ -143,7 +145,6 @@ const DashboardPage = () => {
     }
   };
 
-  // MAIN RENDER
   return (
     <div style={{ display: 'flex' }}>
       <AdminSidebar />
@@ -191,7 +192,6 @@ const DashboardPage = () => {
             </h2>
             <div className="admin-image-grid">
               {IMAGE_LIST.map(item => {
-                // Always zero if nothing, never stale value
                 const amount = Number(totals[item.name]) || 0;
                 const payout = amount * 10;
                 return (
