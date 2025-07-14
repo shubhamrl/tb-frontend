@@ -48,33 +48,41 @@ export default function TBGamePage() {
   const [highlighted, setHighlighted] = useState([]);
   const [lastWins, setLastWins] = useState([]);
   const [currentRound, setCurrentRound] = useState(1);
-  const [timer, setTimer] = useState(40);
+  const [timer, setTimer] = useState(90);
   const [bets, setBets] = useState({});
   const [winnerChoice, setWinnerChoice] = useState(null);
   const [showWinner, setShowWinner] = useState(false);
   const [balance, setBalance] = useState(0);
   const [userBets, setUserBets] = useState({});
-  const [lastRound, setLastRound] = useState(1);
   const winnerTimeoutRef = useRef(null);
-
   const [loadingGame, setLoadingGame] = useState(true);
   const [loadingWins, setLoadingWins] = useState(true);
 
-  const navigate = useNavigate();
-
-  // LIVE STATE FETCH
+  // LIVE STATE FETCH & strict reset on round change!
   useEffect(() => {
+    let prevRound = -1;
     const fetchLiveState = async () => {
       try {
         const res = await api.get('/bets/live-state');
+        // Always overwrite state from API
         setCurrentRound(res.data.round);
         setTimer(res.data.timer);
         setBets(res.data.totals || {});
         setWinnerChoice(res.data.winnerChoice || null);
-        if (typeof res.data.balance === "number") setBalance(res.data.balance);
-        if (res.data.userBets) setUserBets(res.data.userBets);
-        else setUserBets({});
+        setBalance(typeof res.data.balance === "number" ? res.data.balance : 0);
+        setUserBets(res.data.userBets || {});
         setLoadingGame(false);
+
+        // Hard reset all bets on round switch (no carry forward ever!)
+        if (prevRound !== -1 && prevRound !== res.data.round) {
+          setUserBets({});
+          setBets({});
+          setWinnerChoice(null);
+          setShowWinner(false);
+          setHighlighted([]);
+          setSelectedCoin(null);
+        }
+        prevRound = res.data.round;
       } catch {
         setUserBets({});
         setBets({});
@@ -146,18 +154,6 @@ export default function TBGamePage() {
     }
   }, [timer, currentRound]);
 
-  // NEW ROUND RESET (add winnerChoice reset)
-  useEffect(() => {
-    if (currentRound !== lastRound) {
-      setHighlighted([]);
-      setSelectedCoin(null);
-      setUserBets({});
-      setShowWinner(false);
-      setWinnerChoice(null); // winnerChoice reset
-      setLastRound(currentRound);
-    }
-  }, [currentRound, lastRound]);
-
   // COIN SELECT & BET LOGIC
   const handleCoinSelect = (value) => setSelectedCoin(value);
   const handleImageBet = async (name) => {
@@ -172,6 +168,7 @@ export default function TBGamePage() {
     setBalance(prev => prev - selectedCoin);
     try {
       await api.post('/bets/place-bet', { choice: name, amount: selectedCoin, round: currentRound });
+      // Success pe backend state fetch karein (optional), ya next interval pe aa jayega
     } catch (e) {
       alert(e.response?.data?.message || 'Bet failed');
       setUserBets(prev => ({
@@ -187,7 +184,7 @@ export default function TBGamePage() {
     }
   };
 
-  const userTotalBet = Object.values(userBets).reduce((sum, val) => sum + val, 0);
+  const userTotalBet = Object.values(userBets || {}).reduce((sum, val) => sum + val, 0);
 
   if (loadingGame || loadingWins) {
     return <Loader />;
@@ -206,13 +203,11 @@ export default function TBGamePage() {
           <img src="/images/trophy.png" alt="last win" />
         </button>
       </div>
-
       {/* Round and Timer */}
       <div className="tb-round-timer-row">
         <div className="tb-round">Round: #{currentRound}</div>
         <div className="tb-timer">⏱ {timer}s</div>
       </div>
-
       {/* Images */}
       <div className="tb-image-flex">
         {IMAGE_LIST.map((item) => (
@@ -223,7 +218,7 @@ export default function TBGamePage() {
             style={{ cursor: timer <= 15 ? "not-allowed" : "pointer" }}
           >
             <img src={item.src} alt={EN_TO_HI[item.name] || item.name} />
-            {userBets[item.name] > 0 &&
+            {!!userBets[item.name] &&
               <div className="tb-card-coin">
                 <img src="/images/coin.png" alt="coin" />
                 <span>{userBets[item.name]}</span>
@@ -233,10 +228,8 @@ export default function TBGamePage() {
           </div>
         ))}
       </div>
-
       {/* Winner Popup */}
       <div className="tb-winner-popup-block">
-        {/* Pending logic: */}
         {!winnerChoice && timer <= 5 &&
           <div className="tb-winner-pending">Status: Pending...</div>
         }
@@ -249,13 +242,11 @@ export default function TBGamePage() {
           </div>
         }
       </div>
-
       {/* Bet Bar */}
       <div className="tb-total-bet-row">
         <span>Your Bet This Round: </span>
         <b>₹{userTotalBet}</b>
       </div>
-
       {/* Coins Row */}
       <div className="tb-coin-row">
         {COINS.map(val => (
@@ -279,7 +270,6 @@ export default function TBGamePage() {
           Cancel Coin
         </button>
       }
-
       {/* Last Win Modal */}
       <dialog id="tb-lastwin-modal" className="tb-lastwin-modal">
         <div>
