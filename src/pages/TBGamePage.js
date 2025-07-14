@@ -271,22 +271,28 @@ export default function TBGamePage() {
         </button>
       }
       {/* Last Win Modal */}
-      <dialog id="tb-lastwin-modal" className="tb-lastwin-modal">
-        <div>
-          <h3>Last 10 Wins</h3>
-          <ul>
-            {lastWins.map((w, i) => {
-              const round = w && typeof w.round !== 'undefined' ? w.round : "-";
-              const choice = w && w.choice ? w.choice : "-";
-              const name = (EN_TO_HI[choice] || choice).toUpperCase();
-              return (
-                <li key={i}><b>Round {round}:</b> {name}</li>
-              );
-            })}
-          </ul>
-          <button onClick={() => document.getElementById('tb-lastwin-modal').close()}>Close</button>
-        </div>
-      </dialog>
+     <dialog id="tb-lastwin-modal" className="tb-lastwin-modal">
+  <div className="tb-lastwin-modal-content">
+    <h2 className="tb-lastwin-title">🏆 Last 10 Wins</h2>
+    <ul className="tb-lastwin-list">
+      {lastWins.map((w, i) => {
+        const round = w && typeof w.round !== 'undefined' ? w.round : "-";
+        const choice = w && w.choice ? w.choice : "-";
+        const name = (EN_TO_HI[choice] || choice).toUpperCase();
+        return (
+          <li key={i}>
+            <span className="tb-lastwin-round">Round {round}:</span>{" "}
+            <span className="tb-lastwin-choice">{name}</span>
+          </li>
+        );
+      })}
+    </ul>
+    <button className="tb-lastwin-close-btn" onClick={() => document.getElementById('tb-lastwin-modal').close()}>
+      Close
+    </button>
+  </div>
+</dialog>
+
     </div>
   );
 }
