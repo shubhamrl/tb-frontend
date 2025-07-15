@@ -49,7 +49,8 @@ export default function TBGamePage() {
   const [highlighted, setHighlighted] = useState([]);
   const [lastWins, setLastWins] = useState([]);
   const [currentRound, setCurrentRound] = useState(1);
-  const [timer, setTimer] = useState(90);
+ const [timer, setTimer] = useState(40);
+
   const [bets, setBets] = useState({});
   const [winnerChoice, setWinnerChoice] = useState(null);
   const [showWinner, setShowWinner] = useState(false);
