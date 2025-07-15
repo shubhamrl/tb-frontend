@@ -192,28 +192,113 @@ export default function TBGamePage() {
   }
 
   return (
-    <div className="tb-game-root">
-      {/* ...rest of your render code remains unchanged ... */}
-      {/* Yahan se neeche kuch bhi change nahi! */}
-      {/* Top Row: Profile | Balance | Last Win */}
-      <div className="tb-header-row">
-        <img
-          src="/images/profile.png"
-          alt="profile"
-          className="tb-profile-pic"
-          style={{ cursor: "pointer" }}
-          onClick={() => navigate('/dashboard')}
-        />
-        <div className="tb-balance-row">
-          <img src="/images/coin.png" alt="coin" className="tb-coin-icon" />
-          <span>₹{balance}</span>
+  <div className="tb-game-root">
+    {/* Top Row: Profile | Balance | Last Win */}
+    <div className="tb-header-row">
+      <img
+        src="/images/profile.png"
+        alt="profile"
+        className="tb-profile-pic"
+        style={{ cursor: "pointer" }}
+        onClick={() => navigate('/dashboard')}
+      />
+      <div className="tb-balance-row">
+        <img src="/images/coin.png" alt="coin" className="tb-coin-icon" />
+        <span>₹{balance}</span>
+      </div>
+      <button className="tb-last-win-btn" onClick={() => document.getElementById('tb-lastwin-modal').showModal()}>
+        <img src="/images/trophy.png" alt="last win" />
+      </button>
+    </div>
+    {/* Round and Timer */}
+    <div className="tb-round-timer-row">
+      <div className="tb-round">Round: #{currentRound}</div>
+      <div className="tb-timer">⏱ {timer}s</div>
+    </div>
+    {/* Images */}
+    <div className="tb-image-flex">
+      {IMAGE_LIST.map((item) => (
+        <div
+          key={item.name}
+          className={`tb-card ${highlighted.includes(item.name) ? 'selected' : ''} ${winnerChoice === item.name && showWinner ? 'winner' : ''}`}
+          onClick={() => handleImageBet(item.name)}
+          style={{ cursor: timer <= 15 ? "not-allowed" : "pointer" }}
+        >
+          <img src={item.src} alt={EN_TO_HI[item.name] || item.name} />
+          {!!userBets[item.name] &&
+            <div className="tb-card-coin">
+              <img src="/images/coin.png" alt="coin" />
+              <span>{userBets[item.name]}</span>
+            </div>
+          }
+          <div className="tb-card-label">{EN_TO_HI[item.name]}</div>
         </div>
-        <button className="tb-last-win-btn" onClick={() => document.getElementById('tb-lastwin-modal').showModal()}>
-          <img src="/images/trophy.png" alt="last win" />
+      ))}
+    </div>
+    {/* Winner Popup */}
+    <div className="tb-winner-popup-block">
+      {!winnerChoice && timer <= 5 &&
+        <div className="tb-winner-pending">Status: Pending...</div>
+      }
+      {showWinner && winnerChoice &&
+        <div className="tb-winner-popup">
+          <img src={`/images/${winnerChoice}.png`} alt={winnerChoice} />
+          <div className="tb-winner-label">
+            🎉 {(EN_TO_HI[winnerChoice] || winnerChoice).toUpperCase()} 🎉
+          </div>
+        </div>
+      }
+    </div>
+    {/* Bet Bar */}
+    <div className="tb-total-bet-row">
+      <span>Your Bet This Round: </span>
+      <b>₹{userTotalBet}</b>
+    </div>
+    {/* Coins Row */}
+    <div className="tb-coin-row">
+      {COINS.map(val => (
+        <button
+          key={val}
+          className={`tb-coin-btn ${selectedCoin === val ? 'selected' : ''}`}
+          onClick={() => handleCoinSelect(val)}
+          disabled={timer <= 15}
+        >
+          <img src="/images/coin.png" alt="coin" />
+          <span>{val}</span>
+        </button>
+      ))}
+    </div>
+    {/* Coin Cancel Button */}
+    {selectedCoin &&
+      <button
+        className="tb-coin-cancel-btn"
+        onClick={() => setSelectedCoin(null)}
+      >
+        Cancel Coin
+      </button>
+    }
+    {/* Last Win Modal */}
+    <dialog id="tb-lastwin-modal" className="tb-lastwin-modal">
+      <div className="tb-lastwin-modal-content">
+        <h2 className="tb-lastwin-title">🏆 Last 10 Wins</h2>
+        <ul className="tb-lastwin-list">
+          {lastWins.map((w, i) => {
+            const round = w && typeof w.round !== 'undefined' ? w.round : "-";
+            const choice = w && w.choice ? w.choice : "-";
+            const name = (EN_TO_HI[choice] || choice).toUpperCase();
+            return (
+              <li key={i}>
+                <span className="tb-lastwin-round">Round {round}:</span>{" "}
+                <span className="tb-lastwin-choice">{name}</span>
+              </li>
+            );
+          })}
+        </ul>
+        <button className="tb-lastwin-close-btn" onClick={() => document.getElementById('tb-lastwin-modal').close()}>
+          Close
         </button>
       </div>
-      {/* ...baki ka render code bilkul as is ... */}
-      {/* ...no changes in your UI... */}
-    </div>
-  );
+    </dialog>
+  </div>
+);
 }
