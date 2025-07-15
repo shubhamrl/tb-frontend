@@ -1,0 +1,115 @@
+.bh-root {
+  max-width: 760px;
+  margin: 48px auto 32px auto;
+  padding: 32px 22px 30px 22px;
+  border-radius: 26px;
+  box-shadow: 0 8px 32px #0003, 0 1.5px 0 #ffd70033 inset;
+  background: linear-gradient(135deg, #23243a 80%, #1c1c29 100%);
+  backdrop-filter: blur(7px);
+  border: 1.5px solid #3e3e5e;
+  position: relative;
+}
+
+.bh-heading {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: .5px;
+  margin-bottom: 26px;
+  background: linear-gradient(90deg, #ffd700, #ffe9b3 60%, #ececec 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  user-select: none;
+}
+.bh-heading-icon {
+  font-size: 2.1rem;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.bh-empty {
+  color: #bbb;
+  text-align: center;
+  font-size: 1.1rem;
+  padding: 50px 0;
+}
+
+.bh-table-wrapper {
+  overflow-x: auto;
+  background: rgba(248,248,253,0.13);
+  border-radius: 18px;
+  box-shadow: 0 2px 12px #0001;
+}
+
+.bh-table {
+  width: 100%;
+  min-width: 570px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 1.06rem;
+  background: transparent;
+}
+
+.bh-table thead tr {
+  background: linear-gradient(90deg, #262648 60%, #232335 100%);
+  color: #ffd700;
+}
+.bh-table th, .bh-table td {
+  padding: 12px 11px;
+  text-align: left;
+  font-weight: 500;
+  border: none;
+}
+
+.bh-table th {
+  font-weight: 700;
+  font-size: 1.07rem;
+  letter-spacing: 0.03em;
+}
+
+.bh-table tbody tr {
+  transition: box-shadow .14s, background .19s;
+  background: rgba(248, 248, 253, 0.07);
+  border-radius: 11px;
+  margin-bottom: 7px;
+}
+.bh-table tbody tr:hover {
+  box-shadow: 0 4px 16px #4b515633;
+  background: rgba(255,255,255,0.13);
+}
+
+.bh-row-win {
+  background: linear-gradient(90deg, #f9ffe7 50%, #eaffea 100%) !important;
+}
+
+.bh-highlight {
+  color: #26a641;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  filter: drop-shadow(0 0 1.5px #26a64144);
+}
+
+.bh-win-img {
+  color: #26a641;
+  font-weight: 700;
+  text-shadow: 0 2px 8px #bbffc8aa;
+}
+.bh-amount-win {
+  color: #0a8e16;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  filter: drop-shadow(0 1px 5px #8affb433);
+}
+.bh-amount-lose {
+  color: #c10c0c;
+  font-weight: 700;
+  opacity: 0.7;
+}
+
+/* Table mobile scroll */
+@media (max-width: 650px) {
+  .bh-root { padding: 13px 2px 20px 2px; }
+  .bh-table { min-width: 500px; font-size: 15.5px; }
+  .bh-heading { font-size: 1.18rem; }
+}
