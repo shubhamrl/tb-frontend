@@ -48,7 +48,7 @@ const DashboardPage = () => {
   const [activeUsers, setActiveUsers] = useState(0);
   const [lastWins, setLastWins] = useState([]);
   const [currentRound, setCurrentRound] = useState(1);
-  const [timer, setTimer] = useState(90);
+  const [timer, setTimer] = useState(40);
   const [totals, setTotals] = useState({});
   const [winnerChoice, setWinnerChoice] = useState(null);
 
