@@ -5,33 +5,16 @@ import '../styles/dashboard.css';
 import AdminSidebar from '../components/AdminSidebar';
 
 const EN_TO_HI = {
-  umbrella: 'छतरी',
-  football: 'फुटबॉल',
-  sun: 'सूरज',
-  diya: 'दीया',
-  cow: 'गाय',
-  bucket: 'बाल्टी',
-  kite: 'पतंग',
-  spinningTop: 'भंवरा',
-  rose: 'गुलाब',
-  butterfly: 'तितली',
-  pigeon: 'कबूतर',
-  rabbit: 'खरगोश'
+  umbrella: 'छतरी', football: 'फुटबॉल', sun: 'सूरज', diya: 'दीया', cow: 'गाय', bucket: 'बाल्टी',
+  kite: 'पतंग', spinningTop: 'भंवरा', rose: 'गुलाब', butterfly: 'तितली', pigeon: 'कबूतर', rabbit: 'खरगोश'
 };
 
 const IMAGE_LIST = [
-  { name: 'umbrella',    src: '/images/umbrella.png'     },
-  { name: 'football',    src: '/images/Football.png'     },
-  { name: 'sun',         src: '/images/sun.png'          },
-  { name: 'diya',        src: '/images/diya.png'         },
-  { name: 'cow',         src: '/images/cow.png'          },
-  { name: 'bucket',      src: '/images/Bucket.png'       },
-  { name: 'kite',        src: '/images/kite.png'         },
-  { name: 'spinningTop', src: '/images/spinning_Top.png' },
-  { name: 'rose',        src: '/images/rose.png'         },
-  { name: 'butterfly',   src: '/images/Butterfly.png'    },
-  { name: 'pigeon',      src: '/images/pigeon.png'       },
-  { name: 'rabbit',      src: '/images/rabbit.png'       }
+  { name: 'umbrella', src: '/images/umbrella.png' }, { name: 'football', src: '/images/Football.png' },
+  { name: 'sun', src: '/images/sun.png' }, { name: 'diya', src: '/images/diya.png' }, { name: 'cow', src: '/images/cow.png' },
+  { name: 'bucket', src: '/images/Bucket.png' }, { name: 'kite', src: '/images/kite.png' }, { name: 'spinningTop', src: '/images/spinning_Top.png' },
+  { name: 'rose', src: '/images/rose.png' }, { name: 'butterfly', src: '/images/Butterfly.png' }, { name: 'pigeon', src: '/images/pigeon.png' },
+  { name: 'rabbit', src: '/images/rabbit.png' }
 ];
 
 const socket = io('https://tb-backend-1.onrender.com', {
@@ -81,8 +64,6 @@ const DashboardPage = () => {
         setTimer(res.data.timer);
         setTotals(res.data.totals && typeof res.data.totals === 'object' ? res.data.totals : {});
         setWinnerChoice(res.data.winnerChoice || null);
-
-        // On round change, hard reset totals
         if (prevRound !== -1 && prevRound !== res.data.round) {
           setTotals({});
           setWinnerChoice(null);
@@ -104,7 +85,8 @@ const DashboardPage = () => {
       const params = search.trim() ? { search } : {};
       const res = await api.get('/admin/users', { params });
       const data = res.data;
-      const list = Array.isArray(data) ? data : data.users || [];
+      // Defensive: handle array or object shape
+      const list = Array.isArray(data.users) ? data.users : (Array.isArray(data) ? data : []);
       setUsers(list);
       setTotalUsers(data.total || 0);
       setActiveUsers(data.active || 0);
