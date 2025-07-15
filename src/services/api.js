@@ -1,10 +1,10 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://tb-backend-1.onrender.com/api',
+  baseURL: 'https://tb-backend-1.onrender.com/api', // Production backend ka URL
 });
 
-// Har request me JWT attach karo
+// Har request pe JWT token attach hoga
 api.interceptors.request.use(
   config => {
     const token = localStorage.getItem('token');
